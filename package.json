@@ -1,0 +1,22 @@
+{
+  "name": "@smallwins/arc-prototype",
+  "version": "1.0.5",
+  "description": "architecture run commands",
+  "main": "index",
+  "scripts": {
+    "lint": "eslint ./src --fix",
+    "test": "AWS_REGION=us-east-1 NODE_ENV=testing tape test/*-test.js | tap-spec"
+  },
+  "author": "Brian LeRoux <b@brian.io>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "aws-sdk": "^2.48.0",
+    "dynalite": "^1.2.0",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.3"
+  },
+  "dependencies": {
+    "@smallwins/lambda": "^6.1.0",
+    "uid-safe": "^2.1.4"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "session",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "AWS_REGION=us-east-1 NODE_ENV=testing node test | tap-spec"
+  },
+  "author": "Brian LeRoux <b@brian.io>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "aws-sdk": "^2.45.0"
+  },
+  "dependencies": {
+    "uid-safe": "^2.1.4"
+  }
+}

@@ -1,0 +1,54 @@
+# sections start with @
+# sections contain either single values, vectors, or maps
+# single values are strings or numbers
+# vectors are space seperated strings or numbers
+# maps are single values followed by vectors indented by two spaces
+# comments are after hash symbols
+@app
+test-app-name # all resource get prefixed with this value
+
+# document comment
+@html
+GET /  # inline comment
+GET /about
+
+@json
+GET /messages
+GET /messages/{idx}
+POST /messages
+POST /messages/{idx}
+POST /messages/{idx}/delete
+
+@events
+some-test-event
+
+@tables
+# types supported: 
+# - String
+# - Number
+# - Boolean
+# - List
+# - PartitionString (or HashString or *String)
+# - SortString (or RangeString or **String)
+# - PartitionNumber (or HashNumber or *Number)
+# - SortNumber (or RangeNumber or **Number)
+# - lambda Insert
+# - lambda Modify
+# - lambda Delete
+# - ttl 8.64e+7 (24 hours) ttl values: 1s 1second 1m 1min 1h 24h 1hour 2hours 1d 1day 1w 1week 1mo 1month 24months
+account
+  id PartitionString
+  email String
+  name String
+  lambda Insert
+
+contacts
+  accountID PartitionString
+  contactID String
+
+messages
+  id String
+  from String
+  to String
+  text String
+  body String
