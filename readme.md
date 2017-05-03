@@ -1,10 +1,10 @@
-### <kbd>arc:cloud:</kbd>
+### <kbd>arc :cloud:</kbd>
 
 A text format for specifying **_architure as code_**.
 
 ## Concepts
 
-1. Define high level architecture agnostic of :cloud: vendor arcana:
+1. Define software architecture agnostic of :cloud: vendor arcana:
 
 - Pub/Sub Events
 - HTTP Endpoints
