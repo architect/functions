@@ -1,10 +1,10 @@
 var fs = require('fs')
 var path = require('path')
-var parse = require('@smallwins/arc-parser')
 var test = require('tape')
+var waterfall = require('run-waterfall')
+var parse = require('@smallwins/arc-parser')
 var events = require('../src/events')
 var mockSnsEvent = require('./mock-sns-event.json')
-var getIAM = require('../src/_get-iam-role.js')
 
 test('env', t=> {
   t.plan(2)
@@ -40,40 +40,35 @@ test('events.subscribe', t=> {
   })
 })
 
-test('events.generate.plan', t=> {
+/*
+test.only('events.generate.exec', t=> {
   t.plan(1)
   var arcPath = path.join(__dirname, 'mock-arc')
   var mockArc = fs.readFileSync(arcPath).toString()
   var parsed = parse(mockArc)
-  events.generate.plan(parsed, function _plan(err, result) {
-    if (err) {
-      t.fail(err)
+  waterfall([
+    function _plan(callback) {
+      console.log('call to plan')
+      events.generate.plan(parsed, callback)
+    },
+    function _exec(plan, callback) {
+      console.log('call to exe')
+      events.generate.exec(plan, callback)
     }
-    else {
-      t.ok(result, 'got a result')
-      console.log(result)
-    }
-  })
-})
-
-test.only('get iam', t=> {
-  t.plan(1)
-  getIAM(function _iam(err, role) {
+  ],
+  function _done(err, result) {
     if (err) {
       t.fail(err)
       console.log(err)
     }
     else {
-      t.ok(role, 'got role')
-      console.log(role)
+      t.ok(result, 'got result')
+      console.log(result)
     }
   })
 })
+*/
 /*
-test('events.generate.exec', t=> {
-
-})
-
 test('events.publish', t=> {
   t.plan(1)
   events.publish('test-event', function _publish(err, result) {

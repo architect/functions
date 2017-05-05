@@ -3,6 +3,10 @@ var aws = require('aws-sdk')
 var lambda = new aws.Lambda
 var getIAM = require('../../_get-iam-role')
 
+/**
+ * creates app-name-staging-event-name
+ * and app-name-production-event-name
+ */
 module.exports = function _createDeployment(params, callback) {
   waterfall([
     function _getRole(callback) {
@@ -21,7 +25,7 @@ module.exports = function _createDeployment(params, callback) {
         Timeout: 5, 
       }, callback)
     },
-    function _addPermission(fn, callback) {
+    function _addSnsPermission(fn, callback) {
       lambda.addPermission({
         Action: "lambda:InvokeFunction", 
         FunctionName: "MyFunction", 
@@ -30,6 +34,9 @@ module.exports = function _createDeployment(params, callback) {
         SourceArn: "arn:aws:s3:::examplebucket/*", 
         StatementId: "ID-1"
       }, callback) 
+    },
+    function _addLambdaPermission() {
+    
     }
   ], callback)
 }

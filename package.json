@@ -5,7 +5,7 @@
   "main": "index",
   "scripts": {
     "lint": "eslint ./src --fix",
-    "test": "AWS_REGION=us-east-1 NODE_ENV=testing tape test/*-test.js | tap-spec"
+    "test": "AWS_PROFILE=personal AWS_REGION=us-east-1 NODE_ENV=testing tape test/*-test.js | tap-spec"
   },
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",

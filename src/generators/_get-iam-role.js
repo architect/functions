@@ -1,7 +1,7 @@
 var parallel = require('run-parallel')
 var aws = require('aws-sdk')
 var iam = new aws.IAM
-var policy = require('./_default-iam-policy.json')
+var policy = require('./templates/default-iam-policy.json')
 var RoleName = 'arc-role'
 
 /**
