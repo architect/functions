@@ -1,17 +1,55 @@
 var assert = require('@smallwins/validate/assert')
-var fs = require('fs')
+var path = require('path')
 var mkdir = require('mkdirp').sync
+var exec = require('child_process').exec
+var fs = require('fs')
+var cp = require('cp').sync
 
 module.exports = function _createLambdaCode(params, callback) {
+
   assert(params, {
     event: String,
     app: String,
   })
+
+  // non destructive setup dir
   mkdir('src')
   mkdir('src/events')
-  mkdir(`src/events/${params.event}`)
-  // copy src/events/lambda-name/index.js
-  // npm init package.json
-  // npm i @smallwins/arc-prototype
-  callback()
+
+  var p = path.join(process.cwd(), 'src', 'events', params.event)
+  if (fs.existsSync(p)) {
+    // skip if that dir exists
+    console.log(`skipping code create; ${p} exists`)
+    callback()
+  }
+  else {
+    console.log(`creating code: ${p}`)
+    mkdir(`src/events/${params.event}`)
+
+    // write package.json
+    var pathToPkg = path.join('src', 'events', params.event, 'package.json')
+    var pkg = {
+      name: `${params.app}-${params.event}`
+    }
+    fs.writeFileSync(pathToPkg, JSON.stringify(pkg, null, 2))
+
+    // copy in index.js
+    var index = path.join(__dirname, 'templates', 'sns-lambda', 'index.js')
+    cp(index, path.join('src', 'events', params.event, 'index.js'))
+
+    // npm i latest deps in the hello world template
+    var pathToTmpl = path.join('src', 'events', params.event)
+
+    exec(`
+      cd ${pathToTmpl} && \
+      npm rm @smallwins/arc-prototype --save && \
+      npm i @smallwins/arc-prototype --save
+    `, 
+    function _exec(err) {
+      if (err) {
+        console.log(err)
+      }
+      callback()
+    })
+  }
 }

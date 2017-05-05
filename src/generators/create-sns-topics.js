@@ -23,8 +23,12 @@ module.exports = function _createSnsTopics(params, callback) {
       Name: `${params.app}-${env}-${params.event}`,
     },
     function _createTopic(err, data) {
-      if (err) console.log(err, err.stack) // an error occurred
-      else console.log(data)           // successful response
+      if (err) {
+        console.log(err)
+      }
+      else {
+        console.log(`topic: ${data.TopicArn}`)
+      }
       callback()
     })
   }
@@ -37,5 +41,11 @@ module.exports = function _createSnsTopics(params, callback) {
   parallel([
     staging, 
     production
-  ], callback)
+  ],
+  function _done(err) {
+    if (err) {
+      console.log(err)
+    }
+    callback()
+  })
 }

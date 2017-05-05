@@ -1,10 +1,11 @@
-var assert = require('@smallwins/validate/assert')
-var parse = require('@smallwins/arc-parser')
 var fs = require('fs')
+var parse = require('@smallwins/arc-parser')
+var assert = require('@smallwins/validate/assert')
+var execute = require('./_exec')
 
-// {arcFile:'path/to/.arc'} returns .arc execution plan
+// {arcFile:'path/to/.arc', execute:false} returns .arc execution plan
 // {arcFile:'path/to/.arc', execute:true} runs .arc execution plan
-module.exports = function plan(params={execute:false}, callback) {
+module.exports = function generate(params, callback) {
   
   // validate programmer input
   assert(params, {
@@ -17,24 +18,24 @@ module.exports = function plan(params={execute:false}, callback) {
     throw Error(`Not found: ${params.arcFile}`)
   }
 
-  // parse the .arc file
-  var arc = parse(fs.readFileSync(params.arcFile).toString())
+  // parse the .arc file (slow! should be async)
+  var text = fs.readFileSync(params.arcFile).toString()
+  var arc = parse(text)
 
   // TODO validate arc
   // collect all errors and display gracefully
 
   // plans are sequence of commands to execute
   var plans = []
-  var app = arc.app
+  var app = arc.app[0]
   
   // build up a plan for events
   arc.events.forEach(event=> {
     plans.push({action:'create-sns-lambda-code', event, app})
-    plans.push({action:'create-sns-lambda-deployments', event, app})
     plans.push({action:'create-sns-topics', event, app})
+    plans.push({action:'create-sns-lambda-deployments', event, app})
   })
 
-  // TODO run _exec here
   /*
   // build up a plan for html
   arc.html.forEach(route=> {
@@ -42,9 +43,6 @@ module.exports = function plan(params={execute:false}, callback) {
     plans.push({action:'create-html-lambda-deployments', route, app})
   }) 
 
-  if (arc.html) {
-  
-  }
 // html and json are session enabled by default
 // if json by itself there will be no session enabled
 // which means: we create a sessions table by default (arc-sessions; can override with SESSIONS_TABLE env var)
@@ -74,6 +72,14 @@ module.exports = function plan(params={execute:false}, callback) {
   // - creates any trigger lambdas
   // - 
   // build up a plan for indexes
-
-  callback(null, plans)
+ 
+  // if we're executing plans
+  // do that
+  if (params.execute) {
+    execute(plans, callback)
+  }
+  else {
+    // otherwise return the plan
+    callback(null, plans) 
+  }
 }

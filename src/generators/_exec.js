@@ -2,10 +2,15 @@ var waterfall = require('run-waterfall')
 var aws = require('aws-sdk')
 var sns = new aws.SNS
 
+/**
+ * _exec accepts an array of plans and executes them in series
+ */
 module.exports = function _exec(plans, callback) {
-  waterfall(plans.map(function _plan(plan) {
+  var fns = plans.map(function _plan(plan) {
     return function _handle(callback) {
-      actions[require(plan.action)].bind({}, plan, callback)
+      var handler = require(`./${plan.action}`)
+      handler(plan, callback)
     }
-  }), callback)
+  })
+  waterfall(fns, callback)
 }
