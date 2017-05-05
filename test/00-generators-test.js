@@ -81,6 +81,7 @@ test('cleanup _mock', t=> {
   t.ok(fs.existsSync(path.join(process.cwd(), '_mock')) === false, 'cleaned up')
 })
 
+/*
 test('nuke topics', t=> {
   t.plan(2)
   // hardcode to remove sns topics generated from test/mock-arc
@@ -118,7 +119,7 @@ test('nuke topics', t=> {
       })
     }
   })
-})
+})*/
 
 test('nuke lambdas')
 

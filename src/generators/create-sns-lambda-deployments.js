@@ -5,26 +5,29 @@ var zip = require('zipit')
 var path = require('path')
 var aws = require('aws-sdk')
 var lambda = new aws.Lambda
+var sns = new aws.SNS
 var getIAM = require('./_get-iam-role')
 
 /**
- * creates app-name-staging-event-name
- * and app-name-production-event-name
+ * creates sns lambdas
+ *
+ * - app-name-staging-event-name
+ * - app-name-production-event-name
  */
 
 module.exports = function _createDeployments(params, callback) {
 
   assert(params, {
-    event: String,
     app: String,
+    event: String,
   })
 
   parallel([
-    function (callback) {
+    function _createStaging(callback) {
       var staging = `${params.app}-staging-${params.event}`
       _createLambda(params.event, staging, callback)
     },
-    function (callback) {
+    function _createProduction(callback) {
       var production = `${params.app}-production-${params.event}`
       _createLambda(params.event, production, callback)
     }
@@ -75,6 +78,11 @@ function _createLambda(event, env, callback) {
           Role: role.Arn, 
           Runtime: "nodejs6.10", 
           Timeout: 5, 
+          Environment: {
+            Variables: {
+              'NODE_ENV': env.includes('staging')? 'staging' : 'production',
+            }
+          }
         },
         function _createFn(err, result) {
           if (err && err.name != 'ResourceConflictException') {
@@ -82,33 +90,68 @@ function _createLambda(event, env, callback) {
             callback(err)
           }
           else if (err && err.name == 'ResourceConflictException') {
-            console.log('skipping create; lambda already exists')
-            callback()
+            lambda.getFunction({FunctionName:env}, function _gotFn(err, data) {
+              if (err) {
+                callback(err)
+              }
+              else {
+                callback(null, data.Configuration.FunctionArn)
+              }
+            })
           }
           else {
-            console.log(result)
-            callback()
+            callback(null, result.FunctionArn)
           }
         })
       },
-      /*
-      function _addSnsPermission(callback) {
-        console.log('add sns perm')
-      lambda.addPermission({
-        Action: "lambda:InvokeFunction", 
-        FunctionName: "MyFunction", 
-        Principal: "s3.amazonaws.com", 
-        SourceAccount: "123456789012", 
-        SourceArn: "arn:aws:s3:::examplebucket/*", 
-        StatementId: "ID-1"
-      }, coallback) 
-        callback()
+      function _subscribeLambda(lambdaArn, callback) {
+        // the sns topic name === lambda name
+        sns.listTopics({}, function(err, data) {
+          if (err) {
+            console.log(err)
+            callback(err)
+          }
+          else {    
+            var topicArn
+            data.Topics.forEach(t=> {
+              var parts = t.TopicArn.split(':')
+              var last = parts[parts.length - 1]      
+              var found = last === env
+              if (found) {
+                topicArn = t.TopicArn
+              }
+            })
+            sns.subscribe({
+              Protocol: 'lambda',
+              TopicArn: topicArn,
+              Endpoint: lambdaArn,
+            }, 
+            function(err, data) {
+              if (err) {
+                console.log(err)
+              }
+              console.log(data)
+              callback(null, topicArn)
+            })
+          }
+        })
       },
-      function _addLambdaPermission(callback) {
-        console.log('add lambda perm')
-        callback()
-      }
-      */
+      function _addSnsPermission(topicArn, callback) {
+        lambda.addPermission({
+          FunctionName: env, 
+          Action: "lambda:InvokeFunction", 
+          Principal: "sns.amazonaws.com", 
+          StatementId: "idx-1" + Date.now(),
+          SourceArn: topicArn, 
+        }, 
+        function _addPermission(err, result) {
+          if (err) {
+            console.log(err)
+          } 
+          console.log(result)
+          callback()
+        })
+      },
     ],
     function _done(err) {
       if (err) {

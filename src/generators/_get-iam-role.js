@@ -9,7 +9,8 @@ var RoleName = 'arc-role'
  * They get those permissions via an IAM Role. (Idenitty Access Management Role)
  *
  * This function returns `arc-role`: the default IAM Role for arc Lambdas.
- *
+ ,
+  *
  */
 module.exports = function _getRole(callback) {
   // first look for the role
@@ -41,9 +42,33 @@ module.exports = function _getRole(callback) {
             }, callback)
           }
         })
+        
+        policies.push(function _putPolicy(callback) {
+          iam.putRolePolicy({
+            PolicyDocument: JSON.stringify({
+              "Version": "2012-10-17",
+              "Statement": [{
+                "Effect": "Allow",
+                "Action": [
+                  "logs:CreateLogGroup",
+                  "logs:CreateLogStream",
+                  "logs:PutLogEvents",
+                  "logs:DescribeLogStreams"
+                ],
+                "Resource": "arn:aws:logs:*:*:*"
+              }]
+            }, null, 2), 
+            PolicyName: "ArcLambdaCloudwatchPolicy", 
+            RoleName
+         }, callback)
+        })
+
         parallel(policies, function _done(err, results) {
           if (err) throw err
-          callback(null, result.Role)
+          setTimeout(function _fakeLatency() {
+            console.log('getIAM', result.Role)
+            callback(null, result.Role)
+          }, 10000)
         })
       })
     }
