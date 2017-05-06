@@ -1,6 +1,5 @@
+/* eslint global-require:"off" */
 var waterfall = require('run-waterfall')
-var aws = require('aws-sdk')
-var sns = new aws.SNS
 
 /**
  * _exec accepts an array of plans and executes them in series

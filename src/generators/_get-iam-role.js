@@ -24,10 +24,10 @@ module.exports = function _getRole(callback) {
       // if we didn't find it create it
       // and return that
       iam.createRole({
-        AssumeRolePolicyDocument: JSON.stringify(policy), 
-        Path: "/", 
+        AssumeRolePolicyDocument: JSON.stringify(policy),
+        Path: "/",
         RoleName,
-      }, 
+      },
       function _createRole(err, result) {
         if (err) throw err
         var policies = [
@@ -38,11 +38,11 @@ module.exports = function _getRole(callback) {
           return function _attachPolicy(callback) {
             iam.attachRolePolicy({
               RoleName,
-              PolicyArn,  
+              PolicyArn,
             }, callback)
           }
         })
-        
+
         policies.push(function _putPolicy(callback) {
           iam.putRolePolicy({
             PolicyDocument: JSON.stringify({
@@ -57,16 +57,15 @@ module.exports = function _getRole(callback) {
                 ],
                 "Resource": "arn:aws:logs:*:*:*"
               }]
-            }, null, 2), 
-            PolicyName: "ArcLambdaCloudwatchPolicy", 
+            }, null, 2),
+            PolicyName: "ArcLambdaCloudwatchPolicy",
             RoleName
          }, callback)
         })
 
-        parallel(policies, function _done(err, results) {
+        parallel(policies, function _done(err) {
           if (err) throw err
           setTimeout(function _fakeLatency() {
-            console.log('getIAM', result.Role)
             callback(null, result.Role)
           }, 10000)
         })

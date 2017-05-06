@@ -14,10 +14,10 @@ GET /about
 
 @json
 GET /messages
-GET /messages/{idx}
+GET /messages/:msgID
 POST /messages
-POST /messages/{idx}
-POST /messages/{idx}/delete
+POST /messages/:msgID
+POST /messages/:msgID/delete
 
 @events
 some-test-event
@@ -32,11 +32,10 @@ some-test-event
 # - SortString (or RangeString or **String)
 # - PartitionNumber (or HashNumber or *Number)
 # - SortNumber (or RangeNumber or **Number)
-# - lambda Insert
-# - lambda Modify
-# - lambda Delete
-# - ttl 8.64e+7 (24 hours) ttl values: 1s 1second 1m 1min 1h 24h 1hour 2hours 1d 1day 1w 1week 1mo 1month 24months
-account
+# - Lambda (names can only be: insert, update, destroy)
+# - TTL 
+#
+accounts
   id PartitionString
   email String
   name String

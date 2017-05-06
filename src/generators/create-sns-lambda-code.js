@@ -19,11 +19,11 @@ module.exports = function _createLambdaCode(params, callback) {
   var p = path.join(process.cwd(), 'src', 'events', params.event)
   if (fs.existsSync(p)) {
     // skip if that dir exists
-    console.log(`skipping code create; ${p} exists`)
+    console.log(`skip: ${p} exists`)
     callback()
   }
   else {
-    console.log(`creating code: ${p}`)
+    console.log(`create: ${p}`)
     mkdir(`src/events/${params.event}`)
 
     // write package.json
@@ -44,7 +44,7 @@ module.exports = function _createLambdaCode(params, callback) {
       cd ${pathToTmpl} && \
       npm rm @smallwins/arc-prototype --save && \
       npm i @smallwins/arc-prototype --save
-    `, 
+    `,
     function _exec(err) {
       if (err) {
         console.log(err)

@@ -2,7 +2,6 @@ var parallel = require('run-parallel')
 var waterfall = require('run-waterfall')
 var assert = require('@smallwins/validate/assert')
 var zip = require('zipit')
-var path = require('path')
 var aws = require('aws-sdk')
 var lambda = new aws.Lambda
 var sns = new aws.SNS
@@ -21,11 +20,11 @@ module.exports = function _createDeployments(params, callback) {
     app: String,
     event: String,
   })
-      
+
   function _create(stage, callback) {
-    lambda.getFunction({FunctionName:stage}, function _gotFn(err, result) {
+    lambda.getFunction({FunctionName:stage}, function _gotFn(err) {
       if (err && err.name === 'ResourceNotFoundException') {
-        console.log('creating ' + stage)
+        console.log('create: ' + stage)
         _createLambda(params.event, stage, callback)
       }
       else if (err) {
@@ -34,8 +33,7 @@ module.exports = function _createDeployments(params, callback) {
       }
       else {
         // noop if it exists
-        console.log('skip create?')
-        console.log(result)
+        console.log(`skip: ${stage} exists`)
         callback()
       }
     })
@@ -47,20 +45,20 @@ module.exports = function _createDeployments(params, callback) {
   parallel([
     staging,
     production,
-  ], 
+  ],
   function _done(err) {
     if (err) {
       console.log(err)
     }
     callback()
-  })  
+  })
 }
 
 function _createLambda(event, env, callback) {
   waterfall([
     // gets the IAM role for lambda execution
     function _getRole(callback) {
-      getIAM(callback)    
+      getIAM(callback)
     },
     function _readCode(role, callback) {
       zip({
@@ -70,7 +68,7 @@ function _createLambda(event, env, callback) {
           `src/events/${event}/node_modules`
         ],
         cwd: process.cwd()
-      }, 
+      },
       function _zip(err, buffer) {
         if (err) {
           callback(err)
@@ -85,15 +83,15 @@ function _createLambda(event, env, callback) {
       lambda.createFunction({
         Code: {
           ZipFile: zip
-        }, 
-        Description: "", 
-        FunctionName: env, 
+        },
+        Description: `@event ${event}`,
+        FunctionName: env,
         Handler: "index.handler",
-        MemorySize: 1152, 
-        Publish: true, 
-        Role: role.Arn, 
-        Runtime: "nodejs6.10", 
-        Timeout: 5, 
+        MemorySize: 1152,
+        Publish: true,
+        Role: role.Arn,
+        Runtime: "nodejs6.10",
+        Timeout: 5,
         Environment: {
           Variables: {
             'NODE_ENV': env.includes('staging')? 'staging' : 'production',
@@ -122,16 +120,16 @@ function _createLambda(event, env, callback) {
     },
     function _subscribeLambda(lambdaArn, callback) {
       // the sns topic name === lambda name
-      sns.listTopics({}, function(err, data) {
+      sns.listTopics({}, function _listTopics(err, data) {
         if (err) {
           console.log(err)
           callback(err)
         }
-        else {    
+        else {
           var topicArn
           data.Topics.forEach(t=> {
             var parts = t.TopicArn.split(':')
-            var last = parts[parts.length - 1]      
+            var last = parts[parts.length - 1]
             var found = last === env
             if (found) {
               topicArn = t.TopicArn
@@ -141,12 +139,11 @@ function _createLambda(event, env, callback) {
             Protocol: 'lambda',
             TopicArn: topicArn,
             Endpoint: lambdaArn,
-          }, 
-          function(err, data) {
+          },
+          function _subscribe(err) {
             if (err) {
               console.log(err)
             }
-            console.log(data)
             callback(null, topicArn)
           })
         }
@@ -154,17 +151,16 @@ function _createLambda(event, env, callback) {
     },
     function _addSnsPermission(topicArn, callback) {
       lambda.addPermission({
-        FunctionName: env, 
-        Action: "lambda:InvokeFunction", 
-        Principal: "sns.amazonaws.com", 
+        FunctionName: env,
+        Action: "lambda:InvokeFunction",
+        Principal: "sns.amazonaws.com",
         StatementId: "idx-1" + Date.now(),
-        SourceArn: topicArn, 
-      }, 
-      function _addPermission(err, result) {
+        SourceArn: topicArn,
+      },
+      function _addPermission(err) {
         if (err) {
           console.log(err)
-        } 
-        console.log(result)
+        }
         callback()
       })
     }],
