@@ -7,11 +7,14 @@
 @app
 test-app-name # all resource get prefixed with this value
 
-# document comment
+# creates api gateway setup for text/html
+# and corosponding lambda handlers
 @html
 GET /  # inline comment
 GET /about
 
+# creates api gateway setup for application/json
+# express style params supported
 @json
 GET /messages
 GET /messages/:msgID
@@ -19,35 +22,34 @@ POST /messages
 POST /messages/:msgID
 POST /messages/:msgID/delete
 
+# creates sns lambdas
 @events
 some-test-event
 
-@tables
-# types supported: 
-# - String
-# - Number
-# - Boolean
-# - List
-# - PartitionString (or HashString or *String)
-# - SortString (or RangeString or **String)
-# - PartitionNumber (or HashNumber or *Number)
-# - SortNumber (or RangeNumber or **Number)
-# - Lambda (names can only be: insert, update, destroy)
-# - TTL 
-#
-accounts
-  id PartitionString
-  email String
-  name String
-  lambda Insert
+# creates a lambda w cloudwatch event
+# identifier cron
+@scheduled
+send-sns-props cron(0 17 ? * MON-FRI *)
+clean-backups rate(1 hour)
 
-contacts
-  accountID PartitionString
-  contactID String
+# create dynamo tables
+@tables
+
+accounts
+  accountID *String
+  insert Lambda # adds a trigger for insert
+  update Lambda # etc
+  delete Lambda # etc
 
 messages
-  id String
-  from String
-  to String
-  text String
-  body String
+  msgID *String
+  posted **String
+
+# add a global secondary index
+@indexes
+accounts
+  email *String # creates email-index on accounts table
+
+messages
+  accountID *String
+  posted **String # creates accountID-posted-index

@@ -4,29 +4,25 @@ var assert = require('@smallwins/validate/assert')
 var zip = require('zipit')
 var aws = require('aws-sdk')
 var lambda = new aws.Lambda
-var sns = new aws.SNS
 var getIAM = require('./_get-iam-role')
 var print = require('./_print')
-
-/**
- * creates sns lambdas
- *
- * - app-name-staging-event-name
- * - app-name-production-event-name
- */
 
 module.exports = function _createDeployments(params, callback) {
 
   assert(params, {
     app: String,
-    event: String,
+    route: Array,
   })
+
+  var mthd = params.route[0].toLowerCase()
+  var pth = params.route[1] === '/'? '-index' : params.route[1].replace(/\//g, '-').replace(':', '000')
+  var name = `${mthd}${pth}`
 
   function _create(stage, callback) {
     lambda.getFunction({FunctionName:stage}, function _gotFn(err) {
       if (err && err.name === 'ResourceNotFoundException') {
         console.log('create: ' + stage)
-        _createLambda(params.event, stage, callback)
+        _createLambda(name, stage, params.route, callback)
       }
       else if (err) {
         console.log(err)
@@ -35,14 +31,14 @@ module.exports = function _createDeployments(params, callback) {
       else {
         // noop if it exists
         //console.log(`skip: ${stage} exists`)
-        print.skip('@events', stage)
+        print.skip('@html', stage)
         callback()
       }
     })
   }
 
-  var staging = _create.bind({}, `${params.app}-staging-${params.event}`)
-  var production = _create.bind({}, `${params.app}-production-${params.event}`)
+  var staging = _create.bind({}, `${params.app}-staging-${name}`)
+  var production = _create.bind({}, `${params.app}-production-${name}`)
 
   parallel([
     staging,
@@ -56,7 +52,8 @@ module.exports = function _createDeployments(params, callback) {
   })
 }
 
-function _createLambda(event, env, callback) {
+function _createLambda(name, env, route, callback) {
+  var Description = `@html ${route.join(' ')}`
   waterfall([
     // gets the IAM role for lambda execution
     function _getRole(callback) {
@@ -65,9 +62,9 @@ function _createLambda(event, env, callback) {
     function _readCode(role, callback) {
       zip({
         input: [
-          `src/events/${event}/index.js`,
-          `src/events/${event}/package.json`,
-          `src/events/${event}/node_modules`
+          `src/html/${name}/index.js`,
+          `src/html/${name}/package.json`,
+          `src/html/${name}/node_modules`
         ],
         cwd: process.cwd()
       },
@@ -86,7 +83,7 @@ function _createLambda(event, env, callback) {
         Code: {
           ZipFile: zip
         },
-        Description: `@event ${event}`,
+        Description,
         FunctionName: env,
         Handler: "index.handler",
         MemorySize: 1152,
@@ -120,42 +117,11 @@ function _createLambda(event, env, callback) {
         }
       })
     },
-    function _subscribeLambda(lambdaArn, callback) {
-      // the sns topic name === lambda name
-      sns.listTopics({}, function _listTopics(err, data) {
-        if (err) {
-          console.log(err)
-          callback(err)
-        }
-        else {
-          var topicArn
-          data.Topics.forEach(t=> {
-            var parts = t.TopicArn.split(':')
-            var last = parts[parts.length - 1]
-            var found = last === env
-            if (found) {
-              topicArn = t.TopicArn
-            }
-          })
-          sns.subscribe({
-            Protocol: 'lambda',
-            TopicArn: topicArn,
-            Endpoint: lambdaArn,
-          },
-          function _subscribe(err) {
-            if (err) {
-              console.log(err)
-            }
-            callback(null, topicArn)
-          })
-        }
-      })
-    },
-    function _addSnsPermission(topicArn, callback) {
+    function _addApiGatewayInvokePermission(topicArn, callback) {
       lambda.addPermission({
         FunctionName: env,
         Action: "lambda:InvokeFunction",
-        Principal: "sns.amazonaws.com",
+        Principal: "apigateway.amazonaws.com",
         StatementId: "idx-1" + Date.now(),
         SourceArn: topicArn,
       },

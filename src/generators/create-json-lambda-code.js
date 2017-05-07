@@ -9,38 +9,41 @@ var print = require('./_print')
 module.exports = function _createLambdaCode(params, callback) {
 
   assert(params, {
-    event: String,
+    route: Array,
     app: String,
   })
 
+  var mthd = params.route[0].toLowerCase()
+  var pth = params.route[1] === '/'? '-index' : params.route[1].replace(/\//g, '-').replace(':', '000')
+  var name = `${mthd}${pth}`
+
   // non destructive setup dir
   mkdir('src')
-  mkdir('src/events')
+  mkdir('src/json')
 
-  var p = path.join(process.cwd(), 'src', 'events', params.event)
+  var p = path.join(process.cwd(), 'src', 'json', name)
   if (fs.existsSync(p)) {
     // skip if that dir exists
-    // console.log(`skip: ${p} exists`)
-    print.skip('@events', `src/events/${params.event}`)
+    print.skip('@json', `src/json/${name}`)
     callback()
   }
   else {
     console.log(`create: ${p}`)
-    mkdir(`src/events/${params.event}`)
+    mkdir(`src/json/${name}`)
 
     // write package.json
-    var pathToPkg = path.join('src', 'events', params.event, 'package.json')
+    var pathToPkg = path.join('src', 'json', name, 'package.json')
     var pkg = {
-      name: `${params.app}-${params.event}`
+      name: `${params.app}-${name}`
     }
     fs.writeFileSync(pathToPkg, JSON.stringify(pkg, null, 2))
 
     // copy in index.js
-    var index = path.join(__dirname, 'templates', 'sns-lambda', 'index.js')
-    cp(index, path.join('src', 'events', params.event, 'index.js'))
+    var index = path.join(__dirname, 'templates', 'json-lambda', `${mthd}.js`)
+    cp(index, path.join('src', 'json', name, 'index.js'))
 
     // npm i latest deps in the hello world template
-    var pathToTmpl = path.join('src', 'events', params.event)
+    var pathToTmpl = path.join('src', 'json', name)
 
     exec(`
       cd ${pathToTmpl} && \

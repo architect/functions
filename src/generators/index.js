@@ -51,31 +51,37 @@ module.exports = function generate(params, callback) {
   // html and json are session enabled by default
   // which means: we create a sessions table by default
   // (arc-sessions; can override with SESSIONS_TABLE env var)
-  var sessionEnabled = arc.json.length > 0 || arc.html.length > 0
-  if (sessionEnabled) {
+  var sessions = arc.json.length > 0 || arc.html.length > 0
+  if (sessions) {
     var table = {
       'arc-sessions': {
         _idx: '*String',
         _ttl: 'TTL'
       }
     }
-    plans.push({action:'create-table', table, app})
+    plans.push({action:'create-tables', table, app})
   }
 
-  /*
   arc.tables.forEach(table=> {
-    plans.push({action:'create-table', table, app})
-    var trigger = tbl.hasOwnProperty('insert') || tbl.hasOwnProperty('update') || tbl.hasOwnProperty('destroy')
-    if (trigger) {
+    plans.push({action:'create-tables', table, app})
+    var name = Object.keys(table)[0]
+    var triggers = table[name].hasOwnProperty('insert') || table[name].hasOwnProperty('update') || table[name].hasOwnProperty('destroy')
+    if (triggers) {
       plans.push({action:'create-table-lambda-code', table, app})
       plans.push({action:'create-table-lambda-deployments', table, app})
     }
   })
-  */
 
   /* build up a plan for indexes
   arc.indexes.forEach(index=> {
+    plans.push({action:'create-table-index', index, app})
+  })
+  */
 
+  /* build up a plan for scheduled
+  arc.scheduled.forEach(scheduled=> {
+    plans.push({action:'create-scheduled-lambda-code', scheduled, app})
+    plans.push({action:'create-scheduled-lambda-deployments', scheduled, app})
   })
   */
 
@@ -93,6 +99,14 @@ module.exports = function generate(params, callback) {
   })
   // html is configured for text/html: 200, 302, 403, 404, 500
   // json is configured for appplication/json: 200, 201, 403, 404, 500
+  //
+  @slack
+  action
+  options
+  event
+  slash
+
+  //
   */
 
   // if we're executing plans
