@@ -1,6 +1,6 @@
 {
   "name": "@smallwins/arc-prototype",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "architecture run commands",
   "main": "index",
   "scripts": {
