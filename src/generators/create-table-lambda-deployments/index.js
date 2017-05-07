@@ -7,7 +7,7 @@ module.exports = function _createDeployments(params, callback) {
 
   assert(params, {
     app: String, // test-app
-    table: Object, // sessions-arc: 
+    table: Object, // sessions-arc:
   })
 
   var name = Object.keys(params.table)[0] // table name
