@@ -72,11 +72,10 @@ module.exports = function generate(params, callback) {
     }
   })
 
-  /* build up a plan for indexes
+  // build up a plan for indexes
   arc.indexes.forEach(index=> {
     plans.push({action:'create-table-index', index, app})
   })
-  */
 
   /* build up a plan for scheduled
   arc.scheduled.forEach(scheduled=> {

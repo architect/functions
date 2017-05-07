@@ -1,9 +1,6 @@
 var chalk = require('chalk')
 
 function skip(section, resource) {
-  // skip @html src/html/get-index exists
-  // skip @html appname-staging-get-index exists
-  // skip @html appname-production-get-index exists
   var skip = chalk.dim('skip')
   var sect = chalk.dim(section)
   var item = chalk.magenta(resource)

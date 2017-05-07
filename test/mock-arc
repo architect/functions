@@ -46,6 +46,7 @@ messages
   posted **String
 
 # add a global secondary index
+# same syntax as adding a table; just different keys
 @indexes
 accounts
   email *String # creates email-index on accounts table

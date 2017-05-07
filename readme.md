@@ -25,3 +25,4 @@ Its shaping up to be a few packages.
 - arc-generate _create infra from .arc_
 - arc-nuke _destroy infra from .arc_
 - arc-commands _npm run commands for .arc projects_
+- arc-test _run infra offline for testing_
