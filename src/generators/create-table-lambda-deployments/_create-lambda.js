@@ -2,6 +2,7 @@ var waterfall = require('run-waterfall')
 var zip = require('zipit')
 var aws = require('aws-sdk')
 var lambda = new aws.Lambda
+var dynamo = new aws.DynamoDB
 var getIAM = require('../_get-iam-role')
 
 //
@@ -73,6 +74,27 @@ module.exports = function _createLambda(name, env, callback) {
         }
       })
     },
+    function _enableStreamOnTable(arn, callback) {
+      dynamo.updateTable({
+        TableName: env.replace(/-insert|-update|-destroy/g, ''),
+        StreamSpecification: {
+          StreamEnabled: true,
+          StreamViewType: 'NEW_AND_OLD_IMAGES'
+        }
+      }, 
+      function _enabledStream(err, data) {
+        if (err && err.name === 'ResourceInUseException') {
+          callback(null, arn) // this error is not an error; just means the stream exists
+        }
+        else if (err) {
+          callback(err)
+        }
+        else {
+          callback(null, arn)
+        }
+      })
+    },
+    /*
     function _addApiGatewayInvokePermission(topicArn, callback) {
       lambda.addPermission({
         FunctionName: env,
@@ -87,7 +109,7 @@ module.exports = function _createLambda(name, env, callback) {
         }
         callback()
       })
-    }],
+    }*/],
     function _done(err) {
       if (err) {
         console.log(err)

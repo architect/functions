@@ -81,9 +81,8 @@ module.exports = function generate(params, callback) {
   arc.scheduled.forEach(scheduled=> {
     plans.push({action:'create-scheduled-lambda-code', scheduled, app})
     plans.push({action:'create-scheduled-lambda-deployments', scheduled, app})
-  })
-  */
-
+  })*/
+  
   /*
    // build up a plan for api gateway
   plans.push({
