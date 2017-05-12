@@ -12,6 +12,8 @@ module.exports = function arc(...fns) {
   // return an aws lambda function signature
   return function _lambdaHandler(request, context, callback) {
 
+    console.log('ARC DEBUG', JSON.stringify(request, null, 2))
+
     if (!request.headers) {
       throw Error('gateway missing headers')
     }
