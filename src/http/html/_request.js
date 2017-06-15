@@ -34,7 +34,7 @@ module.exports = function arc(...fns) {
       }
       else {
         // fix the body
-        request.body = querystring.parse(request.body)
+        //request.body = querystring.parse(request.body)
 
         // tag the request w the session id
         request._idx = payload._idx
