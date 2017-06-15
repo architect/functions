@@ -20,11 +20,10 @@ module.exports = function arc(...fns) {
     var fnsCache = fns.slice()
 
     // adds request.session by cookie token lookup in dynamo
-    var cookies = request.headers.Cookie || ''
-    var jar = cookies.split(';').map(c=> c.split('='))
-    var sesh = jar.find(c=> c[0] === '_idx')
+    var jar = cookie.parse(request.headers.Cookie || '')
+    var sesh = jar.hasOwnProperty('_idx')
     var exec = sesh? session.find : session.create
-    var params = sesh? sesh[1] : {}
+    var params = sesh? sesh._idx : {}
 
     exec(params, function _find(err, payload) {
       if (err) {

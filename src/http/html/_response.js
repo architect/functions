@@ -1,4 +1,5 @@
 var session = require('../session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
+var cookie = require('cookie')
 
 module.exports = function response(request, callback, cmds) {
 
@@ -27,8 +28,15 @@ module.exports = function response(request, callback, cmds) {
       throw err
     }
     else {
+
       // write the session cookie
-      cmds.cookie = `_idx=${request._idx}; httpOnly`
+      var maxAge = Date.now() + 7.884e+11
+      cmds.cookie = cookie.serialize('_idx', request._idx, {
+        maxAge, 
+        expires: new Date(maxAge), 
+        secure: true, 
+        httpOnly: true
+      }) 
 
       // we need to hijack api gateway error to create a statusCode 302
       // not a real error mind you; but a string
