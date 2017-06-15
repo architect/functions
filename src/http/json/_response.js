@@ -30,19 +30,13 @@ module.exports = function response(request, callback, cmds) {
       // write the session cookie
       cmds.cookie = `_idx=${request._idx}; httpOnly`
 
-      if (request.method.toLowerCase() === 'post') {
-        // always a 302; mapping templtes look for location key
-        callback(null, cmds)
+      // we need to hijack api gateway error to create a statusCode 302
+      // not a real error mind you; but a string
+      if (cmds.location) {
+        callback(cmds.location)
       }
       else {
-        // we need to hijack api gateway error to create a statusCode 302
-        // not a real error mind you; but a string
-        if (cmds.location) {
-          callback(cmds.location)
-        }
-        else {
-          callback(null, cmds)
-        }
+        callback(null, cmds)
       }
     }
   })
