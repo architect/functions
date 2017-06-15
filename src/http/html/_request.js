@@ -26,7 +26,7 @@ module.exports = function arc(...fns) {
     var jar = cookie.parse(request.headers.Cookie || '')
     var sesh = jar.hasOwnProperty('_idx')
     var exec = sesh? session.find : session.create
-    var params = sesh? sesh._idx : {}
+    var params = sesh? jar._idx : {}
 
     exec(params, function _find(err, payload) {
       if (err) {
