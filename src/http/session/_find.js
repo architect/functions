@@ -13,7 +13,9 @@ module.exports = function _find(name, _idx, callback) {
     else {
       var result = data.Item
       if (!result) {
-        result._idx = _idx
+        result = {
+          _idx
+        }
       }
       callback(null, result)
     }
