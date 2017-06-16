@@ -6,7 +6,7 @@ var endpoint = new aws.Endpoint('http://localhost:5000')
 // if SESSION_TABLE_NAME isn't defined we mock the client and just pass session thru
 var passthru = {
   get(params, callback) {
-    callback(null, {_idx: params.Key._idx})
+    callback()
   },
   put(params, callback) {
     callback()
@@ -14,4 +14,3 @@ var passthru = {
 }
 
 module.exports = testing? new aws.DynamoDB.DocumentClient({endpoint}) : (passthru? mock : new aws.DynamoDB.DocumentClient)
-

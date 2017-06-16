@@ -122,10 +122,10 @@ test('arc can save some data in a session', t=> {
 
   // create a lambda handler
   var locCalled = false
-  var handler = arc.html.post(function loc(req, res, next) {
+  var handler = arc.html.get(function loc(req, res, next) {
     locCalled = true
     res({
-      location: `/`,
+      html: `<b>hi</b>`,
       session: {
         msg: 'hello world'
       }
@@ -133,7 +133,7 @@ test('arc can save some data in a session', t=> {
   })
 
   // execute the hander w mock data
-  var request = {headers: {}, method:'post'}
+  var request = {headers:{}, method:'get'}
   var context = {}
   handler(request, context, function errback(err, response) {
     if (err) {
@@ -154,17 +154,17 @@ test('arc session can be retrieved', t=> {
 
   // create a lambda handler
   var locCalled = false
-  var handler = arc.html.post(function loc(req, res, next) {
+  var handler = arc.html.get(function loc(req, res, next) {
     console.log(req)
     locCalled = true
     t.ok(request.session.msg === 'hello world', 'session found')
     res({
-      location: `/sutr0`
+      html: `sutr0 says hello`
     })
   })
 
   // execute the hander w mock data
-  var request = {method:'post', headers: {Cookie:'_idx=' + _idx}}
+  var request = {method:'get', headers: {Cookie:'_idx=' + _idx}}
   var context = {}
   handler(request, context, function errback(err, response) {
     if (err) {

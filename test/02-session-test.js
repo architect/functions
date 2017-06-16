@@ -1,4 +1,4 @@
-var session = require('.')
+var session = require('../src/http/session')
 var test = require('tape')
 var dynalite = require('dynalite')
 var server, sesh
