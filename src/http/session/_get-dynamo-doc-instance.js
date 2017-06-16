@@ -1,6 +1,17 @@
 var aws = require('aws-sdk')
 var testing = process.env.NODE_ENV === 'testing'
+var passthru = !process.env.hasOwnProperty('SESSION_TABLE_NAME')
 var endpoint = new aws.Endpoint('http://localhost:5000')
 
-module.exports = testing? new aws.DynamoDB.DocumentClient({endpoint}) : new aws.DynamoDB.DocumentClient
+// if SESSION_TABLE_NAME isn't defined we mock the client and just pass session thru
+var passthru = {
+  get(params, callback) {
+    callback(null, {_idx: params.Key._idx})
+  },
+  put(params, callback) {
+    callback()
+  }
+}
+
+module.exports = testing? new aws.DynamoDB.DocumentClient({endpoint}) : (passthru? mock : new aws.DynamoDB.DocumentClient)
 

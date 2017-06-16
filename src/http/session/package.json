@@ -1,5 +1,5 @@
 {
-  "name": "session",
+  "name": "@smallwins/arc-session",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
