@@ -11,7 +11,11 @@ module.exports = function _find(name, _idx, callback) {
       callback(err)
     }
     else {
-      callback(null, data.Item)
+      var result = data.Item
+      if (!result.hasOwnProperty('_idx')) {
+        result._idx = _idx
+      }
+      callback(null, result)
     }
   })
 }
