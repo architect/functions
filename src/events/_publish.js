@@ -1,4 +1,4 @@
-var assert = require('@smallwins/assert')
+var assert = require('@smallwins/validate/assert')
 var aws = require('aws-sdk')
 var sns = new aws.SNS
 var arn = false // cache the arn
