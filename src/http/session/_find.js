@@ -11,7 +11,7 @@ module.exports = function _find(name, _idx, callback) {
       callback(err)
     }
     else {
-      var result = data.Item
+      var result = typeof data === 'undefined'? false : data.Item
       if (!result) {
         result = {
           _idx
