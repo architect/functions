@@ -17,6 +17,28 @@ function __publish(arn, payload, callback) {
   })
 }
 
+/**
+ * invoke an event lambda by name
+ *
+ * usage
+ *
+ *   var arc = require('@smallwins/arc-prototype')
+ *
+ *   arc.events.publish({
+ *     name: 'eventname', 
+ *     payload: {hello: 'world'},
+ *   }, console.log)
+ *
+ * this will invoke appname-staging-eventname (or appname-production-eventname)
+ *
+ * you can invoke events for other arc apps in the same region by overriding appname with app param like so:
+ *
+ *   arc.events.publish({
+ *     app: 'otherappname',
+ *     name: 'eventname',
+ *     payload: {hello: 'world2'},
+ *   }, console.log)
+ */
 module.exports = function _publish(params, callback) {
   assert(params, {
     name: String,
@@ -27,7 +49,8 @@ module.exports = function _publish(params, callback) {
     __publish(arn, payload, callback)
   }
   else {
-    var eventName = `${process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
+    var override = params.hasOwnProperty('app')
+    var eventName = `${override? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
     // lookup the event sns topic arn
     sns.listTopics({}, function _listTopics(err, results) {
       if (err) throw err
