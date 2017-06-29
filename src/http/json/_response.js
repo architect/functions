@@ -28,15 +28,15 @@ module.exports = function response(request, callback, cmds) {
       throw err
     }
     else {
-      
+
       // write the session cookie
       var maxAge = Date.now() + 7.884e+11
       cmds.cookie = cookie.serialize('_idx', request._idx, {
-        maxAge, 
-        expires: new Date(maxAge), 
-        secure: true, 
+        maxAge,
+        expires: new Date(maxAge),
+        secure: true,
         httpOnly: true
-      }) 
+      })
 
       // we need to hijack api gateway error to create a statusCode 302
       // not a real error mind you; but a string

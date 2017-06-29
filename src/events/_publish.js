@@ -26,7 +26,7 @@ function __publish(arn, payload, callback) {
  *   var arc = require('@smallwins/arc-prototype')
  *
  *   arc.events.publish({
- *     name: 'eventname', 
+ *     name: 'eventname',
  *     payload: {hello: 'world'},
  *   }, console.log)
  *
@@ -45,7 +45,7 @@ module.exports = function _publish(params, callback) {
     name: String,
     payload: Object
   })
-  
+
   var {name, payload} = params
   var arn = ledger.hasOwnProperty(name)
 
