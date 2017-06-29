@@ -7,6 +7,7 @@ var arn = false // cache the arn
 // blindly publishes to sns topic json stringified record
 // throws if fails so lambda errors are noticible
 function __publish(arn, payload, callback) {
+  console.log('Publishing SNS', JSON.stringify({arn, payload}))
   sns.publish({
     TopicArn: arn,
     Message: JSON.stringify(payload)
