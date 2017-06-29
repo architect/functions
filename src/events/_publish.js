@@ -1,7 +1,7 @@
 var assert = require('@smallwins/validate/assert')
 var aws = require('aws-sdk')
 var sns = new aws.SNS
-var arn = false // cache the arn
+var ledger = {}
 
 // priv publish
 // blindly publishes to sns topic json stringified record
@@ -45,9 +45,12 @@ module.exports = function _publish(params, callback) {
     name: String,
     payload: Object
   })
+  
   var {name, payload} = params
+  var arn = ledger.hasOwnProperty(name)
+
   if (arn) {
-    __publish(arn, payload, callback)
+    __publish(ledger[name], payload, callback)
   }
   else {
     var override = params.hasOwnProperty('app')
@@ -62,9 +65,9 @@ module.exports = function _publish(params, callback) {
       })
       if (found) {
         // cache the arn here
-        arn = found.TopicArn
+        ledger[name] = found.TopicArn
         // and continue
-        __publish(arn, payload, callback)
+        __publish(ledger[name], payload, callback)
       }
       else {
         throw Error(`topic ${eventName} not found`) // fail loudly if we can't find it
