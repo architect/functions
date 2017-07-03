@@ -2,7 +2,7 @@ var parallel = require('run-parallel')
 /**
  * // Exmaple usage:
  *
- * var arc = require('@smallwins/arc')
+ * var arc = require('@architect/functions')
  *
  * function signup(record, callback) {
  *   console.log(record)
