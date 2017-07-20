@@ -2,7 +2,7 @@ var fs = require('fs')
 var path = require('path')
 var test = require('tape')
 var waterfall = require('run-waterfall')
-var parse = require('@smallwins/arc-parser')
+var parse = require('@architect/parser')
 var events = require('../src/events')
 var mockSnsEvent = require('./mock-sns-event.json')
 
