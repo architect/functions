@@ -1,6 +1,8 @@
 var cookie = require('cookie')
 var _response = require('./_response')
 var session = require('../session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
+var unsign = require('cookie-signature').unsign
+var secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
 
 module.exports = function arc(...fns) {
 
@@ -22,8 +24,10 @@ module.exports = function arc(...fns) {
     // adds request.session by cookie token lookup in dynamo
     var jar = cookie.parse(request.headers.Cookie || '')
     var sesh = jar.hasOwnProperty('_idx')
-    var exec = sesh? session.find : session.create
-    var params = sesh? jar._idx : {}
+    var valid = unsign(jar._idx || '', secret)
+
+    var exec = sesh && valid? session.find : session.create
+    var params = sesh && valid? valid : {}
 
     exec(params, function _find(err, payload) {
       if (err) {

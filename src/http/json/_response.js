@@ -1,5 +1,7 @@
 var session = require('../session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
 var cookie = require('cookie')
+var sign = require('cookie-signature').sign
+var secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
 
 module.exports = function response(request, callback, cmds) {
 
@@ -31,7 +33,7 @@ module.exports = function response(request, callback, cmds) {
 
       // write the session cookie
       var maxAge = Date.now() + 7.884e+11
-      cmds.cookie = cookie.serialize('_idx', request._idx, {
+      cmds.cookie = cookie.serialize('_idx', sign(request._idx, secret), {
         maxAge,
         expires: new Date(maxAge),
         secure: true,

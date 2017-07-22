@@ -2,6 +2,7 @@ var test = require('tape')
 var dynalite = require('dynalite')
 var session = require('../src/http/session')
 var arc = require('../')
+var cookie = require('cookie')
 
 test('env', t=> {
   t.plan(1)
@@ -144,7 +145,8 @@ test('arc can save some data in a session', t=> {
       t.ok(response, 'gotta result')
       t.ok(locCalled, 'loc called')
       console.log('response', response)
-      _idx = response.session._idx
+      _idx = cookie.parse(response.cookie)._idx
+      console.log(_idx)
     }
   })
 })
