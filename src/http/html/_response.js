@@ -4,10 +4,10 @@ var cookie = require('cookie')
 module.exports = function response(request, callback, cmds) {
 
   // ensure only valid command keys
-  var allowed = ['location', 'session', 'html']
+  var allowed = ['location', 'session', 'html', 'status']
   Object.keys(cmds).forEach(k=> {
     if (!allowed.includes(k)) {
-      throw Error(k + ' unknown key. Only location, session and html allowed')
+      throw Error(k + ' unknown key. Only location, session, status and html allowed')
     }
   })
 
@@ -42,6 +42,9 @@ module.exports = function response(request, callback, cmds) {
       // not a real error mind you; but a string
       if (cmds.location) {
         callback(cmds.location)
+      }
+      else if (cmds.status) {
+        callback(JSON.stringify({statusCode:cmds.status, html:cmds.html || 'not found'}))
       }
       else {
         callback(null, cmds)
