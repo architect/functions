@@ -24,7 +24,7 @@ module.exports = function response(request, callback, cmds) {
     throw Error('response must have location or html')
   }
 
-  var sesh = Object.assign(cmds.session || request.session, {_idx:request._idx})
+  var sesh = Object.assign(cmds.session || request.session, {_idx:request._idx, _secret:request._secret})
   session.update(sesh, function _update(err) {
     if (err) {
       throw err

@@ -1,4 +1,5 @@
 var db = require('./_get-dynamo-doc-instance')
+var create = require('./_create')
 
 module.exports = function _find(name, _idx, callback) {
   db.get({
@@ -12,12 +13,12 @@ module.exports = function _find(name, _idx, callback) {
     }
     else {
       var result = typeof data === 'undefined'? false : data.Item
-      if (!result) {
-        result = {
-          _idx
-        }
+      if (result && result.hasOwnProperty('_secret')) {
+        callback(null, result)
       }
-      callback(null, result)
+      else {
+        create(name, {}, callback)
+      }
     }
   })
 }

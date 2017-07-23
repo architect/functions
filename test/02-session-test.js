@@ -77,6 +77,21 @@ test('can update', t=> {
   })
 })
 
+test('find on a dead key returns fresh key', t=> {
+  t.plan(2)
+  var deadkey = 'A8RSJpccsfGzR8QtH43kr4RV'
+  session.find(deadkey, function _find(err, data) {
+    if (err) {
+      t.fail(err)
+    }
+    else {
+      t.ok(data, 'found')
+      t.ok(deadkey != data._idx, 'gotta fresh _idx')
+      console.log({deadkey})
+      console.log(data)
+    }
+  })
+})
 
 test('can shutdown', t=> {
   t.plan(1)

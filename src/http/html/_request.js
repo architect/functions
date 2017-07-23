@@ -4,6 +4,8 @@ var _url = require('../_url')
 var session = require('../session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
 var unsign = require('cookie-signature').unsign
 var secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
+var crsf = require('csrf')
+var tokens = new crsf
 
 module.exports = function arc(...fns) {
 
@@ -35,13 +37,16 @@ module.exports = function arc(...fns) {
         throw err
       }
       else {
-        // tag the request w the session id
+        // tag the request w the session id and secret
         request._idx = payload._idx
+        request._secret = payload._secret
+        request.csrf = tokens.create(request._secret)
 
         // assign the session; clearing private vars
         request.session = payload
         delete payload._idx
         delete payload._ttl
+        delete payload._secret
 
         // add a hidden helper to req for getting the correct staging or production url if dns isn't setup
         // var url = req._url('/count') 
