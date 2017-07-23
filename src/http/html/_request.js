@@ -55,6 +55,12 @@ module.exports = function arc(...fns) {
           enumerable: false
         })
 
+        // adds a hidden helper for checking a csrf token
+        Object.defineProperty(request, '_verify', {
+          value: (aToken)=> tokens.verify(request._secret, aToken), 
+          enumerable: false
+        })
+
         // construct a response function
         var response = _response.bind({}, request, callback)
 

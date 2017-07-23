@@ -5,7 +5,6 @@ var crsf = require('csrf')
 var parallel = require('run-parallel')
  
 module.exports = function _create(name, payload, callback) {
-  var tokens = new crsf
   parallel([
     function _key(callback) {
       uid(18, function _uid(err, val) {

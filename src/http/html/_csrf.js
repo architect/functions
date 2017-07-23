@@ -1,9 +1,6 @@
-var csrf = require('csrf')
-var tokens = new csrf
-
 module.exports = function _csrf(req, res, next) {
   var token = req.body && req.body.csrf? req.body.csrf : ''
-  var valid = tokens.verify(req._secret, token)
+  var valid = req._verify(token)
   if (valid) {
     next()
   }
