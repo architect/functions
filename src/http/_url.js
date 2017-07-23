@@ -4,7 +4,7 @@
  * usage
  *
  *  function route(req, res) {
- *    var url = req._stage('/about')
+ *    var url = req._url('/about')
  *    console.log(url)
  *    res({
  *      location: url
@@ -17,7 +17,7 @@
  *   /about (when NODE_ENV=testing or DNS setup)
  *
  */
-module.exports = function _stage(req, url) {
+module.exports = function _url(req, url) {
   var isStaging = process.env.NODE_ENV === 'staging' && req.headers.Host && req.headers.Host.includes('amazonaws.com')
   var isProduction = process.env.NODE_ENV === 'production' && req.headers.Host && req.headers.Host.includes('amazonaws.com')
   if (isStaging || isProduction) return `/${process.env.NODE_ENV}${url}`

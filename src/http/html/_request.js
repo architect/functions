@@ -1,6 +1,6 @@
 var cookie = require('cookie')
 var _response = require('./_response')
-var _stage = require('../_stage')
+var _url = require('../_url')
 var session = require('../session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
 var unsign = require('cookie-signature').unsign
 var secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
@@ -43,10 +43,10 @@ module.exports = function arc(...fns) {
         delete payload._idx
         delete payload._ttl
 
-        // add a hidden helper for getting the correct staging or production url if dns isn't setup
-        // var url = req._stage('/count') 
-        Object.defineProperty(request, '_stage', {
-          value: _stage.bind({}, request), 
+        // add a hidden helper to req for getting the correct staging or production url if dns isn't setup
+        // var url = req._url('/count') 
+        Object.defineProperty(request, '_url', {
+          value: _url.bind({}, request), 
           enumerable: false
         })
 
