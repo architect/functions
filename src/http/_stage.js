@@ -18,8 +18,8 @@
  *
  */
 module.exports = function _stage(req, url) {
-  var isStaging = process.env.NODE_ENV === 'staging' && req.headers.Referer && /amazonaws.com\/staging/.test(req.headers.Referer)
-  var isProduction = process.env.NODE_ENV === 'production' && req.headers.Referer && /amazonaws.com\/production/.test(req.headers.Referer)
+  var isStaging = process.env.NODE_ENV === 'staging' && req.headers.Host && req.headers.Host.includes('amazonaws.com')
+  var isProduction = process.env.NODE_ENV === 'production' && req.headers.Host && req.headers.Host.includes('amazonaws.com')
   if (isStaging || isProduction) return `/${process.env.NODE_ENV}${url}`
   return url // fallthru for NODE_ENV=testing and when dns setup
 }
