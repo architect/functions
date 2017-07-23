@@ -1,0 +1,25 @@
+/**
+ * hidden helper on req._stage (with current request bound as the first param)
+ *
+ * usage
+ *
+ *  function route(req, res) {
+ *    var url = req._stage('/about')
+ *    console.log(url)
+ *    res({
+ *      location: url
+ *    })
+ *  }
+ *
+ * logs
+ *   /staging/about (when NODE_ENV=staging and DNS not setup)
+ *   /production/about (when NODE_ENV=production and DNS not setup)
+ *   /about (when NODE_ENV=testing or DNS setup)
+ *
+ */
+module.exports = function _stage(req, url) {
+  var isStaging = process.env.NODE_ENV === 'staging' && req.headers.Referer && /amazonaws.com\/staging/.test(req.headers.Referer)
+  var isProduction = process.env.NODE_ENV === 'production' && req.headers.Referer && /amazonaws.com\/production/.test(req.headers.Referer)
+  if (isStaging || isProduction) return `/${process.env.NODE_ENV}${url}`
+  return url // fallthru for NODE_ENV=testing and when dns setup
+}
