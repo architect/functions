@@ -151,6 +151,7 @@ test('arc can save some data in a session', t=> {
   })
 })
 
+var csrfToken
 test('arc session can be retrieved', t=> {
   t.plan(3)
 
@@ -159,6 +160,7 @@ test('arc session can be retrieved', t=> {
   var handler = arc.html.get(function loc(req, res, next) {
     console.log(req)
     locCalled = true
+    csrfToken = req.csrf
     t.ok(request.session.msg === 'hello world', 'session found')
     res({
       html: `sutr0 says hello`
@@ -176,6 +178,60 @@ test('arc session can be retrieved', t=> {
       t.ok(response, 'gotta result')
       t.ok(locCalled, 'loc called')
       console.log('response', response)
+    }
+  })
+})
+
+test('crsf middleware with invalid post', t=> {
+  t.plan(1)
+  // create a lambda handler
+  var handler = arc.html.post(arc.html.csrf, function loc(req, res, next) {
+    res({
+      html: `not called`
+    })
+  })
+  // execute the hander w mock data
+  var request = {method:'post', headers: {Cookie:'_idx=' + _idx}}
+  var context = {}
+  handler(request, context, function errback(err, response) {
+    if (err) {
+      t.ok(JSON.parse(err).statusCode === 403, 'failed w 403')
+      console.log(err)
+    }
+    else {
+      t.fail(response, 'gotta result')
+    }
+  })
+})
+
+test('crsf middleware with valid post', t=> {
+  t.plan(2)
+  // create a lambda handler
+  var handler = arc.html.post(arc.html.csrf, function loc(req, res, next) {
+    t.ok(true, 'csrf middlware handler invoked')
+    res({
+      html: `called!`
+    })
+  })
+  // execute the hander w mock data
+  var request = {
+    method: 'post', 
+    headers: {
+      Cookie:'_idx=' + _idx
+    }, 
+    body: {
+      csrf: csrfToken
+    }
+  }
+  var context = {}
+  handler(request, context, function errback(err, response) {
+    if (err) {
+      t.fail(err, 'csrf request was invalid')
+      console.log(err)
+    }
+    else {
+      t.ok(response, 'request was valid')
+      console.log(response)
     }
   })
 })
