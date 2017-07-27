@@ -1,15 +1,22 @@
-var csrf = require('./html/_csrf')
-var htmlRequest = require('./html/_request')
-var jsonRequest = require('./json/_request')
+var csrf = require('./helpers/_csrf')
+var req = require('./_request')
 
 module.exports = {
   html: {
     csrf,
-    get: htmlRequest,
-    post: htmlRequest,
+    get: req.bind({}, 'text/html'),
+    post: req.bind({}, 'text/html'),
   },
   json: {
-    get: jsonRequest,
-    post: jsonRequest,
+    get: req.bind({}, 'application/json'),
+    post: req.bind({}, 'application/json'),
+  },
+  css: {
+    get: req.bind({}, 'text/css'),
+    post: req.bind({}, 'text/css'),
+  },
+  js: {
+    get: req.bind({}, 'text/javascript'),
+    post: req.bind({}, 'text/javascript'),
   },
 }
