@@ -12,6 +12,6 @@
  */
 module.exports = function _scheduled(fn) {
   return function _lambdaSignature(evt, ctx, callback) {
-    fn.call({}, Object.assign(event, context), callback)
+    fn.call({}, Object.assign(evt, ctx), callback)
   }
 }

@@ -16,7 +16,7 @@ module.exports = function _read(request, callback) {
 
   exec(params, function _find(err, payload) {
     if (err) throw err
-    
+
     // tag the request w the session id and secret
     request._idx = payload._idx
     request._secret = payload._secret

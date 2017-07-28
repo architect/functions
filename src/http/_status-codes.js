@@ -9,10 +9,10 @@ module.exports = function status(cmds) {
     payload.css = cmds.css
   }
   if (cmds.js) {
-    payload.js = js
+    payload.js = cmds.js
   }
   if (cmds.json) {
     payload.json = cmds.json
   }
-  return JSON.stringify(payload) 
+  return JSON.stringify(payload)
 }

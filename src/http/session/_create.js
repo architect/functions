@@ -3,7 +3,7 @@ var week = require('./_week-from-now')
 var db = require('./_get-dynamo-doc-instance')
 var crsf = require('csrf')
 var parallel = require('run-parallel')
- 
+
 module.exports = function _create(name, payload, callback) {
   parallel([
     function _key(callback) {
@@ -13,12 +13,12 @@ module.exports = function _create(name, payload, callback) {
       })
     },
     function _secret(callback) {
-      ;(new crsf).secret(function _uid(err, val) {
+      (new crsf).secret(function _uid(err, val) {
         if (err) callback(err)
         else callback(null, {_secret: val})
-      }) 
+      })
     }
-  ], 
+  ],
   function _put(err, results) {
     if (err) throw err
     results.push({_ttl: week()})

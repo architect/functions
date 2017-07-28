@@ -1,10 +1,11 @@
 var _response = require('./_response')
 var _url = require('./helpers/_url')
 var session = require('./session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
+var csrf = require('csrf')
 
 module.exports = function arc(type, ...fns) {
 
-  // while not neccessary this documents whats going on 
+  // while not neccessary this documents whats going on
   var supported = ['text/html', 'text/css', 'text/javascript', 'application/json']
   if (!supported.includes(type)) throw SyntaxError(`Unsupported type "${type}"`)
 
@@ -25,17 +26,18 @@ module.exports = function arc(type, ...fns) {
 
     session.read(request, function _read(err, request) {
       if (err) throw err
-      
+
       // add a hidden helper to req for getting the correct staging or production url if dns isn't setup
-      // var url = req._url('/count') 
+      // var url = req._url('/count')
       Object.defineProperty(request, '_url', {
-        value: _url.bind({}, request), 
+        value: _url.bind({}, request),
         enumerable: false
       })
 
       // adds a hidden helper for checking a csrf token
+      var tokens = new csrf
       Object.defineProperty(request, '_verify', {
-        value: (aToken)=> tokens.verify(request._secret, aToken), 
+        value: (aToken)=> tokens.verify(request._secret, aToken),
         enumerable: false
       })
 

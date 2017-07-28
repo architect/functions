@@ -7,9 +7,9 @@ module.exports = function response(type, request, callback, cmds) {
   validate(type, cmds)
 
   session.write({
-    request, 
+    request,
     cmds
-  }, 
+  },
   function _sync(err, res) {
     if (err) throw err
     if (res.location) res.status = 302

@@ -4,12 +4,16 @@ module.exports = function validate(type, cmds) {
     'text/css': css,
     'text/javascript': js,
     'application/json': json,
-  })
+  }
   validators[type](cmds)
 }
 
-function css(cmds) {throw Error('not impl')}
-function js(cmds) {throw Error('not impl')}
+function css() {
+  throw Error('not impl')
+}
+function js() {
+  throw Error('not impl')
+}
 
 function html(cmds) {
   var allowed = ['location', 'session', 'html', 'status']
@@ -49,7 +53,7 @@ function json(cmds) {
     }
   })
 
-  // ensure not both location and json 
+  // ensure not both location and json
   var hasLocationAndJson = cmds.hasOwnProperty('location') && cmds.hasOwnProperty('json')
   if (hasLocationAndJson) {
     throw Error('Found location and json keys; only one is allowed')
