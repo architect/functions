@@ -1,4 +1,4 @@
-var session = require('../session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
+var session = require('./session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
 var validate = require('./_validate')
 var status = require('./_status-codes')
 
