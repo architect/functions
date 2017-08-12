@@ -9,10 +9,10 @@ module.exports = function validate(type, cmds) {
 }
 
 function css() {
-  throw Error('not impl')
+  //TODO not impl
 }
 function js() {
-  throw Error('not impl')
+  //TODO not impl
 }
 
 function html(cmds) {

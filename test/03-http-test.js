@@ -74,7 +74,7 @@ test('arc accepts middleware function and responds with html', t=> {
   var handler = arc.html.get(first, second, third)
 
   // execute the hander w mock data
-  var request = {headers: {}, method:'get'}
+  var request = {headers: {Cookie:''}, method:'get'}
   var context = {}
   handler(request, context, function errback(err, response) {
     if (err) {

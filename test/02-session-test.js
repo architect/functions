@@ -37,7 +37,7 @@ test('can get a session client', t=> {
 
 test('can create', t=> {
   t.plan(1)
-  session.create({foo:1}, function _create(err, data) {
+  session._create({foo:1}, function _create(err, data) {
     if (err) {
       t.fail(err)
     }
@@ -51,7 +51,7 @@ test('can create', t=> {
 
 test('can find', t=> {
   t.plan(1)
-  session.find(sesh._idx, function _find(err, data) {
+  session._find(sesh._idx, function _find(err, data) {
     if (err) {
       t.fail(err)
     }
@@ -65,7 +65,7 @@ test('can find', t=> {
 test('can update', t=> {
   t.plan(1)
   sesh.b = 2
-  session.update(sesh, function _update(err, data) {
+  session._update(sesh, function _update(err, data) {
     if (err) {
       t.fail(err)
     }
@@ -80,7 +80,7 @@ test('can update', t=> {
 test('find on a dead key returns fresh key', t=> {
   t.plan(2)
   var deadkey = 'A8RSJpccsfGzR8QtH43kr4RV'
-  session.find(deadkey, function _find(err, data) {
+  session._find(deadkey, function _find(err, data) {
     if (err) {
       t.fail(err)
     }
