@@ -2,7 +2,9 @@ var checkForHtmlErrors = require('./_html-errors')
 
 module.exports = function _html(cmds) {
 
-  cmds = checkForHtmlErrors(cmds)
+  if (!(cmds instanceof Error)) {
+    cmds = checkForHtmlErrors(cmds)
+  }
   /**
    * adds support for res(Error('wtf')) 
    * if `error.code` is present use that for the status code 

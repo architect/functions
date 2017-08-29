@@ -3,7 +3,9 @@ var serialize = require('serialize-error')
 
 module.exports = function _json(cmds) {
 
-  cmds = checkForJsonErrors(cmds)
+  if (!(cmds instanceof Error)) {
+    cmds = checkForJsonErrors(cmds)
+  }
   /**
    * adds support for res(Error('wtf')) 
    * if `error.code` is present use that for the status code 
