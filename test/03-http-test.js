@@ -236,6 +236,75 @@ test('crsf middleware with valid post', t=> {
   })
 })
 
+test('response err types', t=> {
+  t.plan(2)
+  // create a lambda handler
+  var handler = arc.html.get(function loc(req, res, next) {
+    t.ok(true, 'handler invoked')
+    res(Error('testerr'))
+  })
+  // execute the hander w mock data
+  handler({
+    method: 'get', 
+    headers: {},
+  }, {}, function errback(err, response) {
+    if (err) {
+      t.ok(err, err)
+      console.log(err)
+    }
+    else {
+      t.fail(response, 'request was valid')
+      console.log(response)
+    }
+  })
+})
+
+test('response bad res obj', t=> {
+  t.plan(2)
+  // create a lambda handler
+  var handler = arc.html.get(function loc(req, res, next) {
+    t.ok(true, 'handler invoked')
+    res('')
+  })
+  // execute the hander w mock data
+  handler({
+    method: 'get', 
+    headers: {},
+  }, {}, function errback(err, response) {
+    if (err) {
+      t.ok(err, err)
+      console.log(err)
+    }
+    else {
+      t.fail(response, 'request was valid')
+      console.log(response)
+    }
+  })
+})
+
+test('response bad location', t=> {
+  t.plan(2)
+  // create a lambda handler
+  var handler = arc.json.get(function loc(req, res, next) {
+    t.ok(true, 'handler invoked')
+    res({location:'asdf'})
+  })
+  // execute the hander w mock data
+  handler({
+    method: 'get', 
+    headers: {},
+  }, {}, function errback(err, response) {
+    if (err) {
+      t.ok(err, err)
+      console.log(err)
+    }
+    else {
+      t.fail(response, 'request was valid')
+      console.log(response)
+    }
+  })
+})
+
 test('can shutdown', t=> {
   t.plan(1)
   server.close()

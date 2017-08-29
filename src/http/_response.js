@@ -1,16 +1,13 @@
 var session = require('./session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
-var validate = require('./_validate')
+var validate = require('./validate')
 var fmt = require('./_fmt')
 
-module.exports = function response(type, request, callback, cmds) {
-
-  validate(type, cmds)
-
+module.exports = function _response(type, request, callback, cmds) {
   session.write({
+    cmds: validate(type, cmds),
     request,
-    cmds
   },
-  function _sync(err, res) {
+  function _write(err, res) {
     if (err) throw err
 
     if (res.location) {

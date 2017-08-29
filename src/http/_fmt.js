@@ -6,12 +6,6 @@ module.exports = function fmt(cmds) {
   if (cmds.html) {
     payload.html = cmds.html // {html, statusCode}
   }
-  if (cmds.css) {
-    payload.css = cmds.css // {css, statusCode}
-  }
-  if (cmds.js) {
-    payload.js = cmds.js // {js, statusCode}
-  }
   if (cmds.json) {
     payload.json = cmds.json // {json, statusCode}
   }
