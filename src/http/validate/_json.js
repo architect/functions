@@ -14,7 +14,7 @@ module.exports = function _json(cmds) {
   if (cmds instanceof Error) {
     var commands = {
       status: cmds.code || cmds.statusCode || 500,
-      json: cmds.toJSON? cmds.toJSON() : serialize(cmds)
+      json: JSON.stringify(cmds.toJSON? cmds.toJSON() : serialize(cmds))
     }
     cmds = commands
   }
