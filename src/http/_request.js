@@ -44,6 +44,12 @@ module.exports = function arc(type, ...fns) {
       // construct a response function
       var response = _response.bind({}, type, request, callback)
 
+      process.removeAllListeners('uncaughtException')
+      process.on('uncaughtException', err=> {
+        err.code = 500
+        response(err)
+      })
+
       // loop thru middleware
       ;(function _iter(fn) {
         var next = _iter.bind({}, fnsCache.shift() || function _nope(){throw Error('next called from last arc function')})
