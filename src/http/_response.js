@@ -8,12 +8,9 @@ module.exports = function _response(type, request, callback, cmds) {
     request,
   },
   function _write(err, res) {
-    if (err) {
-      var r = {statusCode: 500}
-      r[type === 'text/html'? 'html' : 'json'] = 'session write failed'
-      callback(r) 
-    }
-    else if (res.location) {
+    if (err) console.log(err)
+
+    if (res.location) {
       callback(res.location)
     }
     else if (!res.status || res.status === 200) {
