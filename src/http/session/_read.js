@@ -15,7 +15,11 @@ module.exports = function _read(name, request, callback) {
   var params = sesh && valid? valid : {}
 
   exec(params, function _find(err, payload) {
-    if (err) throw err
+
+    if (err) {
+      console.log(err)
+      throw err
+    }
 
     // tag the request w the session id and secret
     request._idx = payload._idx

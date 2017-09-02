@@ -13,9 +13,9 @@ module.exports = function checkForHtmlErrors(cmds) {
 
   // ensure only valid command keys
   var allowed = [
-    'location', 
-    'session', 
-    'html', 
+    'location',
+    'session',
+    'html',
     'status'
   ]
   var badKeys = []
@@ -36,7 +36,7 @@ allowed: ${allowed.join(', ')}
   if (badUrl) {
     return new InvalidResponseError(`invalid location value: ${cmds.location} is not a valid URL`)
   }
-  
+
   // ensure status only one of 403, 404 or 500
   var badStatus = cmds.status && [403, 404, 500].includes(cmds.status) === false
   if (badStatus) {

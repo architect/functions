@@ -2,12 +2,9 @@ var _response = require('./_response')
 var _url = require('./helpers/_url')
 var session = require('./session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
 var csrf = require('csrf')
+var fail = require('./_500')
 
 module.exports = function arc(type, ...fns) {
-
-  // while not neccessary this documents whats going on
-  var supported = ['text/html', 'text/css', 'text/javascript', 'application/json']
-  if (!supported.includes(type)) throw SyntaxError(`Unsupported type "${type}"`)
 
   // validate everything passed is a function or blow up in the programmers face
   fns.forEach(f=> {
@@ -17,6 +14,15 @@ module.exports = function arc(type, ...fns) {
   // return an aws lambda function signature
   return function _lambdaHandler(request, context, callback) {
 
+    // global exception/rejection handler
+    // ensures whatever got thrown propagates through api gateway
+    process.removeAllListeners('uncaughtException')
+    process.removeAllListeners('unhandledRejection')
+
+    process.on('uncaughtException', fail.bind({}, type, callback))
+    process.on('unhandledRejection', fail.bind({}, type, callback))
+
+    // check for property configured api gateway
     if (!request.headers) {
       throw Error('gateway missing headers')
     }
@@ -25,7 +31,11 @@ module.exports = function arc(type, ...fns) {
     var fnsCache = fns.slice()
 
     session.read(request, function _read(err, request) {
-      if (err) throw err
+
+      if (err) {
+        console.log(err)
+        throw err
+      }
 
       // add a hidden helper to req for getting the correct staging or production url if dns isn't setup
       // var url = req._url('/count')
@@ -43,19 +53,6 @@ module.exports = function arc(type, ...fns) {
 
       // construct a response function
       var response = _response.bind({}, type, request, callback)
-
-      // global exception/rejection handler
-      // ensures whatever got thrown propagates through api gateway
-      function lastChance(err) {
-        err.code = 500
-        response(err)
-      }
-
-      process.removeAllListeners('uncaughtException')
-      process.removeAllListeners('unhandledRejection')
-
-      process.on('uncaughtException', lastChance)
-      process.on('unhandledRejection', lastChance)
 
       // loop thru middleware
       ;(function _iter(fn) {

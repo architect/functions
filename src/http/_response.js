@@ -8,9 +8,11 @@ module.exports = function _response(type, request, callback, cmds) {
     request,
   },
   function _write(err, res) {
-    if (err) console.log(err)
-
-    if (res.location) {
+    if (err) {
+      console.log(err)
+      throw err
+    }
+    else if (res.location) {
       callback(res.location)
     }
     else if (!res.status || res.status === 200) {
@@ -20,7 +22,7 @@ module.exports = function _response(type, request, callback, cmds) {
       callback(fmt(res))
     }
     else {
-      callback(null, res) 
+      callback(null, res)
     }
   })
 }

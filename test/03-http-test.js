@@ -305,6 +305,59 @@ test('response bad location', t=> {
   })
 })
 
+test('uncaught throw renders response', t=> {
+  t.plan(2)
+  // create a lambda handler
+  var handler = arc.json.get(function loc(req, res, next) {
+    t.ok(true, 'handler invoked')
+    throw Error('wtf')
+    res({location:'asdf'})
+  })
+
+  // execute the hander w mock data
+  handler({
+    method: 'get', 
+    headers: {},
+  }, {}, function errback(err, response) {
+    if (err) {
+      t.ok(err, err)
+      console.log(err)
+    }
+    else {
+      t.fail(response, 'request was valid')
+      console.log(response)
+    }
+  })
+})
+
+test('unhandled rejection renders response', t=>{
+  t.plan(2)
+  // create a lambda handler
+  var handler = arc.json.get(function loc(req, res, next) {
+    t.ok(true, 'handler invoked')
+    new Promise((resolve, reject)=> {
+      reject(Error('omg'))
+    }).then(function() {
+      res({json:{}}) 
+    })
+  })
+
+  // execute the hander w mock data
+  handler({
+    method: 'get', 
+    headers: {},
+  }, {}, function errback(err, response) {
+    if (err) {
+      t.ok(err, err)
+      console.log(err)
+    }
+    else {
+      t.fail(response, 'request was valid')
+      console.log(response)
+    }
+  })
+})
+
 test('can shutdown', t=> {
   t.plan(1)
   server.close()

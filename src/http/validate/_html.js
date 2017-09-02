@@ -25,8 +25,8 @@ module.exports = function _html(cmds) {
     cmds = checkForHtmlErrors(cmds)
   }
   /**
-   * adds support for res(Error('wtf')) 
-   * if `error.code` is present use that for the status code 
+   * adds support for res(Error('wtf'))
+   * if `error.code` is present use that for the status code
    * falls back to 500 error otherwise
    */
   if (cmds instanceof Error) {
