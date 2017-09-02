@@ -2,7 +2,7 @@ var _response = require('./_response')
 var _url = require('./helpers/_url')
 var session = require('./session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
 var csrf = require('csrf')
-var fail = require('./_500')
+var fail = require('./_err')
 
 module.exports = function arc(type, ...fns) {
 

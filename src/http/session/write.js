@@ -10,7 +10,10 @@ module.exports = function _write(name, params, callback) {
     _secret: request._secret
   })
   update(name, sesh, function _update(err) {
-    if (err) console.log(err) // swallow the error but log it
+    if (err) {
+      console.log(err)
+      throw err
+    }
     var maxAge = Date.now() + 7.884e+11
     cmds.cookie = cookie.serialize('_idx', sign(request._idx, secret), {
       maxAge,

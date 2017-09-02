@@ -6,6 +6,7 @@ var crsf = require('csrf')
 var secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
 
 module.exports = function _read(name, request, callback) {
+
   // adds request.session by cookie token lookup in dynamo
   var jar = cookie.parse(request.headers && request.headers.Cookie? request.headers.Cookie || '': '')
   var sesh = jar.hasOwnProperty('_idx')
@@ -28,9 +29,11 @@ module.exports = function _read(name, request, callback) {
 
     // assign the session; clearing private vars
     request.session = payload
+
     delete payload._idx
     delete payload._ttl
     delete payload._secret
+
     callback(null, request)
   })
 }
