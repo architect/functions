@@ -10,17 +10,17 @@ module.exports = function _err(type, callback, err) {
   // if the thrown error has a code of 403, 404 or 500
   var hasCode = err.code && Number.isInteger(err.code) && [403, 404, 500].includes(err.code)
   if (hasCode) {
-    exception = err.code
+    exception.statusCode = err.code
   }
 
   var hasStatus = err.status && Number.isInteger(err.status) && [403, 404, 500].includes(err.status)
   if (hasStatus) {
-    exception = err.status
+    exception.statusCode = err.status
   }
 
   var hasStatusCode = err.statusCode && Number.isInteger(err.statusCode) && [403, 404, 500].includes(err.statusCode)
   if (hasStatusCode) {
-    exception = err.statusCode
+    exception.statusCode = err.statusCode
   }
 
   var isHTML = type === 'text/html'
