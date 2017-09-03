@@ -1,10 +1,16 @@
-var html = require('./_html')
-var json = require('./_json')
+var checkForHtmlErrors = require('./_html-errors')
+var checkForJsonErrors = require('./_json-errors')
 
 module.exports = function validate(type, cmds) {
-  var validators = {
-    'text/html': html,
-    'application/json': json,
+
+  if (cmds instanceof Error) throw cmds
+
+  if (type === 'text/html') {
+    checkForHtmlErrors(cmds)
   }
-  return validators[type](cmds)
+  else {
+    checkForJsonErrors(cmds)
+  }
+
+  return cmds
 }

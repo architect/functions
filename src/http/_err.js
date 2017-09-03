@@ -1,4 +1,5 @@
 var serialize = require('serialize-error')
+var html = require('./_err-tmpl')
 
 module.exports = function _err(type, callback, err) {
 
@@ -7,24 +8,24 @@ module.exports = function _err(type, callback, err) {
     statusCode: 500
   }
 
-  // if the thrown error has a code of 403, 404 or 500
+  // if the thrown error has code, status or statusCode of 403, 404 or 500 use it
   var hasCode = err.code && Number.isInteger(err.code) && [403, 404, 500].includes(err.code)
+  var hasStatus = err.status && Number.isInteger(err.status) && [403, 404, 500].includes(err.status)
+  var hasStatusCode = err.statusCode && Number.isInteger(err.statusCode) && [403, 404, 500].includes(err.statusCode)
+
   if (hasCode) {
     exception.statusCode = err.code
   }
 
-  var hasStatus = err.status && Number.isInteger(err.status) && [403, 404, 500].includes(err.status)
   if (hasStatus) {
     exception.statusCode = err.status
   }
 
-  var hasStatusCode = err.statusCode && Number.isInteger(err.statusCode) && [403, 404, 500].includes(err.statusCode)
   if (hasStatusCode) {
     exception.statusCode = err.statusCode
   }
 
-  var isHTML = type === 'text/html'
-  if (isHTML) {
+  if (type === 'text/html') {
     exception.html = html(err)
   }
   else {
@@ -34,34 +35,3 @@ module.exports = function _err(type, callback, err) {
   callback(JSON.stringify(exception))
 }
 
-function html(err) {
-  return `<!doctype html>
-<html>
-<head>
-<meta name=viewport content=width=device-width,initial-scale=1>
-<style>
-body {
-  font-family: sans-serif;
-  color: #999;
-}
-
-h1 {
-  width: 850px;
-  color: black;
-  font-size: 2em;
-  margin: 5% auto 20px auto;
-}
-
-pre {
-  width: 850px;
-  margin: 0 auto 0 auto;
-}
-</style>
-</head>
-<body>
-<h1>${err.toString()}</h1>
-<pre>${err.stack}</pre>
-</body>
-</html>
-`
-}
