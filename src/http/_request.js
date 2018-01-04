@@ -1,8 +1,10 @@
 var _response = require('./_response')
 var _url = require('./helpers/_url')
+var _static = require('./helpers/_static')
 var session = require('./session').client(process.env.SESSION_TABLE_NAME || 'arc-sessions')
 var csrf = require('csrf')
 var fail = require('./_err')
+var interpolate = require('./_interpolate-params')
 
 module.exports = function arc(type, ...fns) {
 
@@ -14,13 +16,17 @@ module.exports = function arc(type, ...fns) {
   // return an aws lambda function signature
   return function _lambdaHandler(request, context, callback) {
 
+    // API Gateway returns req.path as /foo/{baz} and req.params = {baz:'bazVal'}
+    request = interpolate(request)
+
     // global exception/rejection handler
     // ensures whatever got thrown propagates through api gateway
-    process.removeAllListeners('uncaughtException')
-    process.removeAllListeners('unhandledRejection')
-
-    process.on('uncaughtException', fail.bind({}, type, callback))
-    process.on('unhandledRejection', fail.bind({}, type, callback))
+    if (process.env.NODE_ENV != 'testing') {
+      process.removeAllListeners('uncaughtException')
+      process.removeAllListeners('unhandledRejection')
+      process.on('uncaughtException', fail.bind({}, type, callback))
+      process.on('unhandledRejection', fail.bind({}, type, callback))
+    }
 
     // check for property configured api gateway
     if (!request.headers) {
@@ -48,6 +54,13 @@ module.exports = function arc(type, ...fns) {
       var tokens = new csrf
       Object.defineProperty(request, '_verify', {
         value: (aToken)=> tokens.verify(request._secret, aToken),
+        enumerable: false
+      })
+
+      // adds a hidden helper for getting the static assets path
+      var tokens = new csrf
+      Object.defineProperty(request, '_static', {
+        value: _static,
         enumerable: false
       })
 

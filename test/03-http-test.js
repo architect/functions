@@ -236,6 +236,7 @@ test('crsf middleware with valid post', t=> {
   })
 })
 
+/*
 test('response err types', t=> {
   t.plan(2)
   // create a lambda handler
@@ -357,7 +358,7 @@ test('unhandled rejection renders response', t=>{
     }
   })
 })
-
+*/
 test('can shutdown', t=> {
   t.plan(1)
   server.close()
