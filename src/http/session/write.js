@@ -19,7 +19,9 @@ module.exports = function _write(name, params, callback) {
       maxAge,
       expires: new Date(maxAge),
       secure: true,
-      httpOnly: true
+      httpOnly: true,
+      path: '/',
+      sameSite: true,
     })
     callback(null, cmds)
   })
