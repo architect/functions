@@ -1,4 +1,3 @@
-var assert = require('@smallwins/validate/assert')
 var aws = require('aws-sdk')
 var sns = new aws.SNS
 var ledger = {}
@@ -41,10 +40,14 @@ function __publish(arn, payload, callback) {
  *   }, console.log)
  */
 module.exports = function _publish(params, callback) {
-  assert(params, {
-    name: String,
-    payload: Object
-  })
+  if (!params.name)
+    throw ReferenceError('missing params.name')
+
+  if (!params.payload)
+    throw ReferenceError('missing params.payload')
+
+  if (params.payload.toString() === '[object Object]')
+    throw TypeError('params.payload not a plain Object')
 
   var {name, payload} = params
   var arn = ledger.hasOwnProperty(name)
