@@ -1,13 +1,13 @@
 module.exports = {
-  'env': {
-    'node':true,
-    'es6': true
+  parserOptions: {
+    ecmaVersion: 2018
   },
-  'ecmaFeatures': {
-    'arrowFunctions': true
+  env: {
+    node:true,
+    es6: true
   },
-  'extends': 'eslint:recommended',
-  'rules': {
+  extends: 'eslint:recommended',
+  rules: {
     // enable additional rules
     'linebreak-style': ['error', 'unix'],
     // node specific

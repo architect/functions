@@ -1,5 +1,6 @@
-var err = require('@smallwins/err')
-var isPlainObject = require('is-plain-object')
+let err = require('@smallwins/err')
+let isPlainObject = require('is-plain-object')
+let statusCodes = require('./_status-codes')
 
 class InvalidHtmlResponseError extends err.InternalError {}
 
@@ -38,9 +39,9 @@ allowed: ${allowed.join(', ')}
   }
 
   // ensure status only one of 403, 404 or 500
-  var badStatus = cmds.status && [403, 404, 500].includes(cmds.status) === false
+  var badStatus = cmds.status && statusCodes.includes(cmds.status) === false
   if (badStatus) {
-    throw new InvalidHtmlResponseError(`invalid status value: ${cmds.status}\n\nMust be one of: 403, 404 or 500`)
+    throw new InvalidHtmlResponseError(`invalid status value: ${cmds.status}\n\nMust be one of: ${statusCodes.join(', ')}`)
   }
 
   // ensure not both location and html
