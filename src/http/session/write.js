@@ -21,7 +21,7 @@ module.exports = function _write(name, params, callback) {
       secure: true,
       httpOnly: true,
       path: '/',
-      sameSite: true,
+      sameSite: 'lax',
     })
     callback(null, cmds)
   })
