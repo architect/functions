@@ -46,9 +46,6 @@ module.exports = function _publish(params, callback) {
   if (!params.payload)
     throw ReferenceError('missing params.payload')
 
-  if (params.payload.toString() === '[object Object]')
-    throw TypeError('params.payload not a plain Object')
-
   var {name, payload} = params
   var arn = ledger.hasOwnProperty(name)
 
