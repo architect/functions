@@ -1,5 +1,7 @@
+/* eslint global: "off" */
 var aws = require('aws-sdk')
 var sns = new aws.SNS
+var path = require('path')
 var ledger = {}
 
 // priv publish
@@ -45,7 +47,16 @@ module.exports = function _publish(params, callback) {
 
   if (!params.payload)
     throw ReferenceError('missing params.payload')
+  
+  if (process.env.NODE_ENV === 'testing') {
+    _local(params, callback)
+  }
+  else {
+    _live(params, callback)
+  }
+}
 
+function _live(params, callback) {
   var {name, payload} = params
   var arn = ledger.hasOwnProperty(name)
 
@@ -74,4 +85,13 @@ module.exports = function _publish(params, callback) {
       }
     })
   }
+}
+
+function _local(params, callback) {
+  let pathToLocalEventHandler = path.join(process.cwd(), 'src', 'events', params.name)
+  let lambda = require(pathToLocalEventHandler)
+  let event = {Records:[{Sns:{Message:JSON.stringify(params.payload)}}]}
+  let context = {}
+
+  lambda.handler(event, context, callback)
 }
