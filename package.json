@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "architect run commands",
   "main": "index",
   "scripts": {
@@ -10,7 +10,20 @@
   },
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",
-  "keywords": ["aws", "lambda", "amazon", "serverless", "cloud", "cloudfunctions", "apigateway", "dynamodb", "s3", "sns", "api gateway", "framework"],
+  "keywords": [
+    "aws",
+    "lambda",
+    "amazon",
+    "serverless",
+    "cloud",
+    "cloudfunctions",
+    "apigateway",
+    "dynamodb",
+    "s3",
+    "sns",
+    "api gateway",
+    "framework"
+  ],
   "devDependencies": {
     "aws-sdk": "^2.243.1",
     "dynalite": "^1.2.0",
