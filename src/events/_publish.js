@@ -1,4 +1,4 @@
-/* eslint global: "off" */
+/* eslint global-require: "off" */
 var aws = require('aws-sdk')
 var sns = new aws.SNS
 var path = require('path')
@@ -47,7 +47,7 @@ module.exports = function _publish(params, callback) {
 
   if (!params.payload)
     throw ReferenceError('missing params.payload')
-  
+
   if (process.env.NODE_ENV === 'testing') {
     _local(params, callback)
   }
