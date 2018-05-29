@@ -92,11 +92,8 @@ function _local(params, callback) {
   let req = http.request({
     method: 'POST',
     port: 3334,
-  },
-  function _req(res) {
-    res.on('end', callback)
   })
-  req.on('error', callback)
   req.write(JSON.stringify(params))
   req.end()
+  callback()
 }
