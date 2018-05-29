@@ -1,8 +1,8 @@
 /* eslint global-require: "off" */
-var aws = require('aws-sdk')
-var sns = new aws.SNS
-var path = require('path')
-var ledger = {}
+let http = require('http')
+let aws = require('aws-sdk')
+let sns = new aws.SNS
+let ledger = {}
 
 // priv publish
 // blindly publishes to sns topic json stringified record
@@ -24,7 +24,7 @@ function __publish(arn, payload, callback) {
  *
  * usage
  *
- *   var arc = require('@smallwins/arc-prototype')
+ *   let arc = require('@smallwins/arc-prototype')
  *
  *   arc.events.publish({
  *     name: 'eventname',
@@ -48,7 +48,8 @@ module.exports = function _publish(params, callback) {
   if (!params.payload)
     throw ReferenceError('missing params.payload')
 
-  if (process.env.NODE_ENV === 'testing') {
+  let isLocal = process.env.NODE_ENV === 'testing' && !process.env.hasOwnProperty('ARC_LOCAL')
+  if (isLocal) {
     _local(params, callback)
   }
   else {
@@ -57,21 +58,21 @@ module.exports = function _publish(params, callback) {
 }
 
 function _live(params, callback) {
-  var {name, payload} = params
-  var arn = ledger.hasOwnProperty(name)
+  let {name, payload} = params
+  let arn = ledger.hasOwnProperty(name)
 
   if (arn) {
     __publish(ledger[name], payload, callback)
   }
   else {
-    var override = params.hasOwnProperty('app')
-    var eventName = `${override? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
+    let override = params.hasOwnProperty('app')
+    let eventName = `${override? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
     // lookup the event sns topic arn
     sns.listTopics({}, function _listTopics(err, results) {
       if (err) throw err
-      var found = results.Topics.find(t=> {
-        var bits =  t.TopicArn.split(':')
-        var it = bits[bits.length - 1]
+      let found = results.Topics.find(t=> {
+        let bits =  t.TopicArn.split(':')
+        let it = bits[bits.length - 1]
         return it === eventName
       })
       if (found) {
@@ -88,10 +89,14 @@ function _live(params, callback) {
 }
 
 function _local(params, callback) {
-  let pathToLocalEventHandler = path.join(process.cwd(), 'src', 'events', params.name)
-  let lambda = require(pathToLocalEventHandler)
-  let event = {Records:[{Sns:{Message:JSON.stringify(params.payload)}}]}
-  let context = {}
-
-  lambda.handler(event, context, callback)
+  let req = http.request({
+    method: 'POST',
+    port: 3334,
+  },
+  function _req(res) {
+    res.on('end', callback)
+  })
+  req.on('error', callback)
+  req.write(JSON.stringify(params))
+  req.end()
 }
