@@ -1,7 +1,7 @@
 let fs = require('fs')
 let path = require('path')
 let parse = require('@architect/parser')
-let arcFile = path.join(__dirname, '..', 'shared', '.arc')
+let arcFile = path.join(__dirname, '..', '..', '..', '..', 'shared', '.arc')
 
 module.exports = function _static(assetPath) {
   let arc = parse(fs.readFileSync(arcFile).toString())
