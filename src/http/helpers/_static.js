@@ -3,6 +3,7 @@ let path = require('path')
 let parse = require('@architect/parser')
 let arcFile = path.join(__dirname, '..', '..', '..', '..', 'shared', '.arc')
 
+// TODO this is kinda slow; we should (re)introduce a cache!
 module.exports = function _static(assetPath) {
   let arc = parse(fs.readFileSync(arcFile).toString())
   if (arc.static) {
