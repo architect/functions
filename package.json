@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "1.8.8",
+  "version": "1.8.9",
   "description": "architect run commands",
   "main": "index",
   "scripts": {
