@@ -1,38 +1,24 @@
-var path = require('path')
-var parse = require('@architect/parser')
-var fs = require('fs')
-var cache = {}
+let fs = require('fs')
+let path = require('path')
+let parse = require('@architect/parser')
+let arcFile = path.join(__dirname, '..', 'shared', '.arc')
 
 module.exports = function _static(assetPath) {
-  if (cache[assetPath]) {
-    return cache[assetPath]
+  let arc = parse(fs.readFileSync(arcFile).toString())
+  if (arc.static) {
+    let bucket = getBucket(arc.static)//[process.env.NODE_ENV === 'staging'? 0 : 1][1]
+    let url = `https://s3.amazonaws.com/${bucket}${assetPath}`
+    return url
   }
   else {
-
-    var arcFile = path.join(__dirname, '..', 'shared', '.arc')
-    var exists = fs.existsSync(arcFile)
-    var testing = process.env.NODE_ENV === 'testing' || typeof process.env.NODE_ENV === 'undefined'
-
-    if (testing) {
-      // testing env is passthru
-      cache[assetPath] = assetPath
-    }
-    else if (exists) {
-      var arc = parse(fs.readFileSync(arcFile).toString())
-      if (arc.static) {
-        var bucket = arc.static[process.env.NODE_ENV === 'staging'? 0 : 1][1]
-        var url = `https://s3.amazonaws.com/${bucket}${assetPath}`
-        cache[assetPath] = url
-      }
-      else {
-        // missing arc.static so passthru
-        cache[assetPath] = assetPath
-      }
-    }
-    else {
-      // missing .arc so passthru
-      cache[assetPath] = assetPath
-    }
-    return cache[assetPath]
+    // passthru
+    return assetPath
   }
+}
+
+function getBucket(statics) {
+  if (statics[0][0] === process.env.NODE_ENV)
+    return statics[0][1]
+  if (statics[1][0] === process.env.NODE_ENV)
+    return statics[1][1]
 }
