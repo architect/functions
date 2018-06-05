@@ -21,7 +21,7 @@ module.exports = function _static(assetPath) {
       var arc = parse(fs.readFileSync(arcFile).toString())
       if (arc.static) {
         var bucket = arc.static[process.env.NODE_ENV === 'staging'? 0 : 1][1]
-        var url = `https://s3-${process.env.AWS_REGION}.amazonaws.com/${bucket}${assetPath}`
+        var url = `https://s3.amazonaws.com/${bucket}${assetPath}`
         cache[assetPath] = url
       }
       else {
