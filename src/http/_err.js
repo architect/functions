@@ -1,5 +1,6 @@
 var serialize = require('serialize-error')
 var html = require('./_err-tmpl')
+var statusCodes = require('./validate/_status-codes')
 
 module.exports = function _err(type, callback, err) {
 
@@ -8,10 +9,10 @@ module.exports = function _err(type, callback, err) {
     statusCode: 500
   }
 
-  // if the thrown error has code, status or statusCode of 403, 404 or 500 use it
-  var hasCode = err.code && Number.isInteger(err.code) && [403, 404, 500].includes(err.code)
-  var hasStatus = err.status && Number.isInteger(err.status) && [403, 404, 500].includes(err.status)
-  var hasStatusCode = err.statusCode && Number.isInteger(err.statusCode) && [403, 404, 500].includes(err.statusCode)
+  // if the thrown error has code, status or statusCode of 400, 403, 404, 406, 409, 415, or 500 use it
+  var hasCode = err.code && Number.isInteger(err.code) && statusCodes.includes(err.code)
+  var hasStatus = err.status && Number.isInteger(err.status) && statusCodes.includes(err.status)
+  var hasStatusCode = err.statusCode && Number.isInteger(err.statusCode) && statusCodes.includes(err.statusCode)
 
   if (hasCode) {
     exception.statusCode = err.code
@@ -34,4 +35,3 @@ module.exports = function _err(type, callback, err) {
 
   callback(JSON.stringify(exception))
 }
-

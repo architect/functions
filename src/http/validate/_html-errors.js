@@ -38,7 +38,7 @@ allowed: ${allowed.join(', ')}
     throw new InvalidHtmlResponseError(`invalid location value: ${cmds.location} is not a valid URL`)
   }
 
-  // ensure status only one of 403, 404 or 500
+  // ensure status only one of 400, 403, 404, 406, 409, 415, or 500
   var badStatus = cmds.status && statusCodes.includes(cmds.status) === false
   if (badStatus) {
     throw new InvalidHtmlResponseError(`invalid status value: ${cmds.status}\n\nMust be one of: ${statusCodes.join(', ')}`)
