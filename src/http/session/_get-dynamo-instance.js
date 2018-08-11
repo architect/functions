@@ -1,5 +1,6 @@
-var aws = require('aws-sdk')
-var testing = process.env.NODE_ENV === 'testing'
-var endpoint = new aws.Endpoint('http://localhost:5000')
+let aws = require('aws-sdk')
+let testing = process.env.NODE_ENV === 'testing'
+let endpoint = new aws.Endpoint('http://localhost:5000')
+let region = 'us-west-1'
 
-module.exports = testing? new aws.DynamoDB({endpoint}) : new aws.DynamoDB
+module.exports = testing? new aws.DynamoDB({endpoint, region}) : new aws.DynamoDB
