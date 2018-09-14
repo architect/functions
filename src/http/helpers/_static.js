@@ -2,24 +2,39 @@ let fs = require('fs')
 let path = require('path')
 let parse = require('@architect/parser')
 let arcFile = path.join(__dirname, '..', '..', '..', '..', 'shared', '.arc')
+let arc
 
-// TODO this is kinda slow; we should (re)introduce a cache!
 module.exports = function _static(assetPath) {
-  let arc = parse(fs.readFileSync(arcFile).toString())
-  if (arc.static) {
-    let bucket = getBucket(arc.static)//[process.env.NODE_ENV === 'staging'? 0 : 1][1]
+  // only do this once
+  if (!arc) {
+    arc = parse(fs.readFileSync(arcFile).toString())
+  }
+  // just passthru if we're not running in staging or production
+  let runningLocally = arc.static && process.env.NODE_ENV === 'testing'
+  if (runningLocally) {
+    return assetPath
+  }
+  else {
+    let bucket = getBucket(arc.static)
     let url = `https://s3.amazonaws.com/${bucket}${assetPath}`
     return url
   }
-  else {
-    // passthru
-    return assetPath
-  }
 }
 
-function getBucket(statics) {
-  if (statics[0][0] === process.env.NODE_ENV)
-    return statics[0][1]
-  if (statics[1][0] === process.env.NODE_ENV)
-    return statics[1][1]
+// helper returns the @static value for the current NODE_ENV
+function getBucket(static) {
+  let staging
+  let production
+  static.forEach(thing=> {
+    if (thing[0] === 'staging') {
+      staging = thing[1]
+    }
+    if (thing[0] === 'production') {
+      production = thing[1]
+    }
+  })
+  if (process.env.NODE_ENV === 'staging')
+    return staging
+  if (process.env.NODE_ENV === 'production')
+    return production
 }
