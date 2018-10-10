@@ -1,7 +1,17 @@
-var csrf = require('./helpers/_csrf')
-var req = require('./_request')
+let csrf = require('./helpers/_csrf')
+let req = require('./_request')
+let read = require('./_session-read')
+let write = require('./_session-write')
+let static = require('./helpers/_static')
 
 module.exports = {
+  helpers: {
+    static,
+  },
+  session: {
+    read,
+    write,
+  },
   html: {
     csrf,
     get: req.bind({}, 'text/html'),
