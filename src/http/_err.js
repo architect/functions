@@ -29,8 +29,20 @@ module.exports = function _err(type, callback, err) {
   if (type === 'text/html') {
     exception.html = html(err)
   }
-  else {
+  else if (type === 'text/css') {
+    exception.css = serialize(err)
+  }
+  else if (type === 'text/javascript') {
+    exception.js = serialize(err)
+  }
+  else if (type === 'text/plain') {
+    exception.text = serialize(err)
+  }
+  else if (type === 'application/json') {
     exception.json = serialize(err)
+  }
+  else if (type === 'application/xml') {
+    exception.xml = serialize(err)
   }
 
   callback(JSON.stringify(exception))

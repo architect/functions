@@ -12,7 +12,7 @@ module.exports = function _response(type, request, callback, cmds) {
       console.log(err)
       throw err
     }
-    else if (res.location) {
+    else if (res && res.location) {
       callback(res.location)
     }
     else if (!res.status || res.status === 200) {

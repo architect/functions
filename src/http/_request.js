@@ -21,12 +21,12 @@ module.exports = function arc(type, ...fns) {
 
     // global exception/rejection handler
     // ensures whatever got thrown propagates through api gateway
-    if (process.env.NODE_ENV != 'testing') {
+    //if (process.env.NODE_ENV != 'testing') {
       process.removeAllListeners('uncaughtException')
       process.removeAllListeners('unhandledRejection')
       process.on('uncaughtException', fail.bind({}, type, callback))
       process.on('unhandledRejection', fail.bind({}, type, callback))
-    }
+    //}
 
     // check for property configured api gateway
     if (!request.headers) {
