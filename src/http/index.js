@@ -65,6 +65,10 @@ function response(req, callback, params) {
   commands.type = 'application/json; charset=utf8'
   commands.body = params.body || '\n'
   // shorthand overrides
+  if (params.location) {
+    // auto add 302 to status
+    commands.status = 302
+  }
   if (params.html) {
     commands.type = 'text/html; charset=utf8'
     commands.body = params.html
