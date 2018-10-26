@@ -10,7 +10,7 @@ module.exports = function _static(assetPath) {
     arc = parse(fs.readFileSync(arcFile).toString())
   }
   // just passthru if we're not running in staging or production
-  let runningLocally = arc.static && process.env.NODE_ENV === 'testing'
+  let runningLocally = process.env.NODE_ENV === 'testing'
   if (runningLocally) {
     return assetPath
   }
