@@ -72,24 +72,13 @@ function _live(params, callback) {
   }
   else {
     let override = params.hasOwnProperty('app')
-    let eventName = `${override? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
-    // lookup the event sns topic arn
-    sns.listTopics({}, function _listTopics(err, results) {
+    let eventName = `${override ? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
+    _scan({ eventName }, function _scan (err, found) {
       if (err) throw err
-      let found = results.Topics.find(t=> {
-        let bits =  t.TopicArn.split(':')
-        let it = bits[bits.length - 1]
-        return it === eventName
-      })
-      if (found) {
-        // cache the arn here
-        ledger[name] = found.TopicArn
-        // and continue
-        __publish(ledger[name], payload, callback)
-      }
-      else {
-        throw Error(`topic ${eventName} not found`) // fail loudly if we can't find it
-      }
+      // cache the arn here
+      ledger[name] = found
+      // and continue
+      __publish(ledger[name], payload, callback)
     })
   }
 }
@@ -102,4 +91,25 @@ function _local(params, callback) {
   req.write(JSON.stringify(params))
   req.end()
   callback()
+}
+
+function _scan({eventName}, callback) {
+  let sns = new aws.SNS()
+  ;(function __scanner (params = {}, callback) {
+    sns.listTopics(params, function _listTopics(err, results) {
+      if (err) throw err
+      let found = results.Topics.find(t => {
+        let bits = t.TopicArn.split(':')
+        let it = bits[bits.length - 1]
+        return it === eventName
+      })
+      if (found) {
+        callback(null, found.TopicArn)
+      } else if (results.NextToken) {
+        __scanner({ NextToken: results.NextToken }, callback)
+      } else {
+        callback(Error(`topic ${eventName} not found`))
+      }
+    })
+  })({}, callback)
 }
