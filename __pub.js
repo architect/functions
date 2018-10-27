@@ -1,19 +1,19 @@
 /* eslint global-require: "off" */
 let http = require('http')
 let aws = require('aws-sdk')
-let sns = new aws.SNS
 let ledger = {}
 
 // priv publish
 // blindly publishes to sns topic json stringified record
 // throws if fails so lambda errors are noticible
-function __publish(arn, payload, callback) {
+function __publish (arn, payload, callback) {
   console.log('Publishing SNS', JSON.stringify({arn, payload}))
+  let sns = new aws.SNS()
   sns.publish({
     TopicArn: arn,
     Message: JSON.stringify(payload)
   },
-  function _published(err, result) {
+  function _published (err, result) {
     if (err) throw err
     callback(null, result)
   })
@@ -41,12 +41,10 @@ function __publish(arn, payload, callback) {
  *     payload: {hello: 'world2'},
  *   }, console.log)
  */
-module.exports = function _publish(params, callback) {
-  if (!params.name)
-    throw ReferenceError('missing params.name')
+module.exports = function _publish (params, callback) {
+  if (!params.name) { throw ReferenceError('missing params.name') }
 
-  if (!params.payload)
-    throw ReferenceError('missing params.payload')
+  if (!params.payload) { throw ReferenceError('missing params.payload') }
 
   let promise
   if (!params.callback) {
@@ -63,41 +61,49 @@ module.exports = function _publish(params, callback) {
   return promise
 }
 
-function _live(params, callback) {
-  let {name, payload} = params
+function _live (params, callback) {
+  let { name, payload } = params
   let arn = ledger.hasOwnProperty(name)
-
   if (arn) {
     __publish(ledger[name], payload, callback)
-  }
-  else {
+  } else {
     let override = params.hasOwnProperty('app')
-    let eventName = `${override? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
-    // lookup the event sns topic arn
-    sns.listTopics({}, function _listTopics(err, results) {
+    let eventName = `${override ? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
+    _scan({ eventName }, function _scan (err, found) {
       if (err) throw err
-      let found = results.Topics.find(t=> {
-        let bits =  t.TopicArn.split(':')
-        let it = bits[bits.length - 1]
-        return it === eventName
-      })
-      if (found) {
-        // cache the arn here
-        ledger[name] = found.TopicArn
-        // and continue
-        __publish(ledger[name], payload, callback)
-      }
-      else {
-        throw Error(`topic ${eventName} not found`) // fail loudly if we can't find it
-      }
+      // cache the arn here
+      ledger[name] = found
+      // and continue
+      __publish(ledger[name], payload, callback)
     })
   }
 }
 
-function _local(params, callback) {
+function _scan ({ eventName }, callback) {
+  let sns = new aws.SNS()
+  ;(function __scanner (params = {}, callback) {
+    sns.listTopics(params, function _listTopics (err, results) {
+      if (err) throw err
+      let found = results.Topics.find(t => {
+        let bits = t.TopicArn.split(':')
+        let it = bits[bits.length - 1]
+        return it === eventName
+      })
+      if (found) {
+        callback(null, found.TopicArn)
+      } else if (results.NextToken) {
+        __scanner({ NextToken: results.NextToken }, callback)
+      } else {
+        callback(Error(`topic ${eventName} not found`))
+      }
+    })
+  })({}, callback)
+}
+
+function _local (params, callback) {
   let req = http.request({
     method: 'POST',
-    port: 3334,
+    port: 3334
   })
   req.write(JSON.stringify(params))
   req.end()
