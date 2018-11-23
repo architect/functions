@@ -1,4 +1,5 @@
-test
+.travis.yml
 _mock
 contributing.md
 src/.eslintrc.js
+test

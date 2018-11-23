@@ -49,7 +49,7 @@ module.exports = function _publish(params, callback) {
     throw ReferenceError('missing params.payload')
 
   let promise
-  if (!params.callback) {
+  if (!callback) {
     promise = new Promise((resolve, reject) => {
       callback = function errback (err, result) {
         err ? reject(err) : resolve(result)
