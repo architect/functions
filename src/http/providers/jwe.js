@@ -15,7 +15,8 @@ let jwe = {
     return jwt.generate(alg, enc, payload, key)
   },
   parse(token) {
-    return jwt.parse(token).verify(key)
+    const WEEK = 604800
+    return jwt.parse(token).setTokenLifetime(WEEK).verify(key)
   }
 }
 
@@ -26,7 +27,7 @@ function read(req) {
   let hasCookie = req.headers && req.headers.Cookie
   let jar = cookie.parse(hasCookie? req.headers.Cookie : '')
   let token = jwe.parse(jar._idx)
-  return token.payload || {}
+  return token.valid? token.payload || {}
 }
 
 /**
