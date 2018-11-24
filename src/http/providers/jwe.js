@@ -27,7 +27,7 @@ function read(req) {
   let hasCookie = req.headers && req.headers.Cookie
   let jar = cookie.parse(hasCookie? req.headers.Cookie : '')
   let token = jwe.parse(jar._idx)
-  return token.valid? token.payload || {}
+  return token.valid? token.payload : {}
 }
 
 /**
