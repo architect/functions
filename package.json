@@ -5,7 +5,7 @@
   "main": "index",
   "scripts": {
     "lint": "eslint ./src --fix",
-    "test": "AWS_REGION=us-west-2 AWS_PROFILE=jsf NODE_ENV=testing SESSION_TABLE_NAME=arc-sessions tape test/*-test.js | tap-spec",
+    "test": "AWS_REGION=us-west-2 NODE_ENV=testing SESSION_TABLE_NAME=arc-sessions tape test/*-test.js | tap-spec",
     "t": "AWS_REGION=us-west-2 AWS_PROFILE=jsf NODE_ENV=testing SESSION_TABLE_NAME=arc-sessions tape test/02-* | tap-spec"
   },
   "author": "Brian LeRoux <b@brian.io>",
