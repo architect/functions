@@ -16,51 +16,67 @@ let aws = require('aws-sdk')
  *
  */
 module.exports = function _publish(params, callback) {
-
   // ensure required input
   if (!params.name)
     throw ReferenceError('missing params.name')
   if (!params.payload)
     throw ReferenceError('missing params.payload')
 
-  // queue name normalized with appname and env
-  let name = `${process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${params.name}`
-  let payload = params.payload
+  let promise
+  if (!callback) {
+    promise = new Promise((resolve, reject) => {
+      callback = (err, result) => err ? reject(err) : resolve(result)
+    })
+  }
 
   // check if we're running locally
   let local = process.env.NODE_ENV === 'testing' && !process.env.hasOwnProperty('ARC_LOCAL')
   if (local) {
+    _local(params, callback)
+  } else {
+    _live(params, callback)
+  }
+  return promise
+}
 
-    // if so send the mock request
-    let req = http.request({
-      method: 'POST',
-      port: 3334,
-    })
-    req.write(JSON.stringify(params))
-    req.end()
-    callback()
-  }
-  else {
-    // otherwise attempt to sqs.sendMessage
-    let sqs = new aws.SQS
-    waterfall([
-      function reads(callback) {
-        sqs.getQueueUrl({
-          QueueName: name,
-        }, callback)
-      },
-      function  publishes(result, callback) {
-        let QueueUrl = result.QueueUrl
-        console.log('sqs.sendMessage', JSON.stringify({QueueUrl, payload}))
-        sqs.sendMessage({
-          QueueUrl,
-          MessageBody: JSON.stringify(payload)
-        }, callback)
-      }
-    ],
-    function _published(err, result) {
-      if (err) throw err
-      callback(null, result)
-    })
-  }
+function _local ({name, payload}, callback) {
+  // send a fake event to the local loopback service
+  let lambda = 'queues/' + name
+  let event = {Records:[{body: JSON.stringify(payload)}]}
+  let req = http.request({method: 'POST', port: 3334})
+  req.write(JSON.stringify({lambda, event}))
+  req.end()
+  req.on('response', function (res) {
+    if (res.statusCode == 200) {
+      callback()
+    } else {
+      let chunks = []
+      res.on('data', chunk => chunks.push(chunk))
+      res.on('end', () => callback(new Error(Buffer.concat(chunks).toString())))
+    }
+  })
+}
+
+function _live({name, payload}, callback) {
+  let sqs = new aws.SQS
+  waterfall([
+    function reads(callback) {
+      sqs.getQueueUrl({
+        // queue name normalized with appname and env
+        QueueName: `${process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`,
+      }, callback)
+    },
+    function  publishes(result, callback) {
+      let QueueUrl = result.QueueUrl
+      console.log('sqs.sendMessage', JSON.stringify({QueueUrl, payload}))
+      sqs.sendMessage({
+        QueueUrl,
+        MessageBody: JSON.stringify(payload)
+      }, callback)
+    }
+  ],
+  function _published(err, result) {
+    if (err) throw err
+    callback(null, result)
+  })
 }

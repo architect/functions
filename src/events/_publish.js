@@ -84,13 +84,24 @@ function _live(params, callback) {
 }
 
 function _local(params, callback) {
+  let lambda = 'events/' + params.name
+  let event = {Records:[{Sns:{Message:JSON.stringify(params.payload)}}]}; // this is fine
   let req = http.request({
     method: 'POST',
     port: 3334,
   })
-  req.write(JSON.stringify(params))
+  req.write(JSON.stringify({lambda, event}))
   req.end()
-  callback()
+  req.on('response', res => {
+    if (res.statusCode === 200) {
+      callback()
+    } else {
+      let chunks = []
+      res.on('data', chunk => chunks.push(chunk))
+      res.on('error', callback)
+      res.on('end', () => callback(new Error(Buffer.concat(chunks).toString())))
+    }
+  })
 }
 
 function _scan({eventName}, callback) {
