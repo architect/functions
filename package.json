@@ -9,6 +9,10 @@
     "t": "AWS_REGION=us-west-2 AWS_PROFILE=jsf NODE_ENV=testing SESSION_TABLE_NAME=arc-sessions tape test/02-* | tap-spec"
   },
   "author": "Brian LeRoux <b@brian.io>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arc-repos/arc-functions"
+  },
   "license": "Apache-2.0",
   "keywords": [
     "aws",
