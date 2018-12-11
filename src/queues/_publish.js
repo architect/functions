@@ -39,12 +39,12 @@ module.exports = function _publish(params, callback) {
   return promise
 }
 
-function _local ({name, payload}, callback) {
+function _local ({name, payload, delay}, callback) {
   // send a fake event to the local loopback service
   let lambda = 'queues/' + name
   let event = {Records:[{body: JSON.stringify(payload)}]}
   let req = http.request({method: 'POST', port: 3334})
-  req.write(JSON.stringify({lambda, event}))
+  req.write(JSON.stringify({lambda, event, delay}))
   req.end()
   req.on('response', function (res) {
     if (res.statusCode == 200) {
@@ -57,7 +57,7 @@ function _local ({name, payload}, callback) {
   })
 }
 
-function _live({name, payload}, callback) {
+function _live({name, payload, delay}, callback) {
   let sqs = new aws.SQS
   waterfall([
     function reads(callback) {
@@ -71,6 +71,7 @@ function _live({name, payload}, callback) {
       console.log('sqs.sendMessage', JSON.stringify({QueueUrl, payload}))
       sqs.sendMessage({
         QueueUrl,
+        DelaySeconds: delay,
         MessageBody: JSON.stringify(payload)
       }, callback)
     }
