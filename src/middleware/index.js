@@ -26,10 +26,6 @@ function addMiddleware(...steps) {
     // Finished combined function!
     return response
   }
-  var stepNames = steps.map(function(step) {
-    return step.name
-  })
-  // Combined functions ${stepNames}
   return combined
 }
 
