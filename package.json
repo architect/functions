@@ -47,5 +47,14 @@
     "run-waterfall": "^1.1.6",
     "serialize-error": "^2.1.0",
     "uid-safe": "^2.1.5"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "useTabs": false,
+    "trailingComma:": "es5",
+    "bracketSpacing": false,
+    "printWidth": 1000
   }
 }
