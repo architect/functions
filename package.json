@@ -55,6 +55,7 @@
     "useTabs": false,
     "trailingComma:": "es5",
     "bracketSpacing": false,
+    "endOfLine": "lf",
     "printWidth": 1000
   }
 }
