@@ -93,11 +93,10 @@ function response(req, callback, params) {
   else if (params.text) {
     commands.type = 'text/plain; charset=utf8'
     commands.body = params.text
-
   }
   else if (params.json) {
     commands.type = 'application/json; charset=utf8'
-    commands.body = params.json
+    commands.body = JSON.stringify(params.json)
   }
   else if (params.xml) {
     commands.type = 'application/xml; charset=utf8'
