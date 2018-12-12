@@ -24,6 +24,9 @@ function addMiddleware(...steps) {
       }
     }
     // Finished combined function!
+    if (!response) {
+      throw new Error(`Finished all middleware steps without returning a response.`)
+    }
     return response
   }
   return combined
