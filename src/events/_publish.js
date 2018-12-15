@@ -87,6 +87,7 @@ function _local(params, callback) {
   let req = http.request({
     method: 'POST',
     port: 3334,
+    path: '/events',
   })
   req.write(JSON.stringify(params))
   req.end()
