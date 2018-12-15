@@ -8,7 +8,7 @@ var secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback
 module.exports = function _read(name, request, callback) {
 
   // adds request.session by cookie token lookup in dynamo
-  var jar = cookie.parse(request.headers && request.headers.Cookie? request.headers.Cookie || '': '')
+  var jar = cookie.parse(request.headers ? (request.headers.Cookie || request.headers.cookie || '') : '')
   var sesh = jar.hasOwnProperty('_idx')
   var valid = unsign(jar._idx || '', secret)
 
