@@ -2,6 +2,12 @@
   "name": "@architect/functions",
   "version": "1.10.5",
   "description": "architect run commands",
+  "homepage": "https://github.com/arc-repos/arc-functions",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/arc-repos/arc-functions.git"
+  },
+  "bugs": "https://github.com/arc-repos/arc-functions/issues",
   "main": "index",
   "scripts": {
     "lint": "eslint ./src --fix",
