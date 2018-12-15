@@ -27,6 +27,15 @@ module.exports = function _publish(params, callback) {
   let name = `${process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${params.name}`
   let payload = params.payload
 
+  let promise
+  if (!callback) {
+    promise = new Promise((resolve, reject) => {
+      callback = function errback (err, result) {
+        err ? reject(err) : resolve(result)
+      }
+    })
+  }
+
   // check if we're running locally
   let local = process.env.NODE_ENV === 'testing' && !process.env.hasOwnProperty('ARC_LOCAL')
   if (local) {
@@ -64,4 +73,5 @@ module.exports = function _publish(params, callback) {
       callback(null, result)
     })
   }
+  return promise
 }
