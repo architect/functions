@@ -1,11 +1,11 @@
 {
   "name": "@architect/functions",
-  "version": "1.10.5",
+  "version": "1.11.0",
   "description": "architect run commands",
   "homepage": "https://github.com/arc-repos/arc-functions",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/arc-repos/arc-functions.git"
+    "type": "git",
+    "url": "https://github.com/arc-repos/arc-functions"
   },
   "bugs": "https://github.com/arc-repos/arc-functions/issues",
   "main": "index",
@@ -15,10 +15,6 @@
     "t": "AWS_REGION=us-west-2 AWS_PROFILE=jsf NODE_ENV=testing SESSION_TABLE_NAME=arc-sessions tape test/02-* | tap-spec"
   },
   "author": "Brian LeRoux <b@brian.io>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/arc-repos/arc-functions"
-  },
   "license": "Apache-2.0",
   "keywords": [
     "aws",
