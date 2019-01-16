@@ -5,14 +5,14 @@ let arcFile = path.join(__dirname, '..', '..', '..', '..', 'shared', '.arc')
 let arc
 
 module.exports = function _static(assetPath) {
-  // only do this once
-  if (!arc) {
-    arc = parse(fs.readFileSync(arcFile).toString())
-  }
   // just passthru if we're not running in staging or production
   let runningLocally = process.env.NODE_ENV === 'testing'
   if (runningLocally) {
     return assetPath
+  }
+  // only do this once
+  if (!arc) {
+    arc = parse(fs.readFileSync(arcFile).toString())
   }
   // S3 is the oldest AWS service, and has a bit of cruft
   // if region is us-east-1, S3 paths are: http://s3.amazonaws.com/bucket
