@@ -1,7 +1,7 @@
 let fs = require('fs')
 let path = require('path')
 let parse = require('@architect/parser')
-let arcFile = path.join(__dirname, '..', '..', '..', '..', 'shared', '.arc')
+let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
 let arc
 
 module.exports = function _static(assetPath) {
