@@ -44,7 +44,6 @@ module.exports = function WS(event) {
         req.on('close', ()=> callback())
         req.write(body)
         req.end()
-        return promise
       }
       else {
         let apiVersion = '2018-11-29'
@@ -55,14 +54,14 @@ module.exports = function WS(event) {
         let gateway = new aws.ApiGatewayManagementApi({apiVersion, endpoint})
         gateway.postToConnection({
           ConnectionId: id,
-          Data: payload
+          Data: JSON.stringify(payload)
         },
         function postToConnection(err) {
           if (err) callback(err)
           else callback()
         })
-        return promise
       }
+      return promise
     }
   }
 }
