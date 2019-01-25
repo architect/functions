@@ -64,10 +64,10 @@ function write(params, callback) {
       callback(err)
     }
     else {
-      let maxAge = Date.now() + 7.884e+11
+      let maxAge = 7.884e+8
       let result = cookie.serialize('_idx', sign(params._idx, secret), {
         maxAge,
-        expires: new Date(maxAge),
+        expires: new Date(Date.now() + maxAge * 1000),
         secure: true,
         httpOnly: true,
         path: '/',

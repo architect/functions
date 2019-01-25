@@ -36,10 +36,10 @@ function read(req) {
 function write(payload) {
   let key = '_idx'
   let val = jwe.create(payload)
-  let maxAge = Date.now() + 7.884e+11
+  let maxAge = 7.884e+8
   return cookie.serialize(key, val, {
     maxAge,
-    expires: new Date(maxAge),
+    expires: new Date(Date.now() + maxAge * 1000),
     secure: true,
     httpOnly: true,
     path: '/',

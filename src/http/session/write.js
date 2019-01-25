@@ -14,10 +14,10 @@ module.exports = function _write(name, params, callback) {
       console.log(err)
       throw err
     }
-    var maxAge = Date.now() + 7.884e+11
+    var maxAge = 7.884e+8
     cmds.cookie = cookie.serialize('_idx', sign(request._idx, secret), {
       maxAge,
-      expires: new Date(maxAge),
+      expires: new Date(Date.now() + maxAge * 1000),
       secure: true,
       httpOnly: true,
       path: '/',
