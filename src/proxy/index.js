@@ -24,6 +24,6 @@
 let _public = require('./public')
 let read = require('./read')
 
-exports.handler = {public:_public, read}
+module.exports = {public:_public, read}
 
 
