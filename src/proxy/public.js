@@ -7,7 +7,7 @@ let headers = {
   'Content-Type': 'text/html; charset=utf8'
 }
 
-module.exports = function proxyPublic({spa}) {
+module.exports = function proxyPublic({spa}={spa:false}) {
   return async function proxy(req) {
     try {
       let Key
@@ -16,7 +16,7 @@ module.exports = function proxyPublic({spa}) {
         Key = isFolder? 'index.html' : req.path.substring(1)
       }
       else {
-        // Lookup the Key w smarts for index.html (this needs improvement)
+        // return index.html for root…otherwise the path:
         Key = req.path === '/'? 'index.html' : req.path.substring(1)
         // add index.html to any empty folder path
         if (Key != 'index.html' && req.path.lastIndexOf('/') === req.path.length - 1) {
