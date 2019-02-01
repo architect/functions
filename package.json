@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "1.13.5",
+  "version": "1.13.6",
   "description": "architect run commands",
   "homepage": "https://github.com/arc-repos/arc-functions",
   "repository": {
