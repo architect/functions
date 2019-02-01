@@ -1,6 +1,19 @@
 # Architect Functions changelog
 
 ---
+## [1.13.0] - 2018-01-31
+
+### Added
+
+- New `arc.proxy` wip proxy get-index to /public when running locally and s3 when running on aws 
+
+```javascript
+// exmaple usage in a ws-connected lambda
+let arc = require('@architect/functions')
+
+exports.handler = arc.proxy.public() 
+```
+---
 ## [1.12.0] - 2018-01-16
 
 ### Added
