@@ -1,5 +1,8 @@
 let read = require('./read')
 
+/**
+ * returns an HTTP handler that proxies calls to S3
+ */
 module.exports = function proxyPublic({spa}={spa:false}) {
   return async function proxy(req) {
     let Key

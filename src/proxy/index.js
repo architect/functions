@@ -6,24 +6,18 @@
  * basic usage:
  *
  *  let arc = require('@architect/functions')
- *
  *  exports.handler = arc.proxy.public({spa:true})
- *
  *
  * with more control:
  *
  *  let arc = require('@architect/functions')
- *
  *  exports.handler = async function http(req) {
- *    let {body, type} = await arc.proxy.read(req)
+ *    let {headers, body} = await arc.proxy.read(req)
  *    // possibly mutate body here..
- *    return {type, body}
+ *    return {headers, body}
  *  }
- *
  */
 let _public = require('./public')
 let read = require('./read')
 
 module.exports = {public:_public, read}
-
-

@@ -11,6 +11,10 @@ let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '
 let cache = {}
 let arc
 
+/**
+ * read a file from S3
+ * returns {headers:{'content-type':type}, body}
+ */
 module.exports = async function read(Key) {
   let env = process.env.NODE_ENV
   let type = mime.contentType(path.extname(Key))
@@ -40,10 +44,10 @@ module.exports = async function read(Key) {
   catch(e) {
     // todo: catch 404 and look for /404.html to return
     let err = `
-      <h1>${err.name}</h1>
-      <pre>${err.code}</pre>
-      <p>${err.message}</p>
-      <pre>${err.stack}</pre>
+      <h1>${e.name}</h1>
+      <pre>${e.code}</pre>
+      <p>${e.message}</p>
+      <pre>${e.stack}</pre>
     `
     return {headers:{'content-type':'text/html'}, body:err}
   }
