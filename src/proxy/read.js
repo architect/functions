@@ -7,7 +7,8 @@ let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '
 let cache = {}
 let arc
 
-module.exports = async function read({Key}) {
+module.exports = async function read(assetPath) {
+  let Key = assetPath
   let s3 = new aws.S3
   let env = process.env.NODE_ENV
   if (env === 'testing') {
