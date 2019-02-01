@@ -30,8 +30,11 @@ module.exports = async function read(Key) {
       // Lookup the blob
       if (!cache[Key]) {
         // Lookup the Bucket by reading node_modules/@architect/shared/.arc
-        if (!arc)// only do this once
-          arc = parse(readFile(arcFile, {encoding}))
+        if (!arc) {
+          // only do this once
+          let raw = await readFile(arcFile, {encoding})
+          arc = parse(raw)
+        }
         // read the file
         let Bucket = getBucket(arc.static)
         let s3 = new aws.S3
