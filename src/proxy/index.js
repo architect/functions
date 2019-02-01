@@ -7,7 +7,7 @@
  *
  *  let arc = require('@architect/functions')
  *
- *  exports.handler = arc.proxy.public()
+ *  exports.handler = arc.proxy.public({spa:true})
  *
  *
  * with more control:
@@ -15,7 +15,7 @@
  *  let arc = require('@architect/functions')
  *
  *  exports.handler = async function http(req) {
- *    let body = await arc.proxy.read(req)
+ *    let {body, type} = await arc.proxy.read(req)
  *    // possibly mutate body here..
  *    return {type, body}
  *  }
