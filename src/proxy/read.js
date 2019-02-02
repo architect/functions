@@ -13,16 +13,21 @@ let arc
 
 /**
  * read a file from S3
- * returns {headers:{'content-type':type}, body}
+ * returns {headers:{'content-type':type}, body, status}
  */
 module.exports = async function read(Key) {
+
   let env = process.env.NODE_ENV
-  let type = mime.contentType(path.extname(Key))
+
   try {
+    // gets the contenttype from the Key
+    let type = mime.contentType(path.extname(Key))
     if (env === 'testing') {
       // Lookup the blob in ./public
       // assuming we're running from a lambda in src/**/*
       let filePath = path.join(process.cwd(), '..', '..', '..', 'public', Key)
+      if (!fs.existsSync(filePath))
+        throw Error('notfound ' + Key)
       let body = await readFile(filePath, {encoding})
       cache[Key] = {headers:{'content-type':type}, body}
     }
@@ -39,20 +44,51 @@ module.exports = async function read(Key) {
         let Bucket = getBucket(arc.static)
         let s3 = new aws.S3
         let result = await s3.getObject({Bucket, Key}).promise()
-        cache[Key] = {headers:{'content-type':type}, body: result.Body.toString()}
+        cache[Key] = {headers: {'content-type':type}, body: result.Body.toString()}
       }
     }
     return cache[Key]
   }
   catch(e) {
-    // todo: catch 404 and look for /404.html to return
+    // render the error to html
+    let headers = {'content-type':'text/html; charset=utf8'}
+
+    if (env === 'testing') {
+      //look for public/404.html
+      let http404 = path.join(process.cwd(), '..', '..', '..', 'public', '404.html')
+      let exists = fs.existsSync(http404)
+      if (exists) {
+        let body = await readFile(http404, {encoding})
+        return {headers, status:404, body}
+      }
+    }
+
+    if (env === 'staging' || env === 'production') {
+      //look for 404.html on s3
+      try {
+        if (!arc) {
+          let raw = await readFile(arcFile, {encoding})
+          arc = parse(raw)
+        }
+        let Bucket = getBucket(arc.static)
+        let s3 = new aws.S3
+        let result = await s3.getObject({Bucket, Key:'404.html'}).promise()
+        let body = result.Body.toString()
+        return {headers, status:404, body}
+      }
+      catch(er) {
+        // noop if the 404 isn't there
+      }
+    }
+
+    // final err fallback
     let err = `
       <h1>${e.name}</h1>
       <pre>${e.code}</pre>
       <p>${e.message}</p>
       <pre>${e.stack}</pre>
     `
-    return {headers:{'content-type':'text/html'}, body:err}
+    return {headers, body:err}
   }
 }
 
