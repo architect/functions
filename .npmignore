@@ -1,6 +1,7 @@
+.arc
+.eslintrc.js
 .travis.yml
 _mock
+changelog.md
 contributing.md
-src/.eslintrc.js
 test
-.arc

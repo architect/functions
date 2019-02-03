@@ -12,7 +12,7 @@
   "scripts": {
     "lint": "eslint ./src --fix",
     "test": "npm run lint && AWS_REGION=us-west-2 NODE_ENV=testing tape test/*-test.js | tap-spec && npm run clean",
-    "clean": "rm -rf ./src/http/get-index/node_modules/@architect/shared"
+    "clean": "rm -rf ./src/http/get-index"
   },
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",

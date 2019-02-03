@@ -1,5 +1,16 @@
 # Architect Functions changelog
 
+## [2.0.0] - 2019-02-03
+
+### Removed
+
+- arc.js
+- arc.css
+- arc.html
+- arc.text
+- arc.xml
+- arc.json
+
 ---
 ## [1.13.0] - 2018-01-31
 
