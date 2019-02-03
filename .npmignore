@@ -3,3 +3,4 @@ _mock
 contributing.md
 src/.eslintrc.js
 test
+.arc
