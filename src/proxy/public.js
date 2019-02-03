@@ -20,9 +20,7 @@ module.exports = function proxyPublic({spa}={spa:false}) {
         Key = Key + 'index.html'
       }
     }
-    // read the blob
-    let {headers, body} = await read(Key)
     // return the blob
-    return {headers, body}
+    return await read(Key)
   }
 }
