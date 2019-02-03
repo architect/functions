@@ -1,5 +1,5 @@
 var db = require('./_get-dynamo-doc-instance')
-var create = require('./_create')
+var create = require('./create')
 
 module.exports = function _find(name, _idx, callback) {
   db.get({

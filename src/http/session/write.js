@@ -1,28 +1,10 @@
-var cookie = require('cookie')
-var sign = require('cookie-signature').sign
-var secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
-var update = require('./_update')
+let jwe = require('./providers/jwe')
+let ddb = require('./providers/ddb')
 
-module.exports = function _write(name, params, callback) {
-  var {request, cmds} = params
-  var sesh = Object.assign(cmds.session || request.session, {
-    _idx: request._idx,
-    _secret: request._secret
-  })
-  update(name, sesh, function _update(err) {
-    if (err) {
-      console.log(err)
-      throw err
-    }
-    var maxAge = 7.884e+8
-    cmds.cookie = cookie.serialize('_idx', sign(request._idx, secret), {
-      maxAge,
-      expires: new Date(Date.now() + maxAge * 1000),
-      secure: true,
-      httpOnly: true,
-      path: '/',
-      sameSite: 'lax',
-    })
-    callback(null, cmds)
-  })
+module.exports = function write(params, callback) {
+
+  if (process.env.SESSION_TABLE_NAME === 'jwe')
+    return jwe.write(params)
+
+  return ddb.write(params, callback)
 }

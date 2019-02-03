@@ -2,9 +2,9 @@ let cookie = require('cookie')
 let unsign = require('cookie-signature').unsign
 let sign = require('cookie-signature').sign
 
-let find = require('../session/_find')
-let create = require('../session/_create')
-let update = require('../session/_update')
+let find = require('./find')
+let create = require('./create')
+let update = require('./update')
 
 module.exports = {read, write}
 
@@ -79,4 +79,3 @@ function write(params, callback) {
 
   return promise
 }
-
