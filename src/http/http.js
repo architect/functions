@@ -96,8 +96,11 @@ function response(req, callback, params) {
     commands.type = 'application/xml; charset=utf8'
     commands.body = params.xml
   }
+  // fixes for proxy+ greedy catchall at root route
+  commands.headers = {'content-type':type}
+  commands.statusCode = commands.status
+  // tag the new session
   if (commands.session) {
-    // tag the new session
     let session = commands.session
     session._idx = req.session._idx
     session._secret = req.session._secret
