@@ -97,8 +97,8 @@ function response(req, callback, params) {
     commands.body = params.xml
   }
   // fixes for proxy+ greedy catchall at root route
-  commands.headers = {'content-type':type}
-  commands.statusCode = commands.status
+  commands.headers = {'content-type':commands.type}
+  commands.statusCode = commands.status || commands.code || commands.statusCode
   // tag the new session
   if (commands.session) {
     let session = commands.session
