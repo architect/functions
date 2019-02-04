@@ -54,66 +54,66 @@ module.exports = function http(...fns) {
  * - status or code
  */
 function response(req, callback, params) {
-  let commands = params
+  let res = params
   // default content type and body
-  commands.type = 'application/json; charset=utf8'
-  commands.body = params.body || '\n'
+  res.type = 'application/json; charset=utf8'
+  res.body = params.body || '\n'
   // shorthand overrides
   if (params instanceof Error) {
-    commands.status = params.status || params.code || 500
-    commands.type = 'text/html; charset=utf8'
-    commands.body = `
-      <h1>${params.name} ${commands.status}</h1>
+    res.status = params.status || params.code || 500
+    res.type = 'text/html; charset=utf8'
+    res.body = `
+      <h1>${params.name} ${res.status}</h1>
       <h3>${params.message}</h3>
       <pre>${params.stack}<pre>
     `
   }
   if (params.location) {
     // auto add 302 to status
-    commands.status = 302
+    res.status = 302
   }
   if (params.html) {
-    commands.type = 'text/html; charset=utf8'
-    commands.body = params.html
+    res.type = 'text/html; charset=utf8'
+    res.body = params.html
   }
   else if (params.css) {
-    commands.type = 'text/css; charset=utf8'
-    commands.body = params.css
+    res.type = 'text/css; charset=utf8'
+    res.body = params.css
   }
   else if (params.js) {
-    commands.type = 'text/javascript; charset=utf8'
-    commands.body = params.js
+    res.type = 'text/javascript; charset=utf8'
+    res.body = params.js
   }
   else if (params.text) {
-    commands.type = 'text/plain; charset=utf8'
-    commands.body = params.text
+    res.type = 'text/plain; charset=utf8'
+    res.body = params.text
   }
   else if (params.json) {
-    commands.type = 'application/json; charset=utf8'
-    commands.body = JSON.stringify(params.json)
+    res.type = 'application/json; charset=utf8'
+    res.body = JSON.stringify(params.json)
   }
   else if (params.xml) {
-    commands.type = 'application/xml; charset=utf8'
-    commands.body = params.xml
+    res.type = 'application/xml; charset=utf8'
+    res.body = params.xml
   }
   // fixes for proxy+ greedy catchall at root route
-  commands.headers = {'content-type':commands.type}
-  commands.statusCode = commands.status || commands.code || commands.statusCode
+  res.headers = {'content-type':res.type}
+  res.statusCode = res.status || res.code || res.statusCode
   // tag the new session
-  if (commands.session) {
-    let session = commands.session
+  if (res.session) {
+    let session = res.session
     session._idx = req.session._idx
     session._secret = req.session._secret
     session._ttl = req.session._ttl
     // save the session
     write(session, function _write(err, cookie) {
       if (err) throw err
-      let merged = Object.assign({}, commands, {cookie})
+      let merged = Object.assign({}, res, {cookie})
       callback(null, merged)
     })
   }
   else {
     // just passthru
-    callback(null, commands)
+    callback(null, res)
   }
 }
