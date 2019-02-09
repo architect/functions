@@ -2,8 +2,16 @@ let read = require('./read')
 
 /**
  * returns an HTTP handler that proxies calls to S3
+ *
+ * arc.proxy.public({
+ *  spa: true|false,
+ *  plugins: {
+ *    jsx: ['@architect/proxy-plugin-jsx', '@architect/proxy-plugin-mjs-urls'],
+      mjs: ['@architect/proxy-plugin-mjs-urls'],
+ *  }
+ * })
  */
-module.exports = function proxyPublic({spa}={spa:false}) {
+module.exports = function proxyPublic({spa, plugins}={spa:false, plugins:{}}) {
   return async function proxy(req) {
     let Key
     if (spa) {
@@ -21,6 +29,6 @@ module.exports = function proxyPublic({spa}={spa:false}) {
       }
     }
     // return the blob
-    return await read(Key)
+    return await read(Key, plugins)
   }
 }

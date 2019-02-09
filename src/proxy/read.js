@@ -13,9 +13,12 @@ let arc
 
 /**
  * read a file from S3
- * returns {headers:{'content-type':type}, body, status}
+ *
+ * @param Key - the Key for the S3 Bucket
+ * @param plugins - plugins for processing the key
+ * @returns - a response: {headers, body, status}
  */
-module.exports = async function read(Key) {
+module.exports = async function read(Key, plugins={}) {
 
   let env = process.env.NODE_ENV
 
@@ -26,10 +29,27 @@ module.exports = async function read(Key) {
       // Lookup the blob in ./public
       // assuming we're running from a lambda in src/**/*
       let filePath = path.join(process.cwd(), '..', '..', '..', 'public', Key)
-      if (!fs.existsSync(filePath))
-        throw Error('notfound ' + Key)
+      if (!fs.existsSync(filePath)) {
+        return {type, status:404, body:`${filePath} not found`}
+      }
       let body = await readFile(filePath, {encoding})
-      cache[Key] = {headers:{'content-type':type}, body}
+      // if any plugins are defined for this filetype run them
+      let defaults = {
+        headers: {'content-type': type},
+        body
+      }
+      let filetype = Key.split('.').pop()
+      if (plugins[filetype]) {
+        cache[Key] = plugins[filetype].reduce(run, defaults)
+        function run(response, plugin) {
+          /* eslint global-require: 'off' */
+          let transformer = require(plugin)
+          return transformer(Key, response)
+        }
+      }
+      else {
+        cache[Key] = defaults
+      }
     }
     else {
       // Lookup the blob
@@ -40,11 +60,37 @@ module.exports = async function read(Key) {
           let raw = await readFile(arcFile, {encoding})
           arc = parse(raw)
         }
+
         // read the file
         let Bucket = getBucket(arc.static)
         let s3 = new aws.S3
-        let result = await s3.getObject({Bucket, Key}).promise()
-        cache[Key] = {headers: {'content-type':type}, body: result.Body.toString()}
+
+        // if the Key starts with staging/ or production/ strip it off..
+        let result = await s3.getObject({
+          Bucket,
+          Key: Key.replace('staging/', '').replace('production/')
+        }).promise()
+
+        // get default response from S3
+        let defaults = {
+          headers: {'content-type': type},
+          body: result.Body.toString()
+        }
+
+        // if any plugins are defined for this filetype run them
+        let filetype = Key.split('.').pop()
+        if (plugins[filetype]) {
+          cache[Key] = plugins[filetype].reduce(run, defaults)
+          function run(response, plugin) {
+            /* eslint global-require: 'off' */
+            let transformer = require(plugin)
+            return transformer(Key, response)
+          }
+        }
+        else {
+          // if not just cache the defaults response
+          cache[Key] = defaults
+        }
       }
     }
     return cache[Key]
