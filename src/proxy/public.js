@@ -1,3 +1,4 @@
+let path = require('path')
 let read = require('./read')
 /**
  * arc.proxy.public
@@ -34,6 +35,29 @@ module.exports = function proxyPublic(config) {
     let aliasing = config.alias && config.alias.hasOwnProperty(req.path)
     if (aliasing) {
       Key = config.alias[req.path].substring(1) // remove leading /
+    }
+
+    // allow for ssr escape hatch
+    let rendering = config.ssr && Key === 'index.html'
+    if (rendering) {
+      // abdicating to the ssr
+      let ssr
+      if (typeof config.ssr === 'string') {
+        /* eslint global-require: 'off' */
+        let local = config.ssr.startsWith('.')
+        let mod = local? path.join(process.cwd(), config.ssr) : config.ssr
+        ssr = require(mod)
+      }
+      if (typeof config.ssr === 'function')
+        ssr = config.ssr
+      if (!ssr)
+        throw ReferenceError('config.ssr must be a valid module path or a function')
+      // run the ssr function
+      let result = await ssr(req, config)
+      // only return if the result has headers and body
+      if (result.headers && result.body)
+        return result
+      // this allows ssr to opt out of some urls
     }
 
     // return the blob
