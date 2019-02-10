@@ -5,6 +5,7 @@ let read = require('./read')
  *
  * @param config - object, for configuration
  * @param config.spa - boolean, forces index.html no matter the folder depth
+ * @param config.srr - path string for module to load or function to override `/index.html`
  * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
  * @param config.alias - object, map of root rel urls to map to fully qualified root rel urls
  *
