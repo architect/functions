@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "architect run commands",
   "homepage": "https://github.com/arc-repos/arc-functions",
   "repository": {
@@ -10,7 +10,7 @@
   "bugs": "https://github.com/arc-repos/arc-functions/issues",
   "main": "index",
   "scripts": {
-    "t":"tape test/proxy/*-test.js | tap-spec",
+    "t": "tape test/proxy/*-test.js | tap-spec",
     "lint": "eslint ./src --fix",
     "test": "npm run lint && AWS_REGION=us-west-2 NODE_ENV=testing tape test/*-test.js | tap-spec && npm run clean",
     "clean": "rm -rf ./src/http/get-index"
