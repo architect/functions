@@ -10,6 +10,7 @@
   "bugs": "https://github.com/arc-repos/arc-functions/issues",
   "main": "index",
   "scripts": {
+    "t":"tape test/proxy/*-test.js | tap-spec",
     "lint": "eslint ./src --fix",
     "test": "npm run lint && AWS_REGION=us-west-2 NODE_ENV=testing tape test/*-test.js | tap-spec && npm run clean",
     "clean": "rm -rf ./src/http/get-index"

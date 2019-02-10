@@ -1,22 +1,23 @@
 let read = require('./read')
-
 /**
- * returns an HTTP handler that proxies calls to S3
+ * arc.proxy.public
  *
- * arc.proxy.public({
- *  spa: true|false,
- *  plugins: {
- *    jsx: ['@architect/proxy-plugin-jsx', '@architect/proxy-plugin-mjs-urls'],
-      mjs: ['@architect/proxy-plugin-mjs-urls'],
- *  }
- * })
+ * @param config - object, for configuration
+ * @param config.spa - boolean, forces index.html no matter the folder depth
+ * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
+ * @param config.alias - object, map of root rel urls to map to fully qualified root rel urls
+ *
+ * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
-module.exports = function proxyPublic({spa, plugins}={spa:false, plugins:{}}) {
+module.exports = function proxyPublic(config) {
   return async function proxy(req) {
+
+    // first we need to determine the S3 Key
     let Key
-    if (spa) {
+
+    if (config.spa) {
       // if spa force index.html
-      let isFolder = req.path.indexOf('.') === -1
+      let isFolder = req.path.split('/').pop().indexOf('.') === -1
       Key = isFolder? 'index.html' : req.path.substring(1)
     }
     else {
@@ -28,7 +29,14 @@ module.exports = function proxyPublic({spa, plugins}={spa:false, plugins:{}}) {
         Key = Key + 'index.html'
       }
     }
+
+    // allow alias override of Key
+    let aliasing = config.alias && config.alias.hasOwnProperty(req.path)
+    if (aliasing) {
+      Key = config.alias[req.path].substring(1) // remove leading /
+    }
+
     // return the blob
-    return await read(Key, plugins)
+    return await read(Key, config)
   }
 }

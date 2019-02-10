@@ -2,13 +2,14 @@
  * returns static assets from s3
  * caches in memory as much as possible
  * you can speed things up farther by turning on bucket acceration in the console
+ * other features: transform plugins and alias routes
  *
  * basic usage:
  *
  *  let arc = require('@architect/functions')
  *  exports.handler = arc.proxy.public({spa:true})
  *
- * with more control:
+ * with full control:
  *
  *  let arc = require('@architect/functions')
  *  exports.handler = async function http(req) {
