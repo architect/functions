@@ -88,10 +88,12 @@ function _local(params, callback) {
     method: 'POST',
     port: 3334,
     path: '/events',
+  },
+  function done(res) {
+    res.on('end', ()=> callback())
   })
   req.write(JSON.stringify(params))
   req.end('\n')
-  callback()
 }
 
 function _scan({eventName}, callback) {
