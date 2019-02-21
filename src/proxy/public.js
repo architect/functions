@@ -33,13 +33,13 @@ module.exports = function proxyPublic(config) {
     }
 
     // allow alias override of Key
-    let aliasing = config.alias && config.alias.hasOwnProperty(req.path)
+    let aliasing = config && config.alias && config.alias.hasOwnProperty(req.path)
     if (aliasing) {
       Key = config.alias[req.path].substring(1) // remove leading /
     }
 
     // allow for ssr escape hatch
-    let rendering = config.ssr && Key === 'index.html'
+    let rendering = config && config.ssr && Key === 'index.html'
     if (rendering) {
       // abdicating to the ssr
       let ssr

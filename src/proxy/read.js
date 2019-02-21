@@ -85,7 +85,7 @@ module.exports = async function read(Key, config={}) {
       let exists = fs.existsSync(http404)
       if (exists) {
         let body = await readFile(http404, {encoding})
-        return {headers, status:404, body}
+        return {headers, statusCode:404, body}
       }
     }
 
@@ -100,7 +100,7 @@ module.exports = async function read(Key, config={}) {
         let s3 = new aws.S3
         let result = await s3.getObject({Bucket, Key:'404.html'}).promise()
         let body = result.Body.toString()
-        return {headers, status:404, body}
+        return {headers, statusCode:404, body}
       }
       catch(er) {
         // noop if the 404 isn't there
