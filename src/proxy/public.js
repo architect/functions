@@ -17,7 +17,7 @@ module.exports = function proxyPublic(config) {
     // first we need to determine the S3 Key
     let Key
 
-    if (config.spa) {
+    if (config && config.spa) {
       // if spa force index.html
       let isFolder = req.path.split('/').pop().indexOf('.') === -1
       Key = isFolder? 'index.html' : req.path.substring(1)
