@@ -32,7 +32,8 @@ module.exports = async function read(Key, config={}) {
       // assuming we're running from a lambda in src/**/*
       let filePath = path.join(process.cwd(), '..', '..', '..', 'public', Key)
       if (!fs.existsSync(filePath))
-        return {type, status:404, body:`${filePath} not found`}
+        throw ReferenceError(`${filePath} not found`)
+
       // read the file
       let body = await readFile(filePath, {encoding})
       cache[Key] = transform({
