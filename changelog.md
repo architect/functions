@@ -1,9 +1,10 @@
 # Architect Functions changelog
 
-## [2.0.1-2.0.6] - 2019-02-09
+## [2.0.1-2.0.11] - 2019-02-26
 
 ## Added
 
+- proxy allows for configurable s3 bucket and folder
 - proxied files now return `etag`
 - `arc.proxy.public` configuration:
   - `spa` - boolean, load `index.html` at any folder depth
