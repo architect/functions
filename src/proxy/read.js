@@ -48,21 +48,29 @@ module.exports = async function read(Key, config={}) {
 
     // Lookup the blob
     if (!cache[Key]) {
+
       // Lookup the Bucket by reading node_modules/@architect/shared/.arc
-      if (!arc) {
+      if (!arc && !config.bucket) {
         // only do this once
         let raw = await readFile(arcFile, {encoding})
         arc = parse(raw)
       }
 
-      // read the file
-      let Bucket = getBucket(arc.static)
-      let s3 = new aws.S3
+      // get the Bucket
+      let Bucket = config.bucket? config.bucket[process.env.NODE_ENV] : getBucket(arc.static)
 
-      // if the Key starts with staging/ or production/ strip it off..
+      // strip staging/ and production/ from req urls
+      if (Key.startsWith('staging/') || Key.startsWith('production/'))
+        Key = Key.replace('staging/', '').replace('production/')
+
+      // add path prefix
+      if (config.bucket && config.bucket.folder)
+        Key = `${config.bucket.folder}/${Key}`
+
+      let s3 = new aws.S3
       let result = await s3.getObject({
         Bucket,
-        Key: Key.replace('staging/', '').replace('production/')
+        Key,
       }).promise()
 
       cache[Key] = transform({
@@ -93,13 +101,14 @@ module.exports = async function read(Key, config={}) {
     if (env === 'staging' || env === 'production') {
       //look for 404.html on s3
       try {
-        if (!arc) {
+        if (!arc && !config.bucket) {
           let raw = await readFile(arcFile, {encoding})
           arc = parse(raw)
         }
-        let Bucket = getBucket(arc.static)
+        let Bucket = config.bucket? config.bucket[process.env.NODE_ENV] : getBucket(arc.static)
+        let Key = config.bucket && config.bucket.folder? `${config.bucket.folder}/404.html` : '404.html'
         let s3 = new aws.S3
-        let result = await s3.getObject({Bucket, Key:'404.html'}).promise()
+        let result = await s3.getObject({Bucket, Key}).promise()
         let body = result.Body.toString()
         return {headers, statusCode:404, body}
       }

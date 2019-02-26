@@ -8,6 +8,10 @@ let read = require('./read')
  * @param config.srr - path string for module to load or function to override `/index.html`
  * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
  * @param config.alias - object, map of root rel urls to map to fully qualified root rel urls
+ * @param config.bucket - object, {staging, production} override the s3 bucket names
+ * @param config.bucket.staging - object, {staging, production} override the s3 bucket names
+ * @param config.bucket.production - object, {staging, production} override the s3 bucket names
+ * @param config.bucket.folder - string, bucket folder
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
