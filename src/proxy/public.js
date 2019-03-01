@@ -12,6 +12,7 @@ let read = require('./read')
  * @param config.bucket.staging - object, {staging, production} override the s3 bucket names
  * @param config.bucket.production - object, {staging, production} override the s3 bucket names
  * @param config.bucket.folder - string, bucket folder
+ * @param config.maxAge - number, set a custom Cache-Control max-age header value
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */

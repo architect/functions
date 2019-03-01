@@ -9,7 +9,6 @@ let transform = require('./transform')
 let readFile = util.promisify(fs.readFile)
 let encoding = 'utf8'
 let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
-let cache = {}
 let arc
 let env = process.env.NODE_ENV
 
@@ -23,18 +22,32 @@ let env = process.env.NODE_ENV
 module.exports = async function read(Key, config={}, reqHeaders) {
 
   try {
+    // assign response below
+    let res
+
     // gets the default content-type from the Key
     let type = mime.contentType(path.extname(Key))
 
-    // defines whether we will allow remote caching
+    // set up headers defining remote caching
     let nopes = [
       'text/html',
       'application/json',
     ]
+    // TODO make this production-only
     let neverCache = nopes.some(n => type.startsWith(n)) //&& env === 'production'
 
-    // assign ETag later for client / CDN cache lookup
-    let ETag
+    // normalize if-none-match header to lower case; it differs between environments
+    let ifNoneMatch = reqHeaders && reqHeaders[Object.keys(reqHeaders).find(k => k.toLowerCase() === 'if-none-match')]
+
+    // default headers
+    let headers = {
+      'content-type': type,
+      'cache-control': 'no-store'
+    }
+    let maxAge = config.maxAge ? config.maxAge : 86400
+    if (!neverCache) {
+      headers['cache-control'] = 'max-age=' + maxAge
+    }
 
     if (env === 'testing') {
       // Lookup the blob in ./public
@@ -45,7 +58,7 @@ module.exports = async function read(Key, config={}, reqHeaders) {
 
       // read the file
       let body = await readFile(filePath, {encoding})
-      cache[Key] = transform({
+      res = transform({
         Key,
         config,
         defaults: {
@@ -55,46 +68,51 @@ module.exports = async function read(Key, config={}, reqHeaders) {
       })
     }
 
-    // Lookup the blob
-    if (!cache[Key]) {
+    // Lookup the Bucket by reading node_modules/@architect/shared/.arc
+    if (!arc && !config.bucket) {
+      // only do this once
+      let raw = await readFile(arcFile, {encoding})
+      arc = parse(raw)
+    }
 
-      // Lookup the Bucket by reading node_modules/@architect/shared/.arc
-      if (!arc && !config.bucket) {
-        // only do this once
-        let raw = await readFile(arcFile, {encoding})
-        arc = parse(raw)
-      }
+    // get the Bucket
+    let Bucket = config.bucket? config.bucket[env] : getBucket(arc.static)
 
-      // get the Bucket
-      let Bucket = config.bucket? config.bucket[env] : getBucket(arc.static)
+    // strip staging/ and production/ from req urls
+    if (Key.startsWith('staging/') || Key.startsWith('production/'))
+      Key = Key.replace('staging/', '').replace('production/')
 
-      // strip staging/ and production/ from req urls
-      if (Key.startsWith('staging/') || Key.startsWith('production/'))
-        Key = Key.replace('staging/', '').replace('production/')
+    // add path prefix
+    if (config.bucket && config.bucket.folder)
+      Key = `${config.bucket.folder}/${Key}`
 
-      // add path prefix
-      if (config.bucket && config.bucket.folder)
-        Key = `${config.bucket.folder}/${Key}`
+    // set up s3 and its params
+    let s3 = new aws.S3
+    let params = { Bucket, Key }
 
-      let s3 = new aws.S3
-      let result = await s3.getObject({
-        Bucket,
-        Key,
-      }).promise()
+    // if client sends if-none-match, use it in s3 getObject params
+    if (ifNoneMatch && !neverCache) { params.IfNoneMatch = ifNoneMatch }
+    let matchedETag = false
 
-      ETag = result.ETag
-      let headers = {
-        'content-type': type,
-        'etag': result.ETag,
-        'cache-control': 'no-cache'
-      }
+    let result = await s3.getObject(params)
+      .promise()
+      .catch(e => {
+        // ETag matches (NotModified), so don't transit the file
+        if (e.code === 'NotModified') {
+          matchedETag = true
+          headers.ETag = ifNoneMatch
+          res = {
+            statusCode: 304,
+            headers,
+          }
+        }
+        else throw Error
+      })
 
-      if (!neverCache) {
-        // TODO ↓ change to 86400 (or something larger) closer to release ↓
-        headers['cache-control'] = 'max-age=600'
-      }
-
-      cache[Key] = transform({
+    // no ETag found, return the blob
+    if (!matchedETag) {
+      headers.ETag = result.ETag
+      res = transform({
         Key,
         config,
         defaults: {
@@ -103,14 +121,7 @@ module.exports = async function read(Key, config={}, reqHeaders) {
         },
       })
     }
-
-    // return 304 if ETag is matched and it's cacheable
-    if (reqHeaders && reqHeaders['if-none-match'] === ETag && !neverCache) {
-      // will not work locally in Arc prior to fixing #323
-      cache[Key].statusCode = 304
-      return cache[Key]
-    }
-    else return cache[Key]
+    return res
   }
   catch(e) {
     // render the error to html
