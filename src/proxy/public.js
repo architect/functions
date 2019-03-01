@@ -65,7 +65,11 @@ module.exports = function proxyPublic(config) {
       // this allows ssr to opt out of some urls
     }
 
+    // pass along headers for ETag, etc.
+    let reqHeaders
+    if (req.headers) { reqHeaders = req.headers }
+
     // return the blob
-    return await read(Key, config)
+    return await read(Key, config, reqHeaders)
   }
 }
