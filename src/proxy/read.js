@@ -21,6 +21,8 @@ let env = process.env.NODE_ENV
  */
 module.exports = async function read(Key, config={}, reqHeaders) {
 
+  let {bucket, cacheControl} = config
+
   try {
     // assign response below
     let res
@@ -42,11 +44,10 @@ module.exports = async function read(Key, config={}, reqHeaders) {
     // default headers
     let headers = {
       'content-type': type,
-      'cache-control': 'no-store'
+      'cache-control': cacheControl ? cacheControl : 'max-age=86400'
     }
-    let maxAge = config.maxAge ? config.maxAge : 86400
-    if (!neverCache) {
-      headers['cache-control'] = 'max-age=' + maxAge
+    if (neverCache && !cacheControl) {
+      headers['cache-control'] = 'no-store'
     }
 
     if (env === 'testing') {
@@ -69,22 +70,22 @@ module.exports = async function read(Key, config={}, reqHeaders) {
     }
 
     // Lookup the Bucket by reading node_modules/@architect/shared/.arc
-    if (!arc && !config.bucket) {
+    if (!arc && !bucket) {
       // only do this once
       let raw = await readFile(arcFile, {encoding})
       arc = parse(raw)
     }
 
     // get the Bucket
-    let Bucket = config.bucket? config.bucket[env] : getBucket(arc.static)
+    let Bucket = bucket? bucket[env] : getBucket(arc.static)
 
     // strip staging/ and production/ from req urls
     if (Key.startsWith('staging/') || Key.startsWith('production/'))
       Key = Key.replace('staging/', '').replace('production/')
 
     // add path prefix
-    if (config.bucket && config.bucket.folder)
-      Key = `${config.bucket.folder}/${Key}`
+    if (bucket && bucket.folder)
+      Key = `${bucket.folder}/${Key}`
 
     // set up s3 and its params
     let s3 = new aws.S3
@@ -140,12 +141,12 @@ module.exports = async function read(Key, config={}, reqHeaders) {
     if (env === 'staging' || env === 'production') {
       //look for 404.html on s3
       try {
-        if (!arc && !config.bucket) {
+        if (!arc && !bucket) {
           let raw = await readFile(arcFile, {encoding})
           arc = parse(raw)
         }
-        let Bucket = config.bucket? config.bucket[env] : getBucket(arc.static)
-        let Key = config.bucket && config.bucket.folder? `${config.bucket.folder}/404.html` : '404.html'
+        let Bucket = bucket? bucket[env] : getBucket(arc.static)
+        let Key = bucket && bucket.folder? `${bucket.folder}/404.html` : '404.html'
         let s3 = new aws.S3
         let result = await s3.getObject({Bucket, Key}).promise()
         let body = result.Body.toString()
