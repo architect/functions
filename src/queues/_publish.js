@@ -37,7 +37,7 @@ module.exports = function _publish(params, callback) {
   }
 
   // check if we're running locally
-  let local = process.env.NODE_ENV === 'testing' || !process.env.hasOwnProperty('ARC_LOCAL')
+  let local = process.env.NODE_ENV === 'testing' || process.env.hasOwnProperty('ARC_LOCAL')
   if (local) {
 
     // if so send the mock request
