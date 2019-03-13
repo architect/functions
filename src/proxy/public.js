@@ -12,6 +12,7 @@ let read = require('./read')
  * @param config.bucket.staging - object, {staging, production} override the s3 bucket names
  * @param config.bucket.production - object, {staging, production} override the s3 bucket names
  * @param config.bucket.folder - string, bucket folder
+ * @param config.cacheControl - string, set a custom Cache-Control max-age header value
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
@@ -65,7 +66,11 @@ module.exports = function proxyPublic(config) {
       // this allows ssr to opt out of some urls
     }
 
+    // pass along headers for ETag, etc.
+    let reqHeaders
+    if (req.headers) { reqHeaders = req.headers }
+
     // return the blob
-    return await read(Key, config)
+    return await read(Key, config, reqHeaders)
   }
 }

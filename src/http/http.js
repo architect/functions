@@ -51,13 +51,15 @@ module.exports = function http(...fns) {
  * - session
  * - location
  * - html, css, js, text, json or xml
- * - status or code
+ * - status, code, or statusCode
+ * - cacheControl
  */
 function response(req, callback, params) {
   let res = params
-  // default content type and body
+  // default content type, body, cache-control
   res.type = 'application/json; charset=utf8'
   res.body = params.body || '\n'
+  res.cacheControl = params.cacheControl || ''
   // shorthand overrides
   if (params instanceof Error) {
     res.status = params.status || params.code || 500

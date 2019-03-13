@@ -9,8 +9,8 @@ let transform = require('./transform')
 let readFile = util.promisify(fs.readFile)
 let encoding = 'utf8'
 let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
-let cache = {}
 let arc
+let env = process.env.NODE_ENV
 
 /**
  * reads a file; possibly transforms and caches it
@@ -19,13 +19,35 @@ let arc
  * @param config - the full arc.proxy.pubic config
  * @returns - an HTTP Lambda friendly response {headers, body, status}
  */
-module.exports = async function read(Key, config={}) {
+module.exports = async function read(Key, config={}, reqHeaders) {
 
-  let env = process.env.NODE_ENV
+  let {bucket, cacheControl} = config
 
   try {
+    // assign response below
+    let res
+
     // gets the default content-type from the Key
     let type = mime.contentType(path.extname(Key))
+
+    // set up headers defining remote caching
+    let nopes = [
+      'text/html',
+      'application/json',
+    ]
+    let neverCache = nopes.some(n => type.startsWith(n))
+
+    // normalize if-none-match header to lower case; it differs between environments
+    let ifNoneMatch = reqHeaders && reqHeaders[Object.keys(reqHeaders).find(k => k.toLowerCase() === 'if-none-match')]
+
+    // default headers
+    let headers = {
+      'content-type': type,
+      'cache-control': cacheControl ? cacheControl : 'max-age=86400'
+    }
+    if (neverCache && !cacheControl) {
+      headers['cache-control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+    }
 
     if (env === 'testing') {
       // Lookup the blob in ./public
@@ -36,7 +58,7 @@ module.exports = async function read(Key, config={}) {
 
       // read the file
       let body = await readFile(filePath, {encoding})
-      cache[Key] = transform({
+      res = transform({
         Key,
         config,
         defaults: {
@@ -45,44 +67,62 @@ module.exports = async function read(Key, config={}) {
         },
       })
     }
-
-    // Lookup the blob
-    if (!cache[Key]) {
-
-      // Lookup the Bucket by reading node_modules/@architect/shared/.arc
-      if (!arc && !config.bucket) {
+    else {
+      // Look up the Bucket by reading node_modules/@architect/shared/.arc
+      if (!arc && !bucket) {
         // only do this once
         let raw = await readFile(arcFile, {encoding})
         arc = parse(raw)
       }
 
       // get the Bucket
-      let Bucket = config.bucket? config.bucket[process.env.NODE_ENV] : getBucket(arc.static)
+      let Bucket = bucket? bucket[env] : getBucket(arc.static)
 
       // strip staging/ and production/ from req urls
       if (Key.startsWith('staging/') || Key.startsWith('production/'))
         Key = Key.replace('staging/', '').replace('production/')
 
       // add path prefix
-      if (config.bucket && config.bucket.folder)
-        Key = `${config.bucket.folder}/${Key}`
+      if (bucket && bucket.folder)
+        Key = `${bucket.folder}/${Key}`
 
+      // set up s3 and its params
       let s3 = new aws.S3
-      let result = await s3.getObject({
-        Bucket,
-        Key,
-      }).promise()
+      let params = { Bucket, Key }
 
-      cache[Key] = transform({
-        Key,
-        config,
-        defaults: {
-          headers: {'content-type': type, 'etag': result.ETag},
-          body: result.Body.toString()
-        },
-      })
+      // if client sends if-none-match, use it in s3 getObject params
+      if (ifNoneMatch && !neverCache) { params.IfNoneMatch = ifNoneMatch }
+      let matchedETag = false
+
+      let result = await s3.getObject(params)
+        .promise()
+        .catch(e => {
+          // ETag matches (getObject error code of NotModified), so don't transit the whole file
+          if (e.code === 'NotModified') {
+            matchedETag = true
+            headers.ETag = ifNoneMatch
+            res = {
+              statusCode: 304,
+              headers,
+            }
+          }
+          else throw Error
+        })
+
+      // no ETag found, return the blob
+      if (!matchedETag) {
+        headers.ETag = result.ETag
+        res = transform({
+          Key,
+          config,
+          defaults: {
+            headers,
+            body: result.Body.toString()
+          },
+        })
+      }
     }
-    return cache[Key]
+    return res
   }
   catch(e) {
     // render the error to html
@@ -101,12 +141,12 @@ module.exports = async function read(Key, config={}) {
     if (env === 'staging' || env === 'production') {
       //look for 404.html on s3
       try {
-        if (!arc && !config.bucket) {
+        if (!arc && !bucket) {
           let raw = await readFile(arcFile, {encoding})
           arc = parse(raw)
         }
-        let Bucket = config.bucket? config.bucket[process.env.NODE_ENV] : getBucket(arc.static)
-        let Key = config.bucket && config.bucket.folder? `${config.bucket.folder}/404.html` : '404.html'
+        let Bucket = bucket? bucket[env] : getBucket(arc.static)
+        let Key = bucket && bucket.folder? `${bucket.folder}/404.html` : '404.html'
         let s3 = new aws.S3
         let result = await s3.getObject({Bucket, Key}).promise()
         let body = result.Body.toString()
@@ -140,8 +180,8 @@ function getBucket(static) {
       production = thing[1]
     }
   })
-  if (process.env.NODE_ENV === 'staging')
+  if (env === 'staging')
     return staging
-  if (process.env.NODE_ENV === 'production')
+  if (env === 'production')
     return production
 }
