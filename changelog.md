@@ -1,8 +1,36 @@
 # Architect Functions changelog
 
+---
+Also see:
+- [Architect changelog](https://github.com/arc-repos/architect/blob/master/changelog.md)
+- [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
+---
+
+## [2.0.15] - 2019-03-13
+
+### Added
+
+- Cache-control header support for `proxy.public`; if not specified, defaults to:
+  - HTML + JSON: `no-cache, no-store, must-revalidate, max-age=0, s-maxage=0`
+  - Everything else: `max-age=86400`
+
+### Changed
+
+- Updated dependencies
+
+---
+
+## [2.0.13-14] - 2019-03-08
+
+### Fixed
+
+- Fixed local env check in `queues.publish` /ht @tobytailor
+
+---
+
 ## [2.0.1-2.0.11] - 2019-02-26
 
-## Added
+### Added
 
 - proxy allows for configurable s3 bucket and folder
 - proxied files now return `etag`
@@ -28,6 +56,8 @@ And for fun:
 
 [Complete example project code here.](https://github.com/arc-repos/arc-example-proxy-plugins)
 
+---
+
 ## [2.0.0] - 2019-02-03
 
 ### Removed
@@ -40,19 +70,22 @@ And for fun:
 - arc.json
 
 ---
+
 ## [1.13.0] - 2018-01-31
 
 ### Added
 
-- New `arc.proxy` wip proxy get-index to /public when running locally and s3 when running on aws 
+- New `arc.proxy` wip proxy get-index to /public when running locally and s3 when running on aws
 
 ```javascript
 // exmaple usage in a ws-connected lambda
 let arc = require('@architect/functions')
 
-exports.handler = arc.proxy.public() 
+exports.handler = arc.proxy.public()
 ```
+
 ---
+
 ## [1.12.0] - 2018-01-16
 
 ### Added
@@ -73,6 +106,7 @@ exports.handler = async function WebSocketConnected(event) {
 ```
 
 ---
+
 ## [1.11.1] - 2018-12-15
 
 ### Added
