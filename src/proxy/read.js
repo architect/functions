@@ -35,8 +35,7 @@ module.exports = async function read(Key, config={}, reqHeaders) {
       'text/html',
       'application/json',
     ]
-    // TODO make this production-only
-    let neverCache = nopes.some(n => type.startsWith(n)) //&& env === 'production'
+    let neverCache = nopes.some(n => type.startsWith(n))
 
     // normalize if-none-match header to lower case; it differs between environments
     let ifNoneMatch = reqHeaders && reqHeaders[Object.keys(reqHeaders).find(k => k.toLowerCase() === 'if-none-match')]
@@ -47,7 +46,7 @@ module.exports = async function read(Key, config={}, reqHeaders) {
       'cache-control': cacheControl ? cacheControl : 'max-age=86400'
     }
     if (neverCache && !cacheControl) {
-      headers['cache-control'] = 'no-store'
+      headers['cache-control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     }
 
     if (env === 'testing') {
@@ -68,59 +67,60 @@ module.exports = async function read(Key, config={}, reqHeaders) {
         },
       })
     }
+    else {
+      // Look up the Bucket by reading node_modules/@architect/shared/.arc
+      if (!arc && !bucket) {
+        // only do this once
+        let raw = await readFile(arcFile, {encoding})
+        arc = parse(raw)
+      }
 
-    // Lookup the Bucket by reading node_modules/@architect/shared/.arc
-    if (!arc && !bucket) {
-      // only do this once
-      let raw = await readFile(arcFile, {encoding})
-      arc = parse(raw)
-    }
+      // get the Bucket
+      let Bucket = bucket? bucket[env] : getBucket(arc.static)
 
-    // get the Bucket
-    let Bucket = bucket? bucket[env] : getBucket(arc.static)
+      // strip staging/ and production/ from req urls
+      if (Key.startsWith('staging/') || Key.startsWith('production/'))
+        Key = Key.replace('staging/', '').replace('production/')
 
-    // strip staging/ and production/ from req urls
-    if (Key.startsWith('staging/') || Key.startsWith('production/'))
-      Key = Key.replace('staging/', '').replace('production/')
+      // add path prefix
+      if (bucket && bucket.folder)
+        Key = `${bucket.folder}/${Key}`
 
-    // add path prefix
-    if (bucket && bucket.folder)
-      Key = `${bucket.folder}/${Key}`
+      // set up s3 and its params
+      let s3 = new aws.S3
+      let params = { Bucket, Key }
 
-    // set up s3 and its params
-    let s3 = new aws.S3
-    let params = { Bucket, Key }
+      // if client sends if-none-match, use it in s3 getObject params
+      if (ifNoneMatch && !neverCache) { params.IfNoneMatch = ifNoneMatch }
+      let matchedETag = false
 
-    // if client sends if-none-match, use it in s3 getObject params
-    if (ifNoneMatch && !neverCache) { params.IfNoneMatch = ifNoneMatch }
-    let matchedETag = false
-
-    let result = await s3.getObject(params)
-      .promise()
-      .catch(e => {
-        // ETag matches (NotModified), so don't transit the file
-        if (e.code === 'NotModified') {
-          matchedETag = true
-          headers.ETag = ifNoneMatch
-          res = {
-            statusCode: 304,
-            headers,
+      let result = await s3.getObject(params)
+        .promise()
+        .catch(e => {
+          // ETag matches (getObject error code of NotModified), so don't transit the whole file
+          if (e.code === 'NotModified') {
+            matchedETag = true
+            headers.ETag = ifNoneMatch
+            res = {
+              statusCode: 304,
+              headers,
+            }
           }
-        }
-        else throw Error
-      })
+          else throw Error
+        })
 
-    // no ETag found, return the blob
-    if (!matchedETag) {
-      headers.ETag = result.ETag
-      res = transform({
-        Key,
-        config,
-        defaults: {
-          headers,
-          body: result.Body.toString()
-        },
-      })
+      // no ETag found, return the blob
+      if (!matchedETag) {
+        headers.ETag = result.ETag
+        res = transform({
+          Key,
+          config,
+          defaults: {
+            headers,
+            body: result.Body.toString()
+          },
+        })
+      }
     }
     return res
   }
