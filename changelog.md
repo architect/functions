@@ -6,6 +6,19 @@ Also see:
 - [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
 ---
 
+## [2.0.16] - 2019-03-27
+
+### Added
+
+- Adds ARC_STATIC_BUCKET + ARC_STATIC_FOLDER env vars for config-reduced `proxy.public()` reads
+
+
+### Fixed
+
+- In `proxy.public()` config, the bucket folder prefix is now respected when working locally
+
+---
+
 ## [2.0.15] - 2019-03-13
 
 ### Added
