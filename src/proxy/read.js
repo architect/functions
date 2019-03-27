@@ -22,6 +22,9 @@ let env = process.env.NODE_ENV
 module.exports = async function read(Key, config={}, reqHeaders) {
 
   let {bucket, cacheControl} = config
+  // Bucket and folder env vars win config
+  if (process.env.ARC_STATIC_BUCKET) { bucket[env] = process.env.ARC_STATIC_BUCKET }
+  if (process.env.ARC_STATIC_FOLDER) { bucket.folder = process.env.ARC_STATIC_FOLDER }
 
   try {
     // assign response below
@@ -76,15 +79,17 @@ module.exports = async function read(Key, config={}, reqHeaders) {
       }
 
       // get the Bucket
-      let Bucket = bucket? bucket[env] : getBucket(arc.static)
+      let Bucket = bucket ? bucket[env] : getBucket(arc.static)
 
       // strip staging/ and production/ from req urls
-      if (Key.startsWith('staging/') || Key.startsWith('production/'))
+      if (Key.startsWith('staging/') || Key.startsWith('production/')) {
         Key = Key.replace('staging/', '').replace('production/')
+      }
 
       // add path prefix
-      if (bucket && bucket.folder)
+      if (bucket && bucket.folder) {
         Key = `${bucket.folder}/${Key}`
+      }
 
       // set up s3 and its params
       let s3 = new aws.S3
@@ -145,8 +150,8 @@ module.exports = async function read(Key, config={}, reqHeaders) {
           let raw = await readFile(arcFile, {encoding})
           arc = parse(raw)
         }
-        let Bucket = bucket? bucket[env] : getBucket(arc.static)
-        let Key = bucket && bucket.folder? `${bucket.folder}/404.html` : '404.html'
+        let Bucket = bucket ? bucket[env] : getBucket(arc.static)
+        let Key = bucket && bucket.folder ? `${bucket.folder}/404.html` : '404.html'
         let s3 = new aws.S3
         let result = await s3.getObject({Bucket, Key}).promise()
         let body = result.Body.toString()
