@@ -52,6 +52,11 @@ module.exports = async function read(Key, config={}, reqHeaders) {
       headers['cache-control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     }
 
+    // add path prefix
+    if (bucket && bucket.folder) {
+      Key = `${bucket.folder}/${Key}`
+    }
+
     if (env === 'testing') {
       // Lookup the blob in ./public
       // assuming we're running from a lambda in src/**/*
@@ -84,11 +89,6 @@ module.exports = async function read(Key, config={}, reqHeaders) {
       // strip staging/ and production/ from req urls
       if (Key.startsWith('staging/') || Key.startsWith('production/')) {
         Key = Key.replace('staging/', '').replace('production/')
-      }
-
-      // add path prefix
-      if (bucket && bucket.folder) {
-        Key = `${bucket.folder}/${Key}`
       }
 
       // set up s3 and its params
