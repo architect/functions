@@ -1,6 +1,8 @@
 .arc
+.git
 .eslintrc.js
 .travis.yml
+.DS_Store
 _mock
 changelog.md
 contributing.md
