@@ -19,7 +19,9 @@ let env = process.env.NODE_ENV
  * @param config - the full arc.proxy.pubic config
  * @returns - an HTTP Lambda friendly response {headers, body, status}
  */
-module.exports = async function read(Key, config={}, reqHeaders) {
+module.exports = async function read(params) {
+
+  let {Key, config={}, reqHeaders, isRoot} = params
 
   let {bucket, cacheControl} = config
   // Bucket and folder env vars win config
@@ -44,8 +46,9 @@ module.exports = async function read(Key, config={}, reqHeaders) {
     let ifNoneMatch = reqHeaders && reqHeaders[Object.keys(reqHeaders).find(k => k.toLowerCase() === 'if-none-match')]
 
     // default headers
+    // note: despite the spec, `content-type` must be lowercase in order to override mapping templates
     let headers = {
-      'content-type': type,
+      'content-type': type, // may be rewritten below
       'cache-control': cacheControl ? cacheControl : 'max-age=86400'
     }
     if (neverCache && !cacheControl) {
@@ -114,24 +117,34 @@ module.exports = async function read(Key, config={}, reqHeaders) {
           else throw Error
         })
 
-      // no ETag found, return the blob
+      // No ETag found, return the blob
       if (!matchedETag) {
+        // Set up response params
         headers.ETag = result.ETag
-        res = transform({
+        headers['content-type'] = result.ContentType || type
+        let body = result.Body.toString('base64')
+        let params = {
           Key,
           config,
           defaults: {
             headers,
-            body: result.Body.toString()
+            body,
+            isBase64Encoded: true,
           },
-        })
+        }
+        // `get /` it isn't being delivered via proxy integration, thus gets special treatment
+        if (Key === 'index.html' && isRoot) {
+          params.defaults.body = result.Body.toString()
+          params.defaults.isBase64Encoded = false
+        }
+        res = transform(params)
       }
     }
     return res
   }
   catch(e) {
     // render the error to html
-    let headers = {'content-type':'text/html; charset=utf8'}
+    let headers = {'content-type': 'text/html; charset=utf8;'}
 
     if (env === 'testing') {
       //look for public/404.html

@@ -5,7 +5,7 @@ let read = require('./read')
  *
  * @param config - object, for configuration
  * @param config.spa - boolean, forces index.html no matter the folder depth
- * @param config.srr - path string for module to load or function to override `/index.html`
+ * @param config.ssr - path string for module to load or function to override `/index.html`
  * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
  * @param config.alias - object, map of root rel urls to map to fully qualified root rel urls
  * @param config.bucket - object, {staging, production} override the s3 bucket names
@@ -22,6 +22,9 @@ module.exports = function proxyPublic(config) {
     // first we need to determine the S3 Key
     let Key
 
+    // root is a special case, pass this along later
+    let isRoot = req.path === '/'
+
     if (config && config.spa) {
       // if spa force index.html
       let isFolder = req.path.split('/').pop().indexOf('.') === -1
@@ -29,7 +32,7 @@ module.exports = function proxyPublic(config) {
     }
     else {
       // return index.html for root…otherwise passthru the path minus leading slash
-      Key = req.path === '/'? 'index.html' : req.path.substring(1)
+      Key = isRoot ? 'index.html' : req.path.substring(1)
       // add index.html to any empty folder path
       let isFolder = Key != 'index.html' && req.path.lastIndexOf('/') === req.path.length - 1
       if (isFolder) {
@@ -71,6 +74,7 @@ module.exports = function proxyPublic(config) {
     if (req.headers) { reqHeaders = req.headers }
 
     // return the blob
-    return await read(Key, config, reqHeaders)
+    let params = {Key, config, reqHeaders, isRoot}
+    return await read(params)
   }
 }
