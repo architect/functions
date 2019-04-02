@@ -155,10 +155,10 @@ module.exports = async function read(Key, config={}, reqHeaders) {
         let s3 = new aws.S3
         let result = await s3.getObject({Bucket, Key}).promise()
         let body = result.Body.toString()
-        return {headers, statusCode:404, body}
+        return {headers, statusCode: 404, body}
       }
-      catch(er) {
-        // noop if the 404 isn't there
+      catch(err) {
+        return {headers, statusCode: 404, body: 'File not found'}
       }
     }
 
