@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "2.0.18",
+  "version": "2.0.19",
   "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
   "homepage": "https://github.com/arc-repos/arc-functions",
   "repository": {
