@@ -22,7 +22,8 @@ let env = process.env.NODE_ENV
 module.exports = async function read(Key, config={}, reqHeaders) {
 
   let {bucket, cacheControl} = config
-  // Bucket and folder env vars win config
+
+  if (!bucket) bucket = {}
   if (process.env.ARC_STATIC_BUCKET) { bucket[env] = process.env.ARC_STATIC_BUCKET }
   if (process.env.ARC_STATIC_FOLDER) { bucket.folder = process.env.ARC_STATIC_FOLDER }
 
