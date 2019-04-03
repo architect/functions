@@ -57,7 +57,7 @@ module.exports = async function read(params) {
     }
 
     // add path prefix
-    if (bucket && bucket.folder) {
+    if (bucket && bucket.folder && env != 'testing') {
       Key = `${bucket.folder}/${Key}`
     }
 
