@@ -20,6 +20,7 @@ Also see:
 ### Fixed
 
 - Added checks to ensure bucket exists in `proxy.public()`
+- Requests to unknown files via `proxy.public()` now return a proper 404 response, and not 200 / `undefined`
 - Fixes proxy path prefix check in testing environment
 - Found and removed some junk files in the NPM package
 
