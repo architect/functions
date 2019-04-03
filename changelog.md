@@ -6,6 +6,27 @@ Also see:
 - [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
 ---
 
+
+## [On master]
+
+### Added
+
+- Enables both text and binary file transit in newly provisioned Arc apps
+
+---
+
+## [2.0.17 - 2.0.19] - 2019-04-02
+
+### Fixed
+
+- Added checks to ensure bucket exists in `proxy.public()`
+- Fixes proxy path prefix check in testing environment
+- Found and removed some junk files in the NPM package
+
+
+---
+
+
 ## [2.0.16] - 2019-03-27
 
 ### Added
