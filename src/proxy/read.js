@@ -134,7 +134,7 @@ module.exports = async function read(params) {
           },
         }
         // `get /` it isn't being delivered via proxy integration, thus gets special treatment
-        if (Key === 'index.html' && isRoot) {
+        if (isRoot) {
           params.defaults.body = result.Body.toString()
           params.defaults.isBase64Encoded = false
         }

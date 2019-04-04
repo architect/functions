@@ -7,7 +7,7 @@ Also see:
 ---
 
 
-## [3.0.0] - 2019-04-04
+## [3.0.1] - 2019-04-04
 
 ### Added
 
@@ -16,6 +16,11 @@ Also see:
   - However, if you use `proxy.public()`, this is a breaking update!
   - In order to enable binary assets support, Arc Functions now encodes files being emitted via `proxy.public()` for use in Architect 5.6+ apps
   - If you'd like your existing app that uses `proxy.public()` to serve binary assets, you'll need to re-create your API (or hang tight until we release our forthcoming API migration tool)
+
+
+### Fixed
+
+- `get /` encoding is now properly set when using `config.bucket.folder`
 
 
 ---
