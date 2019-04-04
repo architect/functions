@@ -12,6 +12,10 @@ Also see:
 ### Added
 
 - Enables both text and binary file transit in newly provisioned Arc apps
+- This is NOT a breaking update if you aren't using `proxy.public()`
+  - However, if you use `proxy.public()`, this is a breaking update!
+  - In order to enable binary assets support, Arc Functions now encodes files being emitted via `proxy.public()` for use in Architect 5.6+ apps
+  - If you'd like your existing app that uses `proxy.public()` to serve binary assets, you'll need to re-create your API (or hang tight until we release our forthcoming API migration tool)
 
 
 ---
