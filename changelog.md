@@ -7,11 +7,12 @@ Also see:
 ---
 
 
-## [On master]
+## [3.0.0] - 2019-04-04
 
 ### Added
 
 - Enables both text and binary file transit in newly provisioned Arc apps
+
 
 ---
 
