@@ -7,6 +7,16 @@ Also see:
 ---
 
 
+## [3.0.2] - 2019-04-10
+
+### Fixed
+
+- Fixes local sandbox publishing events/queues bug introduced in 2.0.8
+
+
+---
+
+
 ## [3.0.1] - 2019-04-04
 
 ### Added

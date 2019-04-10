@@ -90,6 +90,7 @@ function _local(params, callback) {
     path: '/events',
   },
   function done(res) {
+    res.resume()
     res.on('end', ()=> callback())
   })
   req.write(JSON.stringify(params))
