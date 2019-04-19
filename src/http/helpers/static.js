@@ -8,7 +8,7 @@ module.exports = function _static(assetPath) {
   // just passthru if we're not running in staging or production
   let runningLocally = process.env.NODE_ENV === 'testing'
   if (runningLocally) {
-    return `/_static/${assetPath}`
+    return `/_static${assetPath}`
   }
   // only do this once
   if (!arc) {
