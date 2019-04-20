@@ -5,6 +5,11 @@ Also see:
 - [Architect changelog](https://github.com/arc-repos/architect/blob/master/changelog.md)
 - [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
 ---
+## [3.0.3] - 2019-04-19
+
+### Added
+
+- `arc.events.subscribe` will now accept an `AsyncFunction`
 
 
 ## [3.0.2] - 2019-04-10
