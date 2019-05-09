@@ -61,9 +61,11 @@ module.exports = function _publish(params, callback) {
       },
       function  publishes(result, callback) {
         let QueueUrl = result.QueueUrl
-        console.log('sqs.sendMessage', JSON.stringify({QueueUrl, payload}))
+        let DelaySeconds = params.delaySeconds || 0
+        console.log('sqs.sendMessage', JSON.stringify({ QueueUrl, DelaySeconds, payload }))
         sqs.sendMessage({
           QueueUrl,
+          DelaySeconds,
           MessageBody: JSON.stringify(payload)
         }, callback)
       }
