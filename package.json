@@ -32,20 +32,20 @@
     "framework"
   ],
   "dependencies": {
-    "@architect/parser": "^1.1.6",
+    "@architect/parser": "^1.1.7",
     "cookie": "^0.3.1",
     "cookie-signature": "^1.1.0",
-    "csrf": "^3.0.6",
-    "mime-types": "^2.1.22",
+    "csrf": "^3.1.0",
+    "mime-types": "^2.1.24",
     "node-webtokens": "^1.0.0",
     "run-parallel": "^1.1.9",
     "run-waterfall": "^1.1.6",
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/architect": "^5.5.8",
-    "aws-sdk": "^2.421.0",
-    "eslint": "^5.15.1",
+    "@architect/architect": "^5.8.4",
+    "aws-sdk": "^2.453.0",
+    "eslint": "^5.16.0",
     "tap-spec": "^5.0.0",
     "tape": "^4.10.1"
   },
