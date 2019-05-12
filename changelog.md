@@ -5,12 +5,46 @@ Also see:
 - [Architect changelog](https://github.com/arc-repos/architect/blob/master/changelog.md)
 - [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
 ---
-## [3.0.3] - 2019-04-19
+
+## [3.0.7] 2019-05-11
+
+### Added
+
+- `arc.http.helpers.static()` now uses `ARC_STATIC_BUCKET` and `ARC_STATIC_FOLDER` (as introduced in 2.0.16 for `arc.proxy.read()`), fixes #37
+
+### Fixed
+
+- Also improves S3 URL handling in `arc.http.helpers.static()`, partially addressing @architect/architect#375 (S3's late-2020 URL format support change)
+
+### Changed
+
+- Updated dependencies
+
+---
+
+## [3.0.6] 2019-05-09
+
+### Added
+
+- Adds support for sending `delaySeconds` parameter on queue publish, closes #36 /ht @bardbachmann
+
+---
+
+## [3.0.3 - 3.0.5] - 2019-04-19
 
 ### Added
 
 - `arc.events.subscribe` will now accept an `AsyncFunction`
 
+### Fixed
+
+- Removes trailing slash from `arc.http.helpers.static()` that breaks URLs when working locally
+
+### Changed
+
+- Updated dependencies
+
+---
 
 ## [3.0.2] - 2019-04-10
 
@@ -18,9 +52,7 @@ Also see:
 
 - Fixes local sandbox publishing events/queues bug introduced in 2.0.8
 
-
 ---
-
 
 ## [3.0.1] - 2019-04-04
 
@@ -31,7 +63,6 @@ Also see:
   - However, if you use `proxy.public()`, this is a breaking update!
   - In order to enable binary assets support, Arc Functions now encodes files being emitted via `proxy.public()` for use in Architect 5.6+ apps
   - If you'd like your existing app that uses `proxy.public()` to serve binary assets, you'll need to re-create your API (or hang tight until we release our forthcoming API migration tool)
-
 
 ### Fixed
 
@@ -49,16 +80,13 @@ Also see:
 - Fixes proxy path prefix check in testing environment
 - Found and removed some junk files in the NPM package
 
-
 ---
-
 
 ## [2.0.16] - 2019-03-27
 
 ### Added
 
-- Adds ARC_STATIC_BUCKET + ARC_STATIC_FOLDER env vars for config-reduced `proxy.public()` reads
-
+- Adds `ARC_STATIC_BUCKET` + `ARC_STATIC_FOLDER` env vars for config-reduced `proxy.public()` reads
 
 ### Fixed
 
