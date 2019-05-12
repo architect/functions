@@ -5,24 +5,29 @@ let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '
 let arc
 
 module.exports = function _static(assetPath) {
-  // just passthru if we're not running in staging or production
+  let folder = process.env.ARC_STATIC_FOLDER ? '/' + process.env.ARC_STATIC_FOLDER : ''
+  let region = process.env.AWS_REGION
+  let S3domain = bucket => `https://${bucket}.s3.${region}.amazonaws.com${folder}`
+
+  // Just passthru if we're not running in staging or production
   let runningLocally = process.env.NODE_ENV === 'testing'
   if (runningLocally) {
     return `/_static${assetPath}`
   }
-  // only do this once
-  if (!arc) {
-    arc = parse(fs.readFileSync(arcFile).toString())
+  // Static env var takes precedence if present
+  else if (process.env.ARC_STATIC_BUCKET) {
+    let url = S3domain(process.env.ARC_STATIC_BUCKET) + assetPath
+    return url
   }
-  // S3 is the oldest AWS service, and has a bit of cruft
-  // if region is us-east-1, S3 paths are: http://s3.amazonaws.com/bucket
-  // if region isn't us-east-1, paths are: http://s3-aws-region.amazonaws.com/bucket
-  let bucket = getBucket(arc.static)
-  let region = process.env.AWS_REGION
-  let isOGS3 = region === 'us-east-1'
-  let S3domain = isOGS3 ? `https://s3.amazonaws.com/` : `https://s3-${region}.amazonaws.com/`
-  let url = S3domain + bucket + assetPath
-  return url
+  else {
+    if (!arc) {
+      // Only load the arc file once (if possible)
+      arc = parse(fs.readFileSync(arcFile).toString())
+    }
+    let bucket = getBucket(arc.static)
+    let url = S3domain(bucket) + assetPath
+    return url
+  }
 }
 
 // helper returns the @static value for the current NODE_ENV
