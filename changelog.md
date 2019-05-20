@@ -6,6 +6,16 @@ Also see:
 - [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
 ---
 
+## [3.0.8] 2019-05-20
+
+### Fixed
+
+- `proxy.read()` calls without `config.bucket` specified work correctly again, fixes #38
+
+
+---
+
+
 ## [3.0.7] 2019-05-11
 
 ### Added
@@ -20,7 +30,9 @@ Also see:
 
 - Updated dependencies
 
+
 ---
+
 
 ## [3.0.6] 2019-05-09
 
@@ -28,7 +40,9 @@ Also see:
 
 - Adds support for sending `delaySeconds` parameter on queue publish, closes #36 /ht @bardbachmann
 
+
 ---
+
 
 ## [3.0.3 - 3.0.5] - 2019-04-19
 
@@ -44,7 +58,9 @@ Also see:
 
 - Updated dependencies
 
+
 ---
+
 
 ## [3.0.2] - 2019-04-10
 
@@ -71,6 +87,7 @@ Also see:
 
 ---
 
+
 ## [2.0.17 - 2.0.19] - 2019-04-02
 
 ### Fixed
@@ -80,7 +97,9 @@ Also see:
 - Fixes proxy path prefix check in testing environment
 - Found and removed some junk files in the NPM package
 
+
 ---
+
 
 ## [2.0.16] - 2019-03-27
 
@@ -92,7 +111,9 @@ Also see:
 
 - In `proxy.public()` config, the bucket folder prefix is now respected when working locally
 
+
 ---
+
 
 ## [2.0.15] - 2019-03-13
 
@@ -106,7 +127,9 @@ Also see:
 
 - Updated dependencies
 
+
 ---
+
 
 ## [2.0.13-14] - 2019-03-08
 
@@ -114,7 +137,9 @@ Also see:
 
 - Fixed local env check in `queues.publish` /ht @tobytailor
 
+
 ---
+
 
 ## [2.0.1-2.0.11] - 2019-02-26
 
@@ -144,7 +169,9 @@ And for fun:
 
 [Complete example project code here.](https://github.com/arc-repos/arc-example-proxy-plugins)
 
+
 ---
+
 
 ## [2.0.0] - 2019-02-03
 
@@ -157,7 +184,9 @@ And for fun:
 - arc.xml
 - arc.json
 
+
 ---
+
 
 ## [1.13.0] - 2018-01-31
 
@@ -172,7 +201,9 @@ let arc = require('@architect/functions')
 exports.handler = arc.proxy.public()
 ```
 
+
 ---
+
 
 ## [1.12.0] - 2018-01-16
 
@@ -193,7 +224,9 @@ exports.handler = async function WebSocketConnected(event) {
 }
 ```
 
+
 ---
+
 
 ## [1.11.1] - 2018-12-15
 
