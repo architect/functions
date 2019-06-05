@@ -1,5 +1,5 @@
 // helpers
-let static = require('./helpers/static')
+let static = require('../static')
 let url = require('./helpers/url')
 let interpolate = require('./helpers/params')
 
