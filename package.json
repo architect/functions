@@ -46,6 +46,8 @@
     "@architect/architect": "^5.8.4",
     "aws-sdk": "^2.453.0",
     "eslint": "^5.16.0",
+    "mkdirp": "^0.5.1",
+    "path-exists": "^4.0.0",
     "tap-spec": "^5.0.0",
     "tape": "^4.10.1"
   },

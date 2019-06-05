@@ -44,7 +44,7 @@ clean-backups rate(1 hour)
 @static
 staging a-staging-bucket
 production a-production-bucket
-fingerprint false
+fingerprint true
 
 # create dynamo tables
 @tables

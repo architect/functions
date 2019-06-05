@@ -2,35 +2,75 @@ let fs = require('fs')
 let path = require('path')
 let parse = require('@architect/parser')
 let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
+let url = require('url').format
 let arc
 
-module.exports = function _static(assetPath) {
+/**
+ * Architect static asset helper
+ * - Returns the live asset filename
+ */
+module.exports = function static(assetPath, options) {
+  let env = process.env.NODE_ENV
   let folder = process.env.ARC_STATIC_FOLDER ? '/' + process.env.ARC_STATIC_FOLDER : ''
   let region = process.env.AWS_REGION
-  let S3domain = bucket => `https://${bucket}.s3.${region}.amazonaws.com${folder}`
+  let S3domain = bucket => `https://${bucket}.s3.${region}.amazonaws.com${folder}/`
 
-  // Just passthru if we're not running in staging or production
-  let runningLocally = process.env.NODE_ENV === 'testing'
-  if (runningLocally) {
-    return `/_static${assetPath}`
+  // TODO add options
+  // - force serving from /_static
+  // - CDN / alternate domain prefix
+
+  // Only load the arc file once (if possible)
+  if (!arc || options && options.reload) {
+    arc = parse(fs.readFileSync(arcFile).toString())
   }
-  // Static env var takes precedence if present
-  else if (process.env.ARC_STATIC_BUCKET) {
-    let url = S3domain(process.env.ARC_STATIC_BUCKET) + assetPath
-    return url
+
+  // Normalize to no leading slash
+  if (assetPath[0] === '/') assetPath = assetPath.substring(1)
+
+  // Just pass through request if not in staging or production
+  let runningLocally = !env || env === 'testing'
+  if (runningLocally) {
+    return `/_static/${assetPath}`
   }
   else {
-    if (!arc) {
-      // Only load the arc file once (if possible)
-      arc = parse(fs.readFileSync(arcFile).toString())
+    // Check fingerprint status
+    let fingerprint = false
+    let staticManifest
+    if (arc.static && arc.static.some(s => {
+      if (!s[0]) return false
+      if (s.includes('fingerprint') && (s.includes(true) || s.includes('enabled') || s.includes('on'))) return true
+      return false
+    })) {
+      try {
+        fingerprint = true
+        let file = path.join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
+        staticManifest = JSON.parse(fs.readFileSync(file))
+      }
+      catch(e) {
+        // It's possible the static file is missing or hasn't been written yet
+        fingerprint = false
+      }
     }
-    let bucket = getBucket(arc.static)
-    let url = S3domain(bucket) + assetPath
-    return url
+
+    // Rewrite the file path with the fingerprinted filename
+    if (fingerprint && staticManifest) {
+      assetPath = staticManifest[assetPath]
+    }
+
+    // Static env var takes precedence if present
+    if (process.env.ARC_STATIC_BUCKET) {
+      let raw = S3domain(process.env.ARC_STATIC_BUCKET) + assetPath
+      return url(raw)
+    }
+    else {
+      let bucket = getBucket(arc.static)
+      let raw = S3domain(bucket) + assetPath
+      return url(raw)
+    }
   }
 }
 
-// helper returns the @static value for the current NODE_ENV
+// Helper returns the @static value for the current NODE_ENV
 function getBucket(static) {
   let staging
   let production
