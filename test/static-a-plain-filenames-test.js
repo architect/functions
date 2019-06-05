@@ -41,10 +41,11 @@ test('Local URL tests', t=> {
 })
 
 test('Staging and production URL tests', t=> {
-  t.plan(4)
+  t.plan(5)
   process.env.AWS_REGION = 'us-west-1'
   process.env.NODE_ENV = 'production'
   t.equals(arc.static('index.html'), 'https://a-production-bucket.s3.us-west-1.amazonaws.com/index.html', 'Production URL matches')
+  t.equals(arc.http.helpers.static('index.html'), 'https://a-production-bucket.s3.us-west-1.amazonaws.com/index.html', 'Production URL matches (legacy)')
 
   process.env.NODE_ENV = 'staging'
   t.equals(arc.static('index.html'), 'https://a-staging-bucket.s3.us-west-1.amazonaws.com/index.html', 'Staging URL matches')
