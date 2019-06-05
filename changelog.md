@@ -6,6 +6,24 @@ Also see:
 - [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
 ---
 
+
+## [3.1.0] 2019-06-05
+
+### Added
+
+- This release is all about improving static asset access!
+  - Static asset fingerprinting is now built into the static asset helper!
+    - Enable file fingerprinting in your project by adding `fingerprint true` to your Arc manifests's `@static` pramga
+    - If enabled, requesting `styles.css` will return the proper fingerprinted URL (e.g. `https://your-bucket.s3.us-west-1.amazonaws.com/styles-1e25d663f6.css`)
+  - The static asset helper is now a first-class method accessible at: `arc.static('filename.ext')`
+    - File path are still relative to your `public/` dir
+    - Legacy method `arc.http.helpers.static('filename.ext')` will continue to be supported
+  - Static helper tests
+
+
+---
+
+
 ## [3.0.8] 2019-05-20
 
 ### Fixed
