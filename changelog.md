@@ -6,6 +6,16 @@ Also see:
 - [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
 ---
 
+## [3.2.0] 2019-06-14
+
+### Added
+
+- For additional control of your user sessions, you may now define [cookie Domain attribute](https://tools.ietf.org/html/rfc6265#section-5.2.3)
+  - Because this needs to be set consistently, it it's an enviroment variable; set it with `SESSION_DOMAIN`
+
+
+---
+
 
 ## [3.1.0] 2019-06-05
 

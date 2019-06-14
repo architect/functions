@@ -16,6 +16,7 @@ module.exports = function static(assetPath, options) {
   let S3domain = bucket => `https://${bucket}.s3.${region}.amazonaws.com${folder}/`
 
   // TODO add options
+  // - fingerprinted filename only (nice for proxy uses)
   // - force serving from /_static
   // - CDN / alternate domain prefix
 

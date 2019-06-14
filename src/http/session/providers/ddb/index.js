@@ -65,14 +65,18 @@ function write(params, callback) {
     }
     else {
       let maxAge = 7.884e+8
-      let result = cookie.serialize('_idx', sign(params._idx, secret), {
+      let options = {
         maxAge,
         expires: new Date(Date.now() + maxAge * 1000),
         secure: true,
         httpOnly: true,
         path: '/',
         sameSite: 'lax',
-      })
+      }
+      if (process.env.SESSION_DOMAIN) {
+        options.domain = process.env.SESSION_DOMAIN
+      }
+      let result = cookie.serialize('_idx', sign(params._idx, secret), options)
       callback(null, result)
     }
   })
