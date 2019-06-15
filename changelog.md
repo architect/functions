@@ -10,8 +10,8 @@ Also see:
 
 ### Added
 
-- For additional control of your user sessions, you may now define [cookie Domain attribute](https://tools.ietf.org/html/rfc6265#section-5.2.3)
-  - Because this needs to be set consistently, it it's an enviroment variable; set it with `SESSION_DOMAIN`
+- For additional control of your user sessions, you may now define the [cookie Domain attribute](https://tools.ietf.org/html/rfc6265#section-5.2.3)
+  - Because this needs to be set consistently across your app's usage of session, set this via the `SESSION_DOMAIN` environment variable
 
 
 ---
