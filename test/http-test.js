@@ -1,6 +1,6 @@
 let test = require('tape')
 let arc = require('../')
-let sandbox = require('@architect/architect').sandbox
+let sandbox = require('@architect/sandbox')
 
 let end
 test('env', async t=> {

@@ -43,13 +43,13 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/architect": "^5.8.4",
-    "aws-sdk": "^2.453.0",
+    "@architect/sandbox": "^1.0.10",
+    "aws-sdk": "^2.480.0",
     "eslint": "^5.16.0",
     "mkdirp": "^0.5.1",
     "path-exists": "^4.0.0",
     "tap-spec": "^5.0.0",
-    "tape": "^4.10.1"
+    "tape": "^4.10.2"
   },
   "prettier": {
     "semi": false,

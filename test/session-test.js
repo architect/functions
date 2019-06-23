@@ -1,4 +1,4 @@
-let arc = require('@architect/architect')
+let sandbox = require('@architect/sandbox')
 let read = require('../src/http/session/read')
 let write = require('../src/http/session/write')
 let test= require('tape')
@@ -24,9 +24,9 @@ test('jwe', async t=> {
 })
 
 let end
-test('arc.sandbox.start', async t=> {
+test('sandbox.start', async t=> {
   t.plan(1)
-  end = await arc.sandbox.start()
+  end = await sandbox.start()
   t.ok(true, 'started sandbox')
 })
 
