@@ -1,12 +1,13 @@
+let doc = require('./doc')
 let readSSM = require('./read-ssm')
 let readArc = require('./read-arc')
 let factory = require('./factory')
 let sandbox = require('./sandbox')
-let doc = require('./doc')
 let db = require('./db')
 
 // cheap client cache
 let client = false
+
 
 /**
  * // example usage:
@@ -17,7 +18,6 @@ let client = false
  *  await data.tacos.put({taco: 'pollo'})
  *  return {statusCode: 200}
  * }
- *
  */
 function tables(callback) {
   let promise
