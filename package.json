@@ -8,7 +8,7 @@
     "url": "https://github.com/architest/functions"
   },
   "bugs": "https://github.com/architect/functions/issues",
-  "main": "index",
+  "main": "src/index",
   "scripts": {
     "t": "tape test/proxy/*-test.js | tap-spec",
     "lint": "eslint --fix .",
