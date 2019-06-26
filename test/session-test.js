@@ -34,14 +34,19 @@ test('ddb', async t=> {
   t.plan(3)
   process.env.SESSION_TABLE_NAME = 'arc-sessions'
   let fakerequest = {}
-  let session = await read(fakerequest)
-  session.one = 1
-  let cookie = await write(session)
-  t.ok(session, 'read session cookie')
-  t.ok(cookie, 'wrote session cookie')
-  let inception = await read({headers:{Cookie:cookie}})
-  t.ok(inception.one === 1, 'read back again')
-  console.log(session, cookie)
+  try {
+    let session = await read(fakerequest)
+    session.one = 1
+    let cookie = await write(session)
+    t.ok(session, 'read session cookie')
+    t.ok(cookie, 'wrote session cookie')
+    let inception = await read({headers:{Cookie:cookie}})
+    t.ok(inception.one === 1, 'read back again')
+    console.log(session, cookie)
+  }
+  catch(e) {
+    console.log(e)
+  }
 })
 
 test('cleanup', async t=> {
