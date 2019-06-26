@@ -44,7 +44,7 @@ function fails() {
 test('modified requests are passed along the middleware chain', async t => {
   t.plan(1)
   try {
-    var combined = arc.middleware(returnsModifiedRequest, returnsNothing, returnsResponse)
+    var combined = arc.http.middleware(returnsModifiedRequest, returnsNothing, returnsResponse)
     var response = await combined(MOCK_REQUEST)
     t.ok(response.body.didYouModifyTheRequest)
   } catch (e) {
@@ -55,7 +55,7 @@ test('modified requests are passed along the middleware chain', async t => {
 test('we exit on first response', async t => {
   t.plan(1)
   try {
-    var combined = arc.middleware(returnsResponse, fails)
+    var combined = arc.http.middleware(returnsResponse, fails)
     var response = await combined(MOCK_REQUEST)
     t.ok(response.body)
   } catch (e) {
@@ -66,7 +66,7 @@ test('we exit on first response', async t => {
 test('error thrown when middleware chain does not return a response', async t => {
   t.plan(1)
   try {
-    var combined = arc.middleware(returnsModifiedRequest, returnsNothing)
+    var combined = arc.http.middleware(returnsModifiedRequest, returnsNothing)
     var response = await combined(MOCK_REQUEST)
     // This will fail here
   } catch (e) {

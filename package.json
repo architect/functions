@@ -8,7 +8,7 @@
     "url": "https://github.com/arc-repos/arc-functions"
   },
   "bugs": "https://github.com/arc-repos/arc-functions/issues",
-  "main": "index",
+  "main": "src/index",
   "scripts": {
     "t": "tape test/proxy/*-test.js | tap-spec",
     "lint": "eslint ./src --fix",
