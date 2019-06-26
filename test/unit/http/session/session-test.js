@@ -36,16 +36,21 @@ test('ddb read and write implementations', async t=> {
   t.plan(3)
   process.env.SESSION_TABLE_NAME = 'arc-sessions'
   let fakerequest = {}
-  let session = await read(fakerequest)
-  t.ok(session, 'read session cookie')
-  session.one = 1
-  let cookie = await write(session)
-  t.ok(cookie, 'wrote modified session cookie')
-  let inception = await read({headers:{Cookie:cookie}})
-  t.comment(JSON.stringify(session))
-  t.comment(JSON.stringify(cookie))
-  t.comment(JSON.stringify(inception))
-  t.equals(inception.one, 1, 'read back modified cookie')
+  try {
+    let session = await read(fakerequest)
+    t.ok(session, 'read session cookie')
+    session.one = 1
+    let cookie = await write(session)
+    t.ok(cookie, 'wrote modified session cookie')
+    let inception = await read({headers:{Cookie:cookie}})
+    t.comment(JSON.stringify(session))
+    t.comment(JSON.stringify(cookie))
+    t.comment(JSON.stringify(inception))
+    t.equals(inception.one, 1, 'read back modified cookie')
+  }
+  catch(e) {
+    t.fail(e)
+  }
 })
 
 test('shutdown sandbox', async t=> {
