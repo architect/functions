@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@architect/sandbox": "^1.0.10",
-    "aws-sdk": "^2.484.0",
+    "aws-sdk": "^2.485.0",
     "aws-sdk-mock": "^4.5.0",
     "codecov": "^3.5.0",
     "cross-env": "^5.2.0",
