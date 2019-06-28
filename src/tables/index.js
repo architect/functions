@@ -1,3 +1,4 @@
+let old = require('./old')
 let doc = require('./doc')
 let readSSM = require('./read-ssm')
 let readArc = require('./read-arc')
@@ -55,5 +56,13 @@ function tables(callback) {
 // export for direct/fast use
 tables.doc = doc
 tables.db = db
+tables.insert = old.insert
+tables.modify = old.modify
+tables.update = old.update
+tables.remove = old.remove
+tables.destroy = old.destroy
+tables.all = old.all
+tables.save = old.save
+tables.change = old.change
 
 module.exports = tables
