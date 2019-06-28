@@ -32,8 +32,8 @@ function read(req, callback) {
       }
     })
   }
-  let hasCookie = req.headers && req.headers.Cookie
-  let jar = cookie.parse(hasCookie? req.headers.Cookie : '')
+  let hasCookie = req.headers && (req.headers.Cookie || req.headers.cookie)
+  let jar = cookie.parse(hasCookie? (req.headers.Cookie || req.headers.cookie) : '')
   let token = jwe.parse(jar._idx)
   callback(null, token.valid? token.payload : {})
   return promise
@@ -54,14 +54,19 @@ function write(payload, callback) {
   let key = '_idx'
   let val = jwe.create(payload)
   let maxAge = 7.884e+8
-  callback(null, cookie.serialize(key, val, {
+  let options = {
     maxAge,
     expires: new Date(Date.now() + maxAge * 1000),
     secure: true,
     httpOnly: true,
     path: '/',
     sameSite: 'lax',
-  }))
+  }
+  if (process.env.SESSION_DOMAIN)
+    options.domain = process.env.SESSION_DOMAIN
+  if (process.env.NODE_ENV === 'testing')
+    delete options.secure
+  callback(null, cookie.serialize(key, val, options))
   return promise
 }
 
