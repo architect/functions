@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@architect/sandbox": "^1.0.10",
-    "aws-sdk": "^2.484.0",
+    "aws-sdk": "^2.485.0",
     "eslint": "^5.16.0",
     "mkdirp": "^0.5.1",
     "path-exists": "^4.0.0",

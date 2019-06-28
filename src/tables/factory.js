@@ -7,7 +7,7 @@ let promisify = require('./promisify-object')
  */
 module.exports = function reflectFactory(tables) {
 
-  let data = Object.keys(tables).reduce((tablename, client)=> {
+  let data = Object.keys(tables).reduce((client, tablename)=> {
     client[tablename] = factory(tables[tablename])
     return client
   }, {})
