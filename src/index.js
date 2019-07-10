@@ -5,7 +5,7 @@ let static = require('./static')
 let tables = require('./tables')
 let ws = require('./ws')
 
-module.exports = {
+let arc = {
   events,
   http,
   queues,
@@ -13,3 +13,11 @@ module.exports = {
   tables,
   ws,
 }
+
+// backwards compat
+arc.proxy = {}
+arc.proxy.public = http.proxy.public
+arc.middleware = http.middleware
+// backwards compat
+
+module.exports = arc
