@@ -2,9 +2,32 @@
 
 ---
 Also see:
-- [Architect changelog](https://github.com/arc-repos/architect/blob/master/changelog.md)
-- [Architect Data changelog](https://github.com/arc-repos/arc-data/blob/master/changelog.md)
+- [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
+- [Architect Data changelog](https://github.com/architect/arc-data/blob/master/changelog.md)
 ---
+
+
+## [3.2.2] 2019-07-11
+
+### Added
+
+- Including a `headers` object in your `arc.http` response will now set custom headers
+- `SESSION_DOMAIN` variable now supported in `jwe` sessions
+- `context` is now passed onto each middleware function
+
+
+---
+
+
+## [3.2.1] 2019-06-26
+
+### Changed
+
+- Backwards-compatible refactoring of `events` publishing in preparation for Architect 6 service discovery
+
+
+---
+
 
 ## [3.2.0] 2019-06-14
 
@@ -88,7 +111,6 @@ Also see:
 
 
 ---
-
 
 ## [3.0.2] - 2019-04-10
 

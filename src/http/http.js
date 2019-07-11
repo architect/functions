@@ -57,6 +57,7 @@ module.exports = function http(...fns) {
 function response(req, callback, params) {
   let res = params
   // default content type, body, cache-control
+  res.headers = res.headers || {}
   res.type = 'application/json; charset=utf8'
   res.body = params.body || '\n'
   res.cacheControl = params.cacheControl || ''
@@ -99,7 +100,7 @@ function response(req, callback, params) {
     res.body = params.xml
   }
   // fixes for proxy+ greedy catchall at root route
-  res.headers = {'content-type':res.type}
+  res.headers['content-type'] = res.type
   res.statusCode = res.status || res.code || res.statusCode
   // tag the new session
   if (res.session) {

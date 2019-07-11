@@ -54,14 +54,18 @@ function write(payload, callback) {
   let key = '_idx'
   let val = jwe.create(payload)
   let maxAge = 7.884e+8
-  callback(null, cookie.serialize(key, val, {
+  let options = {
     maxAge,
     expires: new Date(Date.now() + maxAge * 1000),
     secure: true,
     httpOnly: true,
     path: '/',
     sameSite: 'lax',
-  }))
+  }
+  if (process.env.SESSION_DOMAIN) {
+    options.domain = process.env.SESSION_DOMAIN
+  }
+  callback(null, cookie.serialize(key, val, options))
   return promise
 }
 
