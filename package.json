@@ -13,6 +13,7 @@
     "t": "tape test/proxy/*-test.js | tap-spec",
     "lint": "eslint ./src --fix",
     "test": "npm run lint && AWS_REGION=us-west-2 NODE_ENV=testing tape test/*-test.js | tap-spec && npm run clean",
+    "bundle:proxy": "browserify src/http/proxy/arc-default-get-index.js --node --ignore aws-sdk --standalone proxy > arc-proxy-3.2.2.js",
     "clean": "rm -rf ./src/http/get-index"
   },
   "author": "Brian LeRoux <b@brian.io>",
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@architect/sandbox": "^1.0.10",
     "aws-sdk": "^2.485.0",
+    "browserify": "^16.3.0",
     "eslint": "^5.16.0",
     "mkdirp": "^0.5.1",
     "path-exists": "^4.0.0",
