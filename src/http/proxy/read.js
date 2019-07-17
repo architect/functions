@@ -82,7 +82,6 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
       })
     }
 
-    console.log('GOT RESPONSE', response)
     return response
   }
   catch(e) {
