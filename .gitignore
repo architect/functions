@@ -1,5 +1,5 @@
 node_modules/
-arc-proxy-
+arc-proxy-*
 _mock
 coverage/
 .nyc_output/
