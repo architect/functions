@@ -26,6 +26,8 @@ function read(request, callback) {
   // read dynamo session table
   let name = process.env.SESSION_TABLE_NAME || 'arc-sessions'
   let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
+  // TODO: uppercase 'Cookie' is not the header name on AWS Lambda; it's
+  // lowercase 'cookie' on lambda...
   let jar = cookie.parse(request.headers && request.headers.Cookie? request.headers.Cookie || '': '')
   let sesh = jar.hasOwnProperty('_idx')
   let valid = unsign(jar._idx || '', secret)

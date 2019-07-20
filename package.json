@@ -2,17 +2,20 @@
   "name": "@architect/functions",
   "version": "3.2.2",
   "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
-  "homepage": "https://github.com/arc-repos/arc-functions",
+  "homepage": "https://github.com/architect/functions",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arc-repos/arc-functions"
+    "url": "https://github.com/architest/functions"
   },
-  "bugs": "https://github.com/arc-repos/arc-functions/issues",
+  "bugs": "https://github.com/architect/functions/issues",
   "main": "index",
   "scripts": {
     "t": "tape test/proxy/*-test.js | tap-spec",
-    "lint": "eslint ./src --fix",
-    "test": "npm run lint && AWS_REGION=us-west-2 NODE_ENV=testing tape test/*-test.js | tap-spec && npm run clean",
+    "lint": "eslint --fix .",
+    "test:unit": "cross-env NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar REGION=us-west-1 tape test/unit/**/*-test.js test/unit/**/**/*-test.js | tap-spec",
+    "test:integration": "cross-env NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar REGION=us-west-1 tape test/integration/*-test.js | tap-spec",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary npm run test:unit",
+    "test": "npm run lint && npm run test:integration && npm run coverage",
     "clean": "rm -rf ./src/http/get-index"
   },
   "author": "Brian LeRoux <b@brian.io>",
@@ -45,9 +48,15 @@
   "devDependencies": {
     "@architect/sandbox": "^1.0.10",
     "aws-sdk": "^2.480.0",
+    "aws-sdk-mock": "^4.5.0",
+    "codecov": "^3.5.0",
+    "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
     "mkdirp": "^0.5.1",
+    "nyc": "^14.1.1",
     "path-exists": "^4.0.0",
+    "proxyquire": "^2.1.1",
+    "sinon": "^7.3.2",
     "tap-spec": "^5.0.0",
     "tape": "^4.10.2"
   },

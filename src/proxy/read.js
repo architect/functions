@@ -20,7 +20,6 @@ let env = process.env.NODE_ENV
  * @returns - an HTTP Lambda friendly response {headers, body, status}
  */
 module.exports = async function read(params) {
-
   let {Key, config={}, reqHeaders, isRoot} = params
 
   let {bucket={}, cacheControl} = config

@@ -1,11 +1,5 @@
 let test = require('tape')
-let transform = require('../../src/proxy/transform')
-
-test('env', t=> {
-  t.plan(1)
-  t.ok(transform, 'transform')
-  console.log(transform)
-})
+let transform = require('../../../src/proxy/transform')
 
 test('transform returns early if there are no plugins', t=> {
   t.plan(2)
@@ -15,22 +9,22 @@ test('transform returns early if there are no plugins', t=> {
     Key:'foo.mjs',
     config: {},
     defaults: {headers, body},
-  }) 
-  t.ok(result.body === body, 'body')
-  t.ok(JSON.stringify(result.headers) === JSON.stringify(headers), 'headers')
+  })
+  t.equals(result.body, body, 'result.body is as expected')
+  t.equals(JSON.stringify(result.headers), JSON.stringify(headers), 'result.headers is as expected')
 })
 
-function plugin0(key, {headers, body}, config) {
+function plugin0(key, {headers, body}) {
   body = JSON.parse(body)
   body.zero = true
   return {headers, body: JSON.stringify(body)}
 }
-function plugin1(key, {headers, body}, config) {
+function plugin1(key, {headers, body}) {
   body = JSON.parse(body)
   body.one = true
   return {headers, body: JSON.stringify(body)}
 }
-function plugin2(key, {headers, body}, config) {
+function plugin2(key, {headers, body}) {
   body = JSON.parse(body)
   body.two = true
   return {headers, body: JSON.stringify(body)}
@@ -48,7 +42,7 @@ test('transforms', t=> {
       }
     },
     defaults: {headers, body},
-  }) 
+  })
   let parsed = JSON.parse(result.body)
   t.ok(parsed, 'body')
   t.ok(parsed.zero, 'zero')

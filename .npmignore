@@ -2,8 +2,10 @@
 .git
 .eslintrc.js
 .travis.yml
+appveyor.yml
 .DS_Store
 _mock
 changelog.md
 contributing.md
 test
+codecov.yaml

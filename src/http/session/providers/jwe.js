@@ -32,6 +32,8 @@ function read(req, callback) {
       }
     })
   }
+  // TODO: uppercase 'Cookie' is not the header name on Lambda, it's lowercase
+  // 'cookie'...
   let hasCookie = req.headers && req.headers.Cookie
   let jar = cookie.parse(hasCookie? req.headers.Cookie : '')
   let token = jwe.parse(jar._idx)
