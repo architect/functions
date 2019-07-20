@@ -1,4 +1,4 @@
-let arc = require('../')
+let arc = require('../../')
 let exec = require('child_process').execSync
 let exists = require('path-exists').sync
 let fs = require('fs')
@@ -16,8 +16,8 @@ test('Init', t=> {
 test('Set up mocked files', t=> {
   t.plan(2)
   mkdir(shared)
-  fs.copyFileSync(join(__dirname, 'mock-arc'), join(shared, '.arc'))
-  fs.copyFileSync(join(__dirname, 'mock-static'), join(shared, 'static.json'))
+  fs.copyFileSync(join(__dirname, '..', 'mock', 'mock-arc'), join(shared, '.arc'))
+  fs.copyFileSync(join(__dirname, '..', 'mock', 'mock-static'), join(shared, 'static.json'))
   t.ok(exists(join(shared, '.arc')), 'Mock .arc file ready')
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
 })

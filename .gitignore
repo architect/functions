@@ -1,2 +1,4 @@
 node_modules/
 _mock
+coverage/
+.nyc_output/
