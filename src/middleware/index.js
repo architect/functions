@@ -10,7 +10,7 @@ function addMiddleware(...steps) {
     for (let step of steps) {
       // Running step ${step.name}
       var middleWareResult = await step(request, context)
-      var isRequest = middleWareResult && middleWareResult.hasOwnProperty('method')
+      var isRequest = middleWareResult && middleWareResult.hasOwnProperty('httpMethod')
       if (isRequest) {
         // Middleware ${step.name} has returned a modified request, continuing...
         request = middleWareResult
