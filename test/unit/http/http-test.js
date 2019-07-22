@@ -7,7 +7,7 @@ test('arc.http express-style middleware', t=> {
   process.env.SESSION_TABLE_NAME = 'jwe' // if we drop this / wanna use ddb, we cant, but we need to run a sandbox instance, then.
   let one = sinon.fake.yields()
   let two = sinon.fake.yields()
-  let three = sinon.fake((req, res) => res({returned:true}))
+  let three = sinon.fake((req, res) => res({body:'hey now'}))
   t.plan(5)
   let lambda = http(one, two, three)
   let req = {headers:{}}
@@ -18,6 +18,6 @@ test('arc.http express-style middleware', t=> {
     t.ok(two.calledOnce, 'second middleware called exactly once')
     t.ok(three.calledOnce, 'third middleware called exactly once')
     t.comment(JSON.stringify(result))
-    t.equals(result.returned, true, 'final handler returned result invoked by res within one of the middlewares')
+    t.equals(result.body, 'hey now', 'final handler returned result that was invoked via `res` within one of the middlewares')
   })
 })
