@@ -8,10 +8,10 @@ let proxyquire = require('proxyquire').noPreserveCache();
 const NODE_ENV = process.env.NODE_ENV
 let readFake = sinon.stub(fs, 'readFile').yields(null, 'this is file body')
 
-test('arc.proxy.read should read from local public folder (via the transform module) when in testing mode', async t => {
+test.skip('arc.proxy.read should read from local public folder (via the transform module) when in testing mode', async t => {
   process.env.NODE_ENV = 'testing'
   let transformStub = sinon.stub().returns(true)
-  let read = proxyquire('../../../src/proxy/read', {
+  let read = proxyquire('../../../../src/http/proxy/read', {
     './transform': transformStub
   })
   t.plan(1)

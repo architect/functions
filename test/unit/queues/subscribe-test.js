@@ -1,6 +1,6 @@
 let test = require('tape')
 let sinon = require('sinon')
-let subscribe = require('../../../src/queues/_subscribe')
+let subscribe = require('../../../src/queues/subscribe')
 let mockSqsEvent = require('./mock-sqs-event.json')
 
 test('queues.subscribe calls handler', t=> {

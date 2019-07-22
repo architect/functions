@@ -17,6 +17,7 @@ test('arc.http express-style middleware', t=> {
     t.ok(one.calledOnce, 'first middleware called exactly once')
     t.ok(two.calledOnce, 'second middleware called exactly once')
     t.ok(three.calledOnce, 'third middleware called exactly once')
-    t.equals(result.returned, true, 'final handler returned expected result')
+    t.comment(JSON.stringify(result))
+    t.equals(result.returned, true, 'final handler returned result invoked by res within one of the middlewares')
   })
 })
