@@ -1,6 +1,6 @@
 let test = require('tape')
 let sinon = require('sinon')
-let middleware = require('../../../src/middleware')
+let middleware = require('../../../../src/http/middleware')
 
 test('arc.middleware should allow for munging and passing a request object between different middleware layers', t => {
   t.plan(1)
