@@ -1,4 +1,3 @@
-let arc = require('../../')
 let exec = require('child_process').execSync
 let exists = require('path-exists').sync
 let fs = require('fs')
@@ -6,20 +5,25 @@ let join = require('path').join
 let mkdir = require('mkdirp').sync
 let test = require('tape')
 
-let shared = join(process.cwd(), 'node_modules', '@architect', 'shared')
+let arc
+let mock = join(__dirname, '..', 'mock')
+let tmp = join(mock, 'tmp')
+let shared = join(tmp, 'node_modules', '@architect', 'shared')
 
-test('Init', t=> {
-  t.plan(1)
-  t.ok(arc, 'Loaded arc')
-})
+let origRegion = process.env.AWS_REGION
+let origCwd = process.cwd()
 
 test('Set up mocked files', t=> {
   t.plan(2)
   mkdir(shared)
-  fs.copyFileSync(join(__dirname, '..', 'mock', 'mock-arc'), join(shared, '.arc'))
-  fs.copyFileSync(join(__dirname, '..', 'mock', 'mock-static'), join(shared, 'static.json'))
+  fs.copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
+  fs.copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
+  fs.copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
   t.ok(exists(join(shared, '.arc')), 'Mock .arc file ready')
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
+  process.chdir(tmp)
+  // eslint-disable-next-line
+  arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
 test('Local URL tests', t=> {
@@ -61,8 +65,9 @@ test('Clean up env', t=> {
   t.plan(1)
   delete process.env.ARC_STATIC_BUCKET
   delete process.env.ARC_STATIC_FOLDER
-  delete process.env.AWS_REGION
+  process.env.AWS_REGION = origRegion
   process.env.NODE_ENV = 'testing'
-  exec(`rm -rf ${shared}`)
-  t.ok(!exists(shared), 'Mocks cleaned up')
+  process.chdir(origCwd)
+  exec(`rm -rf ${tmp}`)
+  t.ok(!exists(tmp), 'Mocks cleaned up')
 })
