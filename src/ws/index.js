@@ -1,67 +1,42 @@
-let aws = require('aws-sdk')
-let http = require('http')
+let sandbox = require('./send-sandbox')
+let old = require('./send-old')
+let run = require('./send')
+let urls = require('./urls')
+
+old.send = send
+old.urls = urls
+
+module.exports = old
 
 /**
- * // the code below supports both code styles
+ * arc.ws.send
  *
- * let WebSocket = require('@architect/functions').ws
- * let ws = new WebSocket(event)
- * await ws.send({id, payload})
+ * publish web socket events
  *
- * // or, more classic/functional
- * let arc = require('@architect/functions')
- * let ws = arc.ws(event)
- * ws.send({id, payload}, callback)
+ * @param {Object} params
+ * @param {String} params.id - the ws connecton id (required)
+ * @param {String} params.payload - a json event payload (required)
+ * @param {Function} callback - a node style errback (optional)
+ * @returns {Promise} - returned if no callback is supplied
  */
-module.exports = function WS(event) {
-  return {
-    /**
-     * ws.send sends a message to the given websocket connection
-     */
-    send({id, payload}, callback) {
-      // create a promise if no callback is defined
-      let promise
-      if (!callback) {
-        promise = new Promise(function(res, rej) {
-          callback = function(err, result) {
-            err ? rej(err) : res(result)
-          }
-        })
+function send({id, payload}, callback) {
+
+  // create a promise if no callback is defined
+  let promise
+  if (!callback) {
+    promise = new Promise(function(res, rej) {
+      callback = function(err, result) {
+        err ? rej(err) : res(result)
       }
-      // check for local dev
-      if (process.env.NODE_ENV === 'testing') {
-        let body = JSON.stringify({id, payload})
-        let req = http.request({
-          method: 'POST',
-          port: 3333,
-          path: '/__arc',
-          headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(body)
-          }
-        })
-        req.on('error', callback)
-        req.on('close', ()=> callback())
-        req.write(body)
-        req.end()
-      }
-      else {
-        let apiVersion = '2018-11-29'
-        let apiId = event.requestContext.apiId
-        let region = process.env.AWS_REGION
-        let stage = process.env.NODE_ENV
-        let endpoint = `https://${apiId}.execute-api.${region}.amazonaws.com/${stage}`
-        let gateway = new aws.ApiGatewayManagementApi({apiVersion, endpoint})
-        gateway.postToConnection({
-          ConnectionId: id,
-          Data: JSON.stringify(payload)
-        },
-        function postToConnection(err) {
-          if (err) callback(err)
-          else callback()
-        })
-      }
-      return promise
-    }
+    })
   }
+
+  let exec = process.env.NODE_ENV === 'testing'? sandbox : run
+
+  exec({
+    id,
+    payload
+  }, callback)
+
+  return promise
 }

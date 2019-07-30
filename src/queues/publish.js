@@ -1,8 +1,8 @@
 let sandbox = require('./publish-sandbox')
-let topic = require('./publish-topic')
+let queue = require('./publish-queue')
 
 /**
- * invoke an event lambda by sns topic name
+ * invoke a queue lambda by sqs queue name
  */
 module.exports = function publish(params, callback) {
 
@@ -22,7 +22,7 @@ module.exports = function publish(params, callback) {
   }
 
   let isLocal = process.env.NODE_ENV === 'testing' || process.env.hasOwnProperty('ARC_LOCAL')
-  let exec = isLocal ? sandbox : topic
+  let exec = isLocal ? sandbox : queue
   exec(params, callback)
   return promise
 }
