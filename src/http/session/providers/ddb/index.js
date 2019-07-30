@@ -78,6 +78,8 @@ function write(params, callback) {
       if (process.env.SESSION_DOMAIN) {
         options.domain = process.env.SESSION_DOMAIN
       }
+      if (process.env.NODE_ENV === 'testing')
+        delete options.secure
       let result = cookie.serialize('_idx', sign(params._idx, secret), options)
       callback(null, result)
     }

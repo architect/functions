@@ -1,5 +1,5 @@
 let test = require('tape')
-let transform = require('../../../src/proxy/transform')
+let transform = require('../../../../src/http/proxy/transform')
 
 test('transform returns early if there are no plugins', t=> {
   t.plan(2)

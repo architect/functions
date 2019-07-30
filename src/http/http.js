@@ -18,7 +18,7 @@ module.exports = function http(...fns) {
 
     // verify the request is configured by arc
     if (!request.headers)
-      throw Error('gateway missing headers')
+      request.headers = {}
 
     // cache the functions
     let cache = fns.slice()
@@ -55,64 +55,71 @@ module.exports = function http(...fns) {
  * - cacheControl
  */
 function response(req, callback, params) {
-  let res = params
+
   // default content type, body, cache-control
-  res.headers = res.headers || {}
-  res.type = 'application/json; charset=utf8'
-  res.body = params.body || '\n'
-  res.cacheControl = params.cacheControl || ''
+  let type = 'application/json; charset=utf8'
+  let body = params.body || '\n'
+  //let cacheControl = params.cacheControl || ''
+  let status = params.status || params.code || params.statusCode || 200
+
   // shorthand overrides
   if (params instanceof Error) {
-    res.status = params.status || params.code || 500
-    res.type = 'text/html; charset=utf8'
-    res.body = `
+    status = params.status || params.code || params.statusCode || 500
+    type = 'text/html; charset=utf8'
+    body = `
       <h1>${params.name} ${res.status}</h1>
       <h3>${params.message}</h3>
       <pre>${params.stack}<pre>
     `
   }
-  if (params.location) {
-    // auto add 302 to status
-    res.status = 302
-  }
+
   if (params.html) {
-    res.type = 'text/html; charset=utf8'
-    res.body = params.html
+    type = 'text/html; charset=utf8'
+    body = params.html
   }
   else if (params.css) {
-    res.type = 'text/css; charset=utf8'
-    res.body = params.css
+    type = 'text/css; charset=utf8'
+    body = params.css
   }
   else if (params.js) {
-    res.type = 'text/javascript; charset=utf8'
-    res.body = params.js
+    type = 'text/javascript; charset=utf8'
+    body = params.js
   }
   else if (params.text) {
-    res.type = 'text/plain; charset=utf8'
-    res.body = params.text
+    type = 'text/plain; charset=utf8'
+    body = params.text
   }
   else if (params.json) {
-    res.type = 'application/json; charset=utf8'
-    res.body = JSON.stringify(params.json)
+    type = 'application/json; charset=utf8'
+    body = JSON.stringify(params.json)
   }
   else if (params.xml) {
-    res.type = 'application/xml; charset=utf8'
-    res.body = params.xml
+    type = 'application/xml; charset=utf8'
+    body = params.xml
   }
-  // fixes for proxy+ greedy catchall at root route
-  res.headers['content-type'] = res.type
-  res.statusCode = res.status || res.code || res.statusCode
+
+  let res = {}
+  res.headers = Object.assign({}, {'content-type': type}, params.headers || {})
+  res.statusCode = status
+  res.body = body
+
+  if (params.location) {
+    res.statusCode = 302
+    res.headers.location = params.location
+  }
+
   // tag the new session
-  if (res.session) {
-    let session = res.session
-    session._idx = req.session._idx
-    session._secret = req.session._secret
-    session._ttl = req.session._ttl
+  if (params.session) {
+    let session = Object.assign({}, req.session, params.session)
+    //session._idx = req.session._idx
+    //session._secret = req.session._secret
+    //session._ttl = req.session._ttl
     // save the session
     write(session, function _write(err, cookie) {
       if (err) throw err
-      let merged = Object.assign({}, res, {cookie})
-      callback(null, merged)
+      //let merged = Object.assign({}, res, {cookie})
+      res.headers['set-cookie'] = cookie
+      callback(null, res)
     })
   }
   else {

@@ -32,10 +32,8 @@ function read(req, callback) {
       }
     })
   }
-  // TODO: uppercase 'Cookie' is not the header name on Lambda, it's lowercase
-  // 'cookie'...
-  let hasCookie = req.headers && req.headers.Cookie
-  let jar = cookie.parse(hasCookie? req.headers.Cookie : '')
+  let hasCookie = req.headers && (req.headers.Cookie || req.headers.cookie)
+  let jar = cookie.parse(hasCookie? (req.headers.Cookie || req.headers.cookie) : '')
   let token = jwe.parse(jar._idx)
   callback(null, token.valid? token.payload : {})
   return promise
@@ -67,6 +65,8 @@ function write(payload, callback) {
   if (process.env.SESSION_DOMAIN) {
     options.domain = process.env.SESSION_DOMAIN
   }
+  if (process.env.NODE_ENV === 'testing')
+    delete options.secure
   callback(null, cookie.serialize(key, val, options))
   return promise
 }

@@ -1,50 +1,68 @@
-var parallel = require('run-parallel')
-/**
- * var trigger = require('aws-dynamodb-lambda-trigger/lambda')
- *
- * function onInsert(record, callback) {
- *   console.log(record)
- *   callback(null, record) // errback style; results passed to context.succeed
- * }
- *
- * module.exports = trigger.insert(onInsert)
- */
+let old = require('./old')
+let doc = require('./doc')
+let readSSM = require('./read-ssm')
+let readArc = require('./read-arc')
+let factory = require('./factory')
+let sandbox = require('./sandbox')
+let db = require('./db')
 
-function __trigger(types, handler) {
-  return function __lambdaSignature(evt, ctx) {
-    // dynamo triggers send batches of records so we're going to create a handler for each one
-    var handlers = evt.Records.map(function(record) {
-      // for each record we construct a handler function
-      return function __actualHandler(callback) {
-        // if isInvoking we invoke the handler with the record
-        var isInvoking = types.indexOf(record.eventName) > -1
-        if (isInvoking) {
-          handler(record, callback)
-        }
-        else {
-          callback() // if not we just call the continuation (callback)
-        }
-      }
-    })
-    // executes the handlers in parallel
-    parallel(handlers, function __processedRecords(err, results) {
-      if (err) {
-        ctx.fail(err)
-      }
-      else {
-        ctx.succeed(results)
+// cheap client cache
+let client = false
+
+
+/**
+ * // example usage:
+ * let arc = require('architect/functions')
+ *
+ * exports.handler = async function http(req) {
+ *  let data = await arc.tables()
+ *  await data.tacos.put({taco: 'pollo'})
+ *  return {statusCode: 200}
+ * }
+ */
+function tables(callback) {
+  let promise
+  if (!callback) {
+    promise = new Promise(function ugh(res, rej) {
+      callback = function errback(err, result) {
+        if (err) rej(err)
+        else res(result)
       }
     })
   }
+  if (process.env.NODE_ENV === 'testing') {
+    readArc(function errback(err, arc) {
+      if (err) callback(err)
+      else callback(null, sandbox(arc))
+    })
+  }
+  else {
+    if (client) {
+      callback(null, client)
+    }
+    else {
+      readSSM(function done(err, tables) {
+        if (err) callback(err)
+        else {
+          client = factory(tables)
+          callback(null, client)
+        }
+      })
+    }
+  }
+  return promise
 }
 
-module.exports = {
-  insert: __trigger.bind({}, ['INSERT']),
-  modify: __trigger.bind({}, ['MODIFY']),
-  update: __trigger.bind({}, ['MODIFY']),
-  remove: __trigger.bind({}, ['REMOVE']),
- destroy: __trigger.bind({}, ['REMOVE']),
-     all: __trigger.bind({}, ['INSERT', 'MODIFY', 'REMOVE']),
-    save: __trigger.bind({}, ['INSERT', 'MODIFY']),
-  change: __trigger.bind({}, ['INSERT', 'REMOVE'])
-}
+// export for direct/fast use
+tables.doc = doc
+tables.db = db
+tables.insert = old.insert
+tables.modify = old.modify
+tables.update = old.update
+tables.remove = old.remove
+tables.destroy = old.destroy
+tables.all = old.all
+tables.save = old.save
+tables.change = old.change
+
+module.exports = tables
