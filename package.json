@@ -10,9 +10,11 @@
   "bugs": "https://github.com/arc-repos/arc-functions/issues",
   "main": "src/index",
   "scripts": {
-    "t": "tape test/proxy/*-test.js | tap-spec",
-    "lint": "eslint ./src --fix",
-    "test": "npm run lint && AWS_REGION=us-west-2 NODE_ENV=testing tape test/*-test.js | tap-spec && npm run clean",
+    "lint": "eslint --fix .",
+    "test:unit": "cross-env NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar REGION=us-west-1 tape test/unit/**/*-test.js test/unit/**/**/*-test.js | tap-spec",
+    "test:integration": "cross-env NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar REGION=us-west-1 tape test/integration/*-test.js | tap-spec",
+    "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
+    "test": "npm run lint && npm run test:integration && npm run coverage",
     "bundle:proxy": "browserify src/http/proxy/arc-default-get-index.js --node --external aws-sdk --standalone proxy > arc-proxy-3.2.2.js",
     "clean": "rm -rf ./src/http/get-index"
   },
@@ -46,10 +48,17 @@
   "devDependencies": {
     "@architect/sandbox": "^1.0.10",
     "aws-sdk": "^2.485.0",
+    "aws-sdk-mock": "^4.5.0",
     "browserify": "^16.3.0",
+    "codecov": "^3.5.0",
+    "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
     "mkdirp": "^0.5.1",
+    "nyc": "^14.1.1",
     "path-exists": "^4.0.0",
+    "proxyquire": "^2.1.1",
+    "rimraf": "^2.6.3",
+    "sinon": "^7.3.2",
     "tap-spec": "^5.0.0",
     "tape": "^4.10.2"
   },

@@ -1,20 +1,10 @@
-var fs = require('fs')
-var path = require('path')
 var test = require('tape')
-var waterfall = require('run-waterfall')
-var parse = require('@architect/parser')
-var events = require('../src/events')
-var mockSnsEvent = require('./mock-sns-event.json')
-
-test('env', t=> {
-  t.plan(2)
-  t.ok(events, 'gotta events')
-  t.ok(events.subscribe, 'events.subscribe')
-})
+var subscribe = require('../../../src/events/subscribe')
+var mockSnsEvent = require('../../mock/mock-sns-event.json')
 
 test('events.subscribe', t=> {
   t.plan(1)
-  
+
   // create a var to see if we successfully invoked
   var eventHandlerCalled = false
 
@@ -26,16 +16,16 @@ test('events.subscribe', t=> {
   }
 
   // get a lambda signature from the handler
-  var handler = events.subscribe(eventHandler)
+  var handler = subscribe(eventHandler)
 
   // invoke the lambda handler with mock payloads
   var mockContext = {}
-  handler(mockSnsEvent, mockContext, function _handler(err, result) {
+  handler(mockSnsEvent, mockContext, function _handler(err) {
     if (err) {
-      t.fail(err) 
+      t.fail(err)
     }
     else {
-      t.ok(eventHandlerCalled, 'successfully called') 
+      t.ok(eventHandlerCalled, 'successfully called')
     }
   })
 })

@@ -1,24 +1,26 @@
-let arc = require('../')
-let exec = require('child_process').execSync
+let arc
 let exists = require('path-exists').sync
 let fs = require('fs')
 let join = require('path').join
 let mkdir = require('mkdirp').sync
 let test = require('tape')
+let rmrf = require('rimraf')
 
-let shared = join(process.cwd(), 'node_modules', '@architect', 'shared')
+let mock = join(__dirname, '..', 'mock')
+let tmp = join(mock, 'tmp')
+let shared = join(tmp, 'node_modules', '@architect', 'shared')
+let previousCwd = process.cwd()
 let static
-
-test('Init', t=> {
-  t.plan(1)
-  t.ok(arc, 'Loaded arc')
-})
 
 test('Set up mocked arc', t=> {
   t.plan(1)
   mkdir(shared)
-  fs.copyFileSync(join(__dirname, 'mock-arc-fingerprint'), join(shared, '.arc'))
+  fs.copyFileSync(join(mock, 'mock-arc-fingerprint'), join(shared, '.arc'))
+  fs.copyFileSync(join(mock, 'mock-arc-fingerprint'), join(tmp, '.arc'))
   t.ok(exists(join(shared, '.arc')), 'Mock .arc file ready')
+  process.chdir(tmp)
+  // eslint-disable-next-line
+  arc = require('../..') // require it here as global scope in static relies on cwd()
 })
 
 test('Fingerprinting only enabled if static manifest is found', t=> {
@@ -31,7 +33,7 @@ test('Fingerprinting only enabled if static manifest is found', t=> {
 
 test('Set up mocked static manifest', t=> {
   t.plan(2)
-  fs.copyFileSync(join(__dirname, 'mock-static'), join(shared, 'static.json'))
+  fs.copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
   // eslint-disable-next-line
   static = require(join(shared, 'static.json'))
@@ -58,6 +60,7 @@ test('Clean up env', t=> {
   delete process.env.ARC_STATIC_FOLDER
   delete process.env.AWS_REGION
   process.env.NODE_ENV = 'testing'
-  exec(`rm -rf ${shared}`)
-  t.ok(!exists(shared), 'Mocks cleaned up')
+  rmrf.sync(tmp)
+  t.ok(!exists(tmp), 'Mocks cleaned up')
+  process.chdir(previousCwd)
 })
