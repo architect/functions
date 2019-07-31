@@ -15,7 +15,7 @@
     "test:integration": "cross-env NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape test/integration/*-test.js | tap-spec",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
     "test": "npm run lint && npm run test:integration && npm run coverage",
-    "bundle:proxy": "browserify src/http/proxy/arc-default-get-index.js --node --external aws-sdk --standalone proxy > arc-proxy-3.2.2.js"
+    "bundle:proxy": "browserify src/http/proxy/arc-default-get-index.js --node --external aws-sdk --standalone proxy > arc-proxy-3.2.3.js"
   },
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",
