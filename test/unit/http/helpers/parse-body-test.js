@@ -2,11 +2,12 @@ let parseBody = require('../../../../src/http/helpers/parse-body')
 let test = require('tape')
 
 let str = i => JSON.stringify(i)
+let b64encode = i => new Buffer.from(i).toString('base64')
 
 // Bodies
 let hi = {hi: 'there'}
-let hiBase64 = {base64: 'aGk9dGhlcmU='} // Arc 5
-let hiBase64file = 'aGkgdGhlcmUK' // text file style
+let hiBase64 = {base64: b64encode('hi there')} // Arc 5
+let hiBase64file = b64encode('hi there\n') // text file style
 let hiFormURL = 'hi=there'
 
 // Content types
@@ -25,7 +26,7 @@ test('Architect v6+ requests', t => {
   t.equals(str(parseBody(req)), str(null), `body matches ${str(req.body)}`)
 
   req = {
-    body: new Buffer.from(str(hi)).toString('base64'),
+    body: b64encode(str(hi)),
     headers: json,
     isBase64Encoded: true
   }
@@ -34,11 +35,11 @@ test('Architect v6+ requests', t => {
   // Test faulty encoding on JSON posts
   req.body = str(hi)
   t.throws(() => str(parseBody(req)), 'Raw JSON fails')
-  req.body = new Buffer.from('hello there').toString('base64')
+  req.body = b64encode('hello there')
   t.throws(() => str(parseBody(req)), 'Base64 encoded non-JSON string fails')
 
   req = {
-    body: new Buffer.from(hiFormURL).toString('base64'),
+    body: b64encode(hiFormURL),
     headers: formURLencoded,
     isBase64Encoded: true
   }
