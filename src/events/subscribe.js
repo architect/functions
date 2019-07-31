@@ -1,6 +1,6 @@
 var parallel = require('run-parallel')
 /**
- * // Exmaple usage:
+ * // Example usage:
  *
  * var arc = require('@architect/functions')
  *
