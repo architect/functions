@@ -1,6 +1,6 @@
 let read = require('./session/read')
 let write = require('./session/write')
-let parseBody = require('./helpers/parse-body')
+let bodyParser = require('./helpers/body-parser')
 let interpolate = require('./helpers/params')
 
 /**
@@ -33,7 +33,7 @@ module.exports = function http(...fns) {
 
       // construct a response function
       let req = interpolate(Object.assign({}, request, {session}))
-      req.body = parseBody(req)
+      req.body = bodyParser(req)
       let res = response.bind({}, req, callback)
 
       // loop thru middleware

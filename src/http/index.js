@@ -1,7 +1,7 @@
 // HTTP
 let http = require('./http')
 // HTTP helpers
-let body = require('./helpers/parse-body')
+let bodyParser = require('./helpers/body-parser')
 let interpolate = require('./helpers/params')
 let static = require('../static')
 let url = require('./helpers/url')
@@ -13,7 +13,7 @@ let middleware = require('./middleware')
 // Proxy
 let proxy = require('./proxy')
 
-http.helpers = {body, interpolate, static, url}
+http.helpers = {bodyParser, interpolate, static, url}
 http.session = {read, write}
 http.middleware = middleware
 http.proxy = proxy

@@ -1,4 +1,4 @@
-let parseBody = require('../../../../src/http/helpers/parse-body')
+let parseBody = require('../../../../src/http/helpers/body-parser')
 let test = require('tape')
 
 let str = i => JSON.stringify(i)
@@ -49,7 +49,8 @@ test('Architect v6+ requests', t => {
   // Pass through multipart / base64
   req = {
     body: hiBase64file,
-    headers: multipartFormData
+    headers: multipartFormData,
+    isBase64Encoded: true
   }
   t.equals(str(parseBody(req)), str({base64: hiBase64file}), `body matches ${str(req.body)}`)
 
