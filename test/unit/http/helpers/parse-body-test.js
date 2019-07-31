@@ -6,6 +6,7 @@ let str = i => JSON.stringify(i)
 // Bodies
 let hi = {hi: 'there'}
 let hiBase64 = {base64: 'aGk9dGhlcmU='} // Arc 5
+let hiBase64file = 'aGkgdGhlcmUK' // text file style
 let hiFormURL = 'hi=there'
 
 // Content types
@@ -15,20 +16,20 @@ let multipartFormData = {'Content-Type': 'multipart/form-data'}
 let octetStream = {'Content-Type': 'application/octet-stream'}
 
 test('Architect v6+ requests', t => {
-  t.plan(5)
+  t.plan(7)
   // Pass through empty body (although in practice we'll never see this, as we transform to empty object)
   let req = {
     body: null,
     headers: json
   }
-  t.equals(str(parseBody(req).body), str(null), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str(null), `body matches ${str(req.body)}`)
 
   req = {
     body: new Buffer.from(str(hi)).toString('base64'),
     headers: json,
     isBase64Encoded: true
   }
-  t.equals(str(parseBody(req).body), str(hi), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
   // Test faulty encoding on JSON posts
   req.body = str(hi)
@@ -41,10 +42,20 @@ test('Architect v6+ requests', t => {
     headers: formURLencoded,
     isBase64Encoded: true
   }
-  t.equals(str(parseBody(req).body), str(hi), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
   // Not test faulty encoding on form URL-encoded posts; you'll always get something back
 
-  // Multi-part form data + octet stream tests covered in Arc 5 tests
+  // Pass through multipart / base64
+  req = {
+    body: hiBase64file,
+    headers: multipartFormData
+  }
+  t.equals(str(parseBody(req)), str({base64: hiBase64file}), `body matches ${str(req.body)}`)
+
+  // Pass through octet stream / base64
+  req.headers = octetStream
+  t.equals(str(parseBody(req)), str({base64: hiBase64file}), `body matches ${str(req.body)}`)
+
 })
 
 test('Architect v5 requests', t => {
@@ -54,30 +65,30 @@ test('Architect v5 requests', t => {
     body: {},
     headers: json
   }
-  t.equals(parseBody(req), req, `body matches ${str(req.body)}`)
+  t.equals(parseBody(req), req.body, `body matches ${str(req.body)}`)
 
   // Pass through parsed body (JSON)
   req = {
     body: hi,
     headers: json
   }
-  t.equals(str(parseBody(req).body), str(hi), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
   // Pass through parsed body (formURLencoded)
   req = {
     body: hi,
     headers: formURLencoded
   }
-  t.equals(str(parseBody(req).body), str(hi), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
   // Pass through multipart / base64
   req = {
     body: hiBase64,
     headers: multipartFormData
   }
-  t.equals(str(parseBody(req).body), str(hiBase64), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str(hiBase64), `body matches ${str(req.body)}`)
 
   // Pass through octet stream / base64
   req.headers = octetStream
-  t.equals(str(parseBody(req).body), str(hiBase64), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str(hiBase64), `body matches ${str(req.body)}`)
 })
