@@ -86,7 +86,62 @@ This allows you to publish to queues from any function within your application
 
 When running in local/testing mode, will publish the event to the [sandbox][sandbox].
 
+## `arc.static(assetPath, options)`
+
+Returns the fully-qualified URI of a static asset for the project-relative `assetPath`
+parameter. Takes into account:
+
+- What environment (testing, staging, production) we are running in.
+- Whether [fingerprinting][static] is enabled.
+- Whether the override environment variable `ARC_STATIC_BUCKET` is present.
+
+`options` is an object with the following currently-supported properties:
+
+- `reload`: will reload the `.arc` file before resolving the asset.
+
+# `arc.tables(callback)`
+
+Returns an object that can be used to access data in database tables as defined
+under `@tables` in your `.arc` file. For example, given the following `.arc`
+file snippet:
+
+```
+@tables
+accounts
+  accountID *String
+
+messages
+  msgID *String
+```
+
+Running the following code:
+
+```
+let data = await arc.tables()
+```
+
+Would yield the following objects:
+
+- `data.accounts`: reference to the `accounts` table
+- `data.messages`: reference to the `messages` table
+
+.. which contain the following methods:
+
+- `delete(key, callback)`: deletes the record from the table with key `key` and
+    invokes `callback` with the result
+- `get(key, callback)`: retrieves the record from the table with key `key` and
+    invokes `callback` when complete
+- `put(item, callback)`: adds `item` to the table and invokes `callback` with
+    the item when complete
+- `query(params, callback)`: queries the table using `params` and invokes
+    `callback` with the result
+- `scan(params, callback)`: scans the table using `params` and invokes
+    `callback` with the result
+- `update(params, callback)`: updates an item in the table using `params` and
+    invokes `callback` when complete
+
 [npm]: https://www.npmjs.com/package/@architect/functions
 [sandbox]: https://www.npmjs.com/package/@architect/sandbox
 [events]: https://arc.codes/reference/events
 [queues]: https://arc.codes/reference/queues
+[static]: https://arc.codes/guides/static-assets
