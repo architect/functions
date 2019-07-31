@@ -21,3 +21,18 @@ test('queues.subscribe calls handler', t=> {
     }
   })
 })
+
+test('queues.subscribe calls async handler', async t=> {
+  t.plan(1)
+
+  let fake = sinon.fake()
+
+  // get a lambda signature from the handler
+  let handler = subscribe(async function(json) {
+    fake(json)
+  })
+
+  // invoke the lambda handler with mock payloads
+  await handler(mockSqsEvent)
+  t.ok(fake.calledOnce, 'event handler called once')
+})
