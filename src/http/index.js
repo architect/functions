@@ -1,7 +1,7 @@
 // HTTP
 let http = require('./http')
 // HTTP helpers
-let body = require('./helpers/body')
+let body = require('./helpers/parse-body')
 let interpolate = require('./helpers/params')
 let static = require('../static')
 let url = require('./helpers/url')
