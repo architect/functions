@@ -1,9 +1,90 @@
+let b64enc = i => new Buffer.from(i).toString('base64')
+let headers = {'Accept-Encoding': 'gzip'}
+
+let arc6 = {
+  // get /
+  getIndex: {
+    body: null,
+    path: '/',
+    headers,
+    httpMethod: 'GET',
+    pathParameters: null,
+    queryStringParameters: null
+  },
+
+  // get /?whats=up
+  getWithQueryString: {
+    body: null,
+    path: '/',
+    headers,
+    httpMethod: 'GET',
+    pathParameters: null,
+    queryStringParameters: {whats:'up'}
+  },
+
+  // get /nature/hiking
+  getWithParam: {
+    body: null,
+    path: '/nature/hiking',
+    resource: '/nature/{activities}',
+    headers,
+    httpMethod: 'GET',
+    pathParameters: null,
+    queryStringParameters: null
+  },
+
+  // post /form (JSON)
+  //   Content-Type header set below
+  postJson: {
+    body: b64enc(JSON.stringify({hi: 'there'})),
+    path: '/form',
+    headers: {'Content-Type': 'application/json'},
+    httpMethod: 'POST',
+    pathParameters: null,
+    queryStringParameters: null,
+    isBase64Encoded: true
+  },
+
+  // post /form (form URL encoded)
+  postFormURL: {
+    body: b64enc('hi=there'),
+    path: '/form',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    httpMethod: 'POST',
+    pathParameters: null,
+    queryStringParameters: null,
+    isBase64Encoded: true
+  },
+
+  // post /form (multipart form data)
+  postMultiPartFormData: {
+    body: b64enc('hi there'), // not a valid multipart form data payload but that's for userland validation
+    path: '/form',
+    headers: {'Content-Type': 'multipart/form-data'},
+    httpMethod: 'POST',
+    pathParameters: null,
+    queryStringParameters: null,
+    isBase64Encoded: true
+  },
+
+  // post /form (octet stream)
+  postOctetStream: {
+    body: b64enc('hi there\n'), // not a valid multipart form data payload but that's for userland validation
+    path: '/form',
+    headers: {'Content-Type': 'application/octet-stream'},
+    httpMethod: 'POST',
+    pathParameters: null,
+    queryStringParameters: null,
+    isBase64Encoded: true
+  },
+}
+
 let arc5 = {
   // get /
   getIndex: {
     body: {},
     path: '/',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'GET',
     httpMethod: 'GET',
     params: {},
@@ -15,7 +96,7 @@ let arc5 = {
   getWithQueryString: {
     body: {},
     path: '/',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'GET',
     httpMethod: 'GET',
     params: {},
@@ -27,7 +108,7 @@ let arc5 = {
   getWithParam: {
     body: {},
     path: '/nature/{activities}',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'GET',
     httpMethod: 'GET',
     params: {activities:'hiking'},
@@ -38,9 +119,9 @@ let arc5 = {
   // post /form
   //   accounts for both JSON and form URL-encoded bodies
   post: {
-    body: {hello: 'there'},
+    body: {hi: 'there'},
     path: '/form',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'POST',
     httpMethod: 'POST',
     params: {},
@@ -53,7 +134,7 @@ let arc5 = {
   postBinary: {
     body: {base64: 'aGVsbG89dGhlcmU='},
     path: '/form',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'POST',
     httpMethod: 'POST',
     params: {},
@@ -63,9 +144,9 @@ let arc5 = {
 
   // put /form
   put: {
-    body: {hello: 'there'},
+    body: {hi: 'there'},
     path: '/form',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'PUT',
     httpMethod: 'PUT',
     params: {},
@@ -75,9 +156,9 @@ let arc5 = {
 
   // patch /form
   patch: {
-    body: {hello: 'there'},
+    body: {hi: 'there'},
     path: '/form',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'PATCH',
     httpMethod: 'PATCH',
     params: {},
@@ -87,9 +168,9 @@ let arc5 = {
 
   // delete /form
   delete: {
-    body: {hello: 'there'},
+    body: {hi: 'there'},
     path: '/form',
-    headers: {'Accept-Encoding': 'gzip'},
+    headers,
     method: 'DELETE',
     httpMethod: 'DELETE',
     params: {},
@@ -99,5 +180,6 @@ let arc5 = {
 }
 
 module.exports = {
+  arc6,
   arc5
 }
