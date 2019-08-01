@@ -141,8 +141,9 @@ function response(req, callback, params) {
   }
 
   // tag the new session
-  if (params.session) {
-    let session = Object.assign({}, req.session, params.session)
+  if (params.session || params.cookie) {
+    let session = params.session || params.cookie
+    session = Object.assign({}, req.session, session)
     // save the session
     write(session, function _write(err, cookie) {
       if (err) throw err
