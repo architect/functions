@@ -57,16 +57,37 @@ module.exports = function http(...fns) {
  * - cacheControl
  */
 function response(req, callback, params) {
+  params = JSON.parse(JSON.stringify(params)) // Deep copy to aid testing mutation
 
-  // default content type, body, cache-control
-  let type = 'application/json; charset=utf8'
+  /**
+   * Response defaults
+   *   where possible, normalize headers to pascal-kebab case (lolsigh)
+   */
+  // Body
   let body = params.body || '\n'
-  let cacheControl = params.cacheControl || ''
-  let status = params.status || params.code || params.statusCode || 200
+
+  // Headers: Cache-Control
+  let cacheControl = params.cacheControl ||
+                     params.headers && params.headers['Cache-Control'] ||
+                     params.headers && params.headers['cache-control'] || ''
+  if (params.headers && params.headers['cache-control'])
+    delete params.headers['cache-control'] // Clean up improper casing
+
+  // Headers: Content-Type
+  let type = params.type ||
+             params.headers && params.headers['Content-Type'] ||
+             params.headers && params.headers['content-type'] ||
+             'application/json; charset=utf8'
+  if (params.headers && params.headers['content-type'])
+    delete params.headers['content-type'] // Clean up improper casing
+
+  // Status
+  let providedStatus = params.status || params.code || params.statusCode
+  let status = providedStatus || 200
 
   // shorthand overrides
   if (params instanceof Error) {
-    status = params.status || params.code || params.statusCode || 500
+    status = providedStatus || 500
     type = 'text/html; charset=utf8'
     body = `
       <h1>${params.name} ${res.status}</h1>
@@ -100,11 +121,19 @@ function response(req, callback, params) {
     body = params.xml
   }
 
-  let res = {}
-  res.headers = Object.assign({}, {'content-type': type}, params.headers || {})
-  res.statusCode = status
-  res.body = body
-  if (cacheControl) res.headers['cache-control'] = cacheControl
+  let res = {
+    headers: Object.assign({}, {'Content-Type': type}, params.headers || {}),
+    statusCode: status,
+    body
+  }
+
+  let headers = res.headers
+  if (cacheControl) headers['Cache-Control'] = cacheControl
+  let antiCache = type.includes('text/html') ||
+                  type.includes('application/json')
+  if (headers && !headers['Cache-Control'] && antiCache) {
+    headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+  }
 
   if (params.location) {
     res.statusCode = 302
@@ -117,7 +146,7 @@ function response(req, callback, params) {
     // save the session
     write(session, function _write(err, cookie) {
       if (err) throw err
-      res.headers['set-cookie'] = cookie
+      res.headers['Set-Cookie'] = cookie
       callback(null, res)
     })
   }
