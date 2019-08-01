@@ -61,7 +61,7 @@ function response(req, callback, params) {
   // default content type, body, cache-control
   let type = 'application/json; charset=utf8'
   let body = params.body || '\n'
-  //let cacheControl = params.cacheControl || ''
+  let cacheControl = params.cacheControl || ''
   let status = params.status || params.code || params.statusCode || 200
 
   // shorthand overrides
@@ -104,6 +104,7 @@ function response(req, callback, params) {
   res.headers = Object.assign({}, {'content-type': type}, params.headers || {})
   res.statusCode = status
   res.body = body
+  if (cacheControl) res.headers['cache-control'] = cacheControl
 
   if (params.location) {
     res.statusCode = 302
@@ -113,13 +114,9 @@ function response(req, callback, params) {
   // tag the new session
   if (params.session) {
     let session = Object.assign({}, req.session, params.session)
-    //session._idx = req.session._idx
-    //session._secret = req.session._secret
-    //session._ttl = req.session._ttl
     // save the session
     write(session, function _write(err, cookie) {
       if (err) throw err
-      //let merged = Object.assign({}, res, {cookie})
       res.headers['set-cookie'] = cookie
       callback(null, res)
     })
