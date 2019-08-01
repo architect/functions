@@ -5,7 +5,7 @@ let qs = require('querystring')
  * <Arc 6 bodies are always objects
  */
 module.exports = function parseBody (req) {
-  if (!req.body || !req.headers || !Object.getOwnPropertyNames(req.body).length) return req.body
+  if (!req.body || !req.headers || !req.headers['Content-Type'] || !Object.getOwnPropertyNames(req.body).length) return req.body
   else {
     // Paranoid deep copy
     let request = JSON.parse(JSON.stringify(req))
