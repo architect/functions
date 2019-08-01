@@ -34,7 +34,6 @@ let arc6 = {
   },
 
   // post /form (JSON)
-  //   Content-Type header set below
   postJson: {
     body: b64enc(JSON.stringify({hi: 'there'})),
     path: '/form',
@@ -77,6 +76,39 @@ let arc6 = {
     queryStringParameters: null,
     isBase64Encoded: true
   },
+
+  // put /form (JSON)
+  putJson: {
+    body: b64enc(JSON.stringify({hi: 'there'})),
+    path: '/form',
+    headers: {'Content-Type': 'application/json'},
+    httpMethod: 'PUT',
+    pathParameters: null,
+    queryStringParameters: null,
+    isBase64Encoded: true
+  },
+
+  // patch /form (JSON)
+  patchJson: {
+    body: b64enc(JSON.stringify({hi: 'there'})),
+    path: '/form',
+    headers: {'Content-Type': 'application/json'},
+    httpMethod: 'PATCH',
+    pathParameters: null,
+    queryStringParameters: null,
+    isBase64Encoded: true
+  },
+
+  // delete /form (JSON)
+  deleteJson: {
+    body: b64enc(JSON.stringify({hi: 'there'})),
+    path: '/form',
+    headers: {'Content-Type': 'application/json'},
+    httpMethod: 'DELETE',
+    pathParameters: null,
+    queryStringParameters: null,
+    isBase64Encoded: true
+  }
 }
 
 let arc5 = {

@@ -1,5 +1,5 @@
 module.exports = function interpolateParams(req) {
-  // Un-null APIG-proxy-Lambda params in >+
+  // Un-null APIG-proxy-Lambda params in 6+
   if (req.body === null)
     req.body = {}
   if (req.pathParameters === null)
