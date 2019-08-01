@@ -174,6 +174,69 @@ test('Architect v6: post /form (octet stream)', t => {
   handler(request, {}, end)
 })
 
+test('Architect v6: put /form (JSON)', t => {
+  t.plan(9)
+  let end = () => t.ok(true, 'Final callback called')
+  let request = reqs.arc6.putJson
+  let handler = http((req,res) => {
+    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+    t.equal(req.body.hi, 'there', `received expected body data`)
+    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+    if (request.httpMethod === req.method)
+      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+    if (unNulled(request.pathParameters, req.params))
+      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+    if (unNulled(request.queryStringParameters, req.query))
+      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+    t.ok(req.session, 'req.session is present')
+    res({html:'Ok!'})
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6: patch /form (JSON)', t => {
+  t.plan(9)
+  let end = () => t.ok(true, 'Final callback called')
+  let request = reqs.arc6.patchJson
+  let handler = http((req,res) => {
+    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+    t.equal(req.body.hi, 'there', `received expected body data`)
+    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+    if (request.httpMethod === req.method)
+      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+    if (unNulled(request.pathParameters, req.params))
+      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+    if (unNulled(request.queryStringParameters, req.query))
+      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+    t.ok(req.session, 'req.session is present')
+    res({html:'Ok!'})
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6: delete /form (JSON)', t => {
+  t.plan(9)
+  let end = () => t.ok(true, 'Final callback called')
+  let request = reqs.arc6.deleteJson
+  let handler = http((req,res) => {
+    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+    t.equal(req.body.hi, 'there', `received expected body data`)
+    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+    if (request.httpMethod === req.method)
+      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+    if (unNulled(request.pathParameters, req.params))
+      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+    if (unNulled(request.queryStringParameters, req.query))
+      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+    t.ok(req.session, 'req.session is present')
+    res({html:'Ok!'})
+  })
+  handler(request, {}, end)
+})
+
 /**
  * Arc 5 tests against later VTL-based request shapes, which include things not present in < Arc 5, such as:
  * - `httpMethod` & `queryStringParameters` (which duplicate `method` + `query`)
