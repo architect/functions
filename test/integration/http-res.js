@@ -136,3 +136,15 @@ test('Architect (all versions) + Functions response params', t => {
     t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0,75)}...`)
   })
 })
+
+test('Test errors', t => {
+  t.plan(3)
+  let request = requests.arc5.getIndex
+  let error = Error('something bad happened')
+  let handler = http((req, res) => res(error))
+  handler(request, {}, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equals(res.statusCode, 500, 'Error response, 500 returned')
+    t.ok(res.body.includes(error.message), `Error response included error message: ${error.message}`)
+  })
+})

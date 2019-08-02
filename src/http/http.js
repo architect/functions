@@ -57,7 +57,8 @@ module.exports = function http(...fns) {
  * - cacheControl
  */
 function response(req, callback, params) {
-  params = JSON.parse(JSON.stringify(params)) // Deep copy to aid testing mutation
+  let isError = params instanceof Error
+  if (!isError) params = JSON.parse(JSON.stringify(params)) // Deep copy to aid testing mutation
 
   /**
    * Response defaults
@@ -89,11 +90,11 @@ function response(req, callback, params) {
   let status = providedStatus || 200
 
   // shorthand overrides
-  if (params instanceof Error) {
+  if (isError) {
     status = providedStatus || 500
     type = 'text/html; charset=utf8'
     body = `
-      <h1>${params.name} ${res.status}</h1>
+      <h1>${params.name} ${status}</h1>
       <h3>${params.message}</h3>
       <pre>${params.stack}<pre>
     `
