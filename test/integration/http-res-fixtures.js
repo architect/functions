@@ -10,26 +10,37 @@ let arc5 = {
   /**
    * Arc Functions response format
    */
+  // Set body
   body: {
     body: 'hi there'
   },
+
+  // Set cacheControl
   cacheControl: {
     body: 'hi there',
     cacheControl: 'max-age=0',
     headers: {'cache-control': 'max-age=60'} // cacheControl should win
   },
+
+  // Test default anti-caching on HTML
   noCacheControlHTML: {
     body: html,
     headers: {'Content-Type': 'text/html; charset=uft8'}
   },
+
+  // Test default anti-caching on JSON
   noCacheControlJSON: {
     body: json,
     headers: {'Content-Type': 'application/json; charset=uft8'}
   },
+
+  // No default anti-caching on other content types
   noCacheControlOther: {
     body: text,
     headers: {'Content-Type': 'text/plain; charset=uft8'}
   },
+
+  // Not specifying a content type should default to JSON
   defaultsToJson: {
     body: json
   },
@@ -37,14 +48,19 @@ let arc5 = {
   /**
    * Dependency-free response format
    */
+  // Set type
   type: {
     body: 'hi there',
     type: 'text/plain'
   },
+
+  // Set cookie
   cookie: {
     body: html,
     cookie: {hi: 'there'}
   },
+
+  // Set cors
   cors: {
     body: html,
     cors: true
@@ -52,7 +68,9 @@ let arc5 = {
 }
 
 let arc4 = {
-
+  /**
+   * Deprecated statically-bound content type style responses
+   */
   css: {css},
   html: {html},
   js: {js},
@@ -62,18 +80,30 @@ let arc4 = {
 }
 
 let arc = {
+  /**
+   * Arc version agnostic response params
+   */
+  // Set location
   locationHi: {
     location: '/hi'
   },
+
+  // Set status
   status201: {
     status: 201
   },
+
+  // Set code
   code201: {
     code: 201
   },
+
+  // Set statusCode
   statusCode201: {
     statusCode: 201
   },
+
+  // Set session
   session: {
     session: {hi: 'there'}
   }
