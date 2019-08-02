@@ -139,7 +139,7 @@ function response(req, callback, params) {
     headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   }
   if (cors) headers['Access-Control-Allow-Origin'] = '*'
-
+  if (params.isBase64Encoded) res.isBase64Encoded = true
   if (params.location) {
     res.statusCode = 302
     res.headers.location = params.location
