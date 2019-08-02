@@ -81,6 +81,9 @@ function response(req, callback, params) {
   if (params.headers && params.headers['content-type'])
     delete params.headers['content-type'] // Clean up improper casing
 
+  // Cross-origin ritual sacrifice
+  let cors = params.cors
+
   // Status
   let providedStatus = params.status || params.code || params.statusCode
   let status = providedStatus || 200
@@ -127,6 +130,7 @@ function response(req, callback, params) {
     body
   }
 
+  // Set and/or update headers
   let headers = res.headers
   if (cacheControl) headers['Cache-Control'] = cacheControl
   let antiCache = type.includes('text/html') ||
@@ -134,6 +138,7 @@ function response(req, callback, params) {
   if (headers && !headers['Cache-Control'] && antiCache) {
     headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   }
+  if (cors) headers['Access-Control-Allow-Origin'] = '*'
 
   if (params.location) {
     res.statusCode = 302
