@@ -1,7 +1,6 @@
 let fs = require('fs')
 let path = require('path')
 let parse = require('@architect/parser')
-let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
 let url = require('url').format
 let arc
 
@@ -10,6 +9,7 @@ let arc
  * - Returns the live asset filename
  */
 module.exports = function static(assetPath, options) {
+  let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
   let env = process.env.NODE_ENV
   let folder = process.env.ARC_STATIC_FOLDER ? '/' + process.env.ARC_STATIC_FOLDER : ''
   let region = process.env.AWS_REGION

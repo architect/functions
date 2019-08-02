@@ -13,6 +13,8 @@ test('Set up env', t => {
 })
 
 test('Architect v6 dependency-free responses', t => {
+  // Init env var to keep from stalling on db reads in CI
+  process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(2)
   let request = requests.arc5.getIndex
   let run = (response, callback) => {
@@ -147,4 +149,7 @@ test('Test errors', t => {
     t.equals(res.statusCode, 500, 'Error response, 500 returned')
     t.ok(res.body.includes(error.message), `Error response included error message: ${error.message}`)
   })
+  // Unset env var for future testing (ostensibly)
+  delete process.env.SESSION_TABLE_NAME
 })
+

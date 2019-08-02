@@ -22,6 +22,8 @@ test('Set up env', t => {
  * - All bodies are base64 encoded
  */
 test('Architect v6: get /', t => {
+  // Set env var to keep from stalling on db reads in CI
+  process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.getIndex
@@ -394,4 +396,7 @@ test('Architect v5: delete /form', t => {
     res({html:'Ok!'})
   })
   handler(request, {}, end)
+  // Unset env var for future testing (ostensibly)
+  delete process.env.SESSION_TABLE_NAME
 })
+
