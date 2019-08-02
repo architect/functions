@@ -12,6 +12,19 @@ test('Set up env', t => {
   t.ok(responses, 'Loaded response fixtures')
 })
 
+test('Architect v6 dependency-free responses', t => {
+  t.plan(2)
+  let request = requests.arc5.getIndex
+  let run = (response, callback) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, callback)
+  }
+  run(responses.arc6.isBase64Encoded, (err, res) => {
+    t.notOk(err, 'No error')
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+  })
+})
+
 test('Architect v5 dependency-free responses', t => {
   t.plan(6)
   let request = requests.arc5.getIndex

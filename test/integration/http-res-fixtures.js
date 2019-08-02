@@ -6,6 +6,17 @@ let json = {hi: 'there'}
 let text = 'hi there'
 let xml = '<hi>there</hi>'
 
+let arc6 = {
+  /**
+   * New params introduced with Arc 6+ APG-proxy-Lambda
+   */
+  // Set isBase64Encoded
+  isBase64Encoded: {
+    body: new Buffer.from('hi there').toString('base64'),
+    isBase64Encoded: true
+  }
+}
+
 let arc5 = {
   /**
    * Arc Functions response format
@@ -110,6 +121,7 @@ let arc = {
 }
 
 module.exports = {
+  arc6,
   arc5,
   arc4,
   arc
