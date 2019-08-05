@@ -1,3 +1,5 @@
+let b64enc = i => new Buffer.from(i).toString('base64')
+
 // Content examples
 let css = '.hi:before {content: "there";}'
 let html = '<span>hi there</span>'
@@ -12,8 +14,19 @@ let arc6 = {
    */
   // Set isBase64Encoded
   isBase64Encoded: {
-    body: new Buffer.from('hi there').toString('base64'),
+    body: b64enc('hi there'),
     isBase64Encoded: true
+  },
+
+  // Should convert buffer to base64 encoded body with isBase64encoded param
+  buffer: {
+    body: new Buffer.from('hi there'),
+  },
+
+  // Base64 encoded with valid binary content type
+  encodedWithBinaryType: {
+    body: b64enc('hi there'),
+    headers: {'Content-Type': 'application/pdf'}
   }
 }
 
