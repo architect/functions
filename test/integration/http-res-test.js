@@ -3,6 +3,7 @@ let test = require('tape')
 let requests = require('./http-req-fixtures')
 let responses = require('./http-res-fixtures')
 
+let b64dec = i => new Buffer.from(i, 'base64').toString()
 let str = i => JSON.stringify(i)
 let match = (copy, item) => `${copy} matches: ${item}`
 
@@ -15,7 +16,7 @@ test('Set up env', t => {
 test('Architect v6 dependency-free responses', t => {
   // Init env var to keep from stalling on db reads in CI
   process.env.SESSION_TABLE_NAME = 'jwe'
-  t.plan(2)
+  t.plan(9)
   let request = requests.arc5.getIndex
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -24,6 +25,17 @@ test('Architect v6 dependency-free responses', t => {
   run(responses.arc6.isBase64Encoded, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+  })
+  run(responses.arc6.buffer, (err, res) => {
+    t.notOk(err, 'No error')
+    t.ok(typeof res.body === 'string', 'Auto-encoded body buffer to base64')
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
+  })
+  run(responses.arc6.encodedWithBinaryType, (err, res) => {
+    t.notOk(err, 'No error')
+    t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
+    t.equals(b64dec(res.body), 'hi there', 'Body properly encoded')
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
   })
 })
 

@@ -1,3 +1,4 @@
+let binaryTypes = require('./helpers/binary-types')
 let read = require('./session/read')
 let write = require('./session/write')
 let bodyParser = require('./helpers/body-parser')
@@ -58,7 +59,11 @@ module.exports = function http(...fns) {
  */
 function response(req, callback, params) {
   let isError = params instanceof Error
+  let buffer
+  let bodyIsBuffer = params.body instanceof Buffer
+  if (bodyIsBuffer) buffer = params.body // Back up buffer
   if (!isError) params = JSON.parse(JSON.stringify(params)) // Deep copy to aid testing mutation
+  if (bodyIsBuffer) params.body = buffer // Restore non-JSON-encoded buffer
 
   /**
    * Response defaults
@@ -146,7 +151,19 @@ function response(req, callback, params) {
     res.headers.location = params.location
   }
 
-  // tag the new session
+  // Handle body encoding (if necessary)
+  let isBinary = binaryTypes.some(t => res.headers['Content-Type'].includes(t))
+  let bodyIsString = typeof res.body === 'string'
+  let b64enc = i => new Buffer.from(i, 'base64').toString()
+  // Always set encoding (and flag) for an outbound buffer
+  if (bodyIsBuffer) {
+    res.body = b64enc(res.body)
+    res.isBase64Encoded = true
+  }
+  // Body is likely base64 and has a binary MIME type, ensure it's flagged binary
+  if (bodyIsString && isBinary) res.isBase64Encoded = true
+
+  // Tag the new session
   if (params.session || params.cookie) {
     let session = params.session || params.cookie
     session = Object.assign({}, req.session, session)
