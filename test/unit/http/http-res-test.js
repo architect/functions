@@ -61,7 +61,7 @@ test('Architect v5 dependency-free responses', t => {
 })
 
 test('Architect v5 + Functions', t => {
-  t.plan(13)
+  t.plan(19)
   let request = requests.arc5.getIndex
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -70,30 +70,36 @@ test('Architect v5 + Functions', t => {
   run(responses.arc5.body, (err, res) => {
     t.notOk(err, 'No error')
     t.equals(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.cacheControl, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(res.headers['Cache-Control'].includes(responses.arc5.cacheControl.cacheControl), match(`res.headers['Cache-Control']`, str(res.headers['Cache-Control'])))
     if (responses.arc5.cacheControl.headers['cache-control'] && !res.headers['cache-control'])
       t.pass(`Headers normalized and de-duped: ${str(res.headers)}`)
+      t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.noCacheControlHTML, (err, res) => {
     let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     t.notOk(err, 'No error')
     t.equals(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for HTML response')
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.noCacheControlJSON, (err, res) => {
     let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     t.notOk(err, 'No error')
     t.equals(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.noCacheControlOther, (err, res) => {
     t.notOk(err, 'No error')
     t.notOk(res.headers['Cache-Control'], 'Default anti-caching headers NOT set for non-HTML/JSON response')
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.defaultsToJson, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
 })
 
@@ -102,17 +108,17 @@ test('Architect v4 + Functions statically-bound content type responses', t => {
   let request = requests.arc5.getIndex
   let r = responses.arc4
   let run = (response, data, contentType) => {
-  let handler = http((req, res) => res(response))
-  handler(request, {}, (err, res) => {
-    t.notOk(err, 'No error')
-    // Don't double-encode JSON
-    if (res.headers['Content-Type'].includes('json'))
+    let handler = http((req, res) => res(response))
+    handler(request, {}, (err, res) => {
+      t.notOk(err, 'No error')
+      // Don't double-encode JSON
+      if (res.headers['Content-Type'].includes('json'))
         t.equals(str(data), res.body, match('res.body', res.body))
-    else
-      t.equals(str(data), str(res.body), match('res.body', res.body))
-    t.true(res.headers['Content-Type'].includes(contentType), `Correct Content-Type header sent: ${contentType}`)
-    t.equals(res.statusCode, 200, 'Responded with 200')
-  })
+      else
+        t.equals(str(data), str(res.body), match('res.body', res.body))
+      t.true(res.headers['Content-Type'].includes(contentType), `Correct Content-Type header sent: ${contentType}`)
+      t.equals(res.statusCode, 200, 'Responded with 200')
+    })
   }
   run(r.css, r.css.css, 'text/css')
   run(r.html, r.html.html, 'text/html')
@@ -123,7 +129,7 @@ test('Architect v4 + Functions statically-bound content type responses', t => {
 })
 
 test('Architect (all versions) + Functions response params', t => {
-  t.plan(10)
+  t.plan(11)
   let request = requests.arc5.getIndex
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -131,7 +137,8 @@ test('Architect (all versions) + Functions response params', t => {
   }
   run(responses.arc.locationHi, (err, res) => {
     t.notOk(err, 'No error')
-    t.equals(responses.arc.locationHi.location, res.headers.location, match('res.headers.location', res.headers.location))
+    t.equals(res.statusCode, 302, match('res.statusCode', res.statusCode))
+    t.equals(responses.arc.locationHi.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
   })
   run(responses.arc.status201, (err, res) => {
     t.notOk(err, 'No error')
