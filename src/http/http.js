@@ -148,19 +148,19 @@ function response(req, callback, params) {
   if (params.isBase64Encoded) res.isBase64Encoded = true
   if (params.location) {
     res.statusCode = 302
-    res.headers.location = params.location
+    res.headers.Location = params.location
   }
 
   // Handle body encoding (if necessary)
   let isBinary = binaryTypes.some(t => res.headers['Content-Type'].includes(t))
   let bodyIsString = typeof res.body === 'string'
   let b64enc = i => new Buffer.from(i, 'base64').toString()
-  // Always set encoding (and flag) for an outbound buffer
+  // Encode (and flag) outbound buffers
   if (bodyIsBuffer) {
     res.body = b64enc(res.body)
     res.isBase64Encoded = true
   }
-  // Body is likely base64 and has a binary MIME type, ensure it's flagged binary
+  // Body is likely base64 & has binary MIME type, so flag it
   if (bodyIsString && isBinary) res.isBase64Encoded = true
 
   // Tag the new session

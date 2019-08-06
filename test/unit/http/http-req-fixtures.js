@@ -29,7 +29,7 @@ let arc6 = {
     resource: '/nature/{activities}',
     headers,
     httpMethod: 'GET',
-    pathParameters: null,
+    pathParameters: {activities:'hiking'},
     queryStringParameters: null
   },
 
@@ -68,7 +68,7 @@ let arc6 = {
 
   // post /form (octet stream)
   postOctetStream: {
-    body: b64enc('hi there\n'), // not a valid multipart form data payload but that's for userland validation
+    body: b64enc('hi there\n'),
     path: '/form',
     headers: {'Content-Type': 'application/octet-stream'},
     httpMethod: 'POST',
