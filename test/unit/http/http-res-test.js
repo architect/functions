@@ -16,7 +16,7 @@ test('Set up env', t => {
 test('Architect v6 dependency-free responses', t => {
   // Init env var to keep from stalling on db reads in CI
   process.env.SESSION_TABLE_NAME = 'jwe'
-  t.plan(9)
+  t.plan(12)
   let request = requests.arc5.getIndex
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -25,22 +25,25 @@ test('Architect v6 dependency-free responses', t => {
   run(responses.arc6.isBase64Encoded, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.buffer, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Auto-encoded body buffer to base64')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.encodedWithBinaryType, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
     t.equals(b64dec(res.body), 'hi there', 'Body properly encoded')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
 })
 
 test('Architect v5 dependency-free responses', t => {
-  t.plan(6)
+  t.plan(9)
   let request = requests.arc5.getIndex
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -49,20 +52,24 @@ test('Architect v5 dependency-free responses', t => {
   run(responses.arc5.type, (err, res) => {
     t.notOk(err, 'No error')
     t.equals(responses.arc5.type.type, res.headers['Content-Type'], `type matches res.headers['Content-Type']: ${res.headers['Content-Type']}`)
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.cookie, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0,75)}...`)
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.cors, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['Access-Control-Allow-Origin'], '*', `CORS boolean set res.headers['Access-Control-Allow-Origin'] === '*'`)
+    t.equals(res.statusCode, 200, 'Responded with 200')
   })
 })
 
 test('Architect v5 + Functions', t => {
   t.plan(19)
   let request = requests.arc5.getIndex
+  let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
@@ -80,20 +87,19 @@ test('Architect v5 + Functions', t => {
       t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.noCacheControlHTML, (err, res) => {
-    let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     t.notOk(err, 'No error')
     t.equals(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for HTML response')
     t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.noCacheControlJSON, (err, res) => {
-    let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     t.notOk(err, 'No error')
     t.equals(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
     t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.noCacheControlOther, (err, res) => {
     t.notOk(err, 'No error')
-    t.notOk(res.headers['Cache-Control'], 'Default anti-caching headers NOT set for non-HTML/JSON response')
+    let def = 'max-age=86400'
+    t.equals(res.headers['Cache-Control'], def, 'Default caching headers set for non-HTML/JSON response')
     t.equals(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.defaultsToJson, (err, res) => {
