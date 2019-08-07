@@ -1,6 +1,12 @@
 let b64enc = i => new Buffer.from(i).toString('base64')
 let headers = {'Accept-Encoding': 'gzip'}
 
+/**
+ * Standard mock request set used in:
+ * - [Architect Functions](test/unit/src/http/http-req-fixtures.js)
+ * - [Architect Sandbox](test/unit/src/http/http-req-fixtures.js)
+ * If you make changes to either, reflect it in the other(s)!
+ */
 let arc6 = {
   // get /
   getIndex: {
