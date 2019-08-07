@@ -145,7 +145,7 @@ let arc5 = {
   // get /nature/hiking
   getWithParam: {
     body: {},
-    path: '/nature/{activities}',
+    path: '/nature/hiking',
     headers,
     method: 'GET',
     httpMethod: 'GET',
