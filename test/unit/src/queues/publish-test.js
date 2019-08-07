@@ -1,5 +1,5 @@
 let test = require('tape')
-let publish = require('../../../src/queues/publish')
+let publish = require('../../../../src/queues/publish')
 
 test('queues.publish should throw if there is no parameter name', t => {
   t.plan(1)

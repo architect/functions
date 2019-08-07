@@ -1,6 +1,6 @@
-let http = require('../../../src').http
-let bodyParser = require('../../../src/http/helpers/body-parser')
-let interpolate = require('../../../src/http/helpers/params')
+let http = require('../../../../src').http
+let bodyParser = require('../../../../src/http/helpers/body-parser')
+let interpolate = require('../../../../src/http/helpers/params')
 let test = require('tape')
 let reqs = require('./http-req-fixtures')
 
