@@ -1,5 +1,12 @@
 let b64enc = i => Buffer.from(i).toString('base64')
 
+/**
+ * Standard mock response set used in:
+ * - [Architect Functions](test/unit/src/http/http-res-fixtures.js)
+ * - [Architect Sandbox](test/unit/src/http/http-res-fixtures.js)
+ * If you make changes to either, reflect it in the other(s)!
+ */
+
 // Content examples
 let css = '.hi:before {content: "there";}'
 let html = '<span>hi there</span>'
