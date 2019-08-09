@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "3.2.2",
+  "version": "3.3.0-RC.1",
   "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
   "homepage": "https://github.com/architect/functions",
   "repository": {
@@ -35,17 +35,17 @@
   ],
   "dependencies": {
     "@architect/parser": "^1.1.7",
-    "cookie": "^0.3.1",
+    "cookie": "^0.4.0",
     "cookie-signature": "^1.1.0",
     "csrf": "^3.1.0",
     "mime-types": "^2.1.24",
-    "node-webtokens": "^1.0.0",
+    "node-webtokens": "^1.0.3",
     "run-parallel": "^1.1.9",
     "run-waterfall": "^1.1.6",
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/sandbox": "^1.0.10",
+    "@architect/sandbox": "^1.2.11",
     "aws-sdk": "^2.485.0",
     "aws-sdk-mock": "^4.5.0",
     "browserify": "^16.3.0",
@@ -55,10 +55,10 @@
     "mkdirp": "^0.5.1",
     "nyc": "^14.1.1",
     "path-exists": "^4.0.0",
-    "proxyquire": "^2.1.1",
-    "sinon": "^7.3.2",
+    "proxyquire": "^2.1.2",
+    "sinon": "^7.4.1",
     "tap-spec": "^5.0.0",
-    "tape": "^4.10.2"
+    "tape": "^4.11.0"
   },
   "prettier": {
     "semi": false,
