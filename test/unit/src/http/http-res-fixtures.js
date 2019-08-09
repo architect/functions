@@ -1,4 +1,4 @@
-let b64enc = i => new Buffer.from(i).toString('base64')
+let b64enc = i => Buffer.from(i).toString('base64')
 
 // Content examples
 let css = '.hi:before {content: "there";}'
@@ -12,20 +12,20 @@ let arc6 = {
   /**
    * New params introduced with Arc 6+ APG-proxy-Lambda
    */
-  // Set isBase64Encoded
+  // Set isBase64Encoded (not technically new, but implemented differently)
   isBase64Encoded: {
-    body: b64enc('hi there'),
+    body: b64enc('hi there\n'),
     isBase64Encoded: true
   },
 
-  // Should convert buffer to base64 encoded body with isBase64encoded param
+  // Should fail in Sandbox, or convert buffer to base64 encoded body with isBase64encoded param in Functions
   buffer: {
-    body: new Buffer.from('hi there'),
+    body: Buffer.from('hi there\n'),
   },
 
   // Base64 encoded with valid binary content type
   encodedWithBinaryType: {
-    body: b64enc('hi there'),
+    body: b64enc('hi there\n'),
     headers: {'Content-Type': 'application/pdf'}
   }
 }
@@ -42,7 +42,7 @@ let arc5 = {
   // Set cacheControl
   cacheControl: {
     body: 'hi there',
-    cacheControl: 'max-age=0',
+    cacheControl: 'max-age=1',
     headers: {'cache-control': 'max-age=60'} // cacheControl should win
   },
 
@@ -88,6 +88,12 @@ let arc5 = {
   cors: {
     body: html,
     cors: true
+  },
+
+  // Set isBase64Encoded
+  isBase64Encoded: {
+    body: b64enc('hi there\n'),
+    isBase64Encoded: true
   }
 }
 
