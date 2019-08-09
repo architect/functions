@@ -6,6 +6,26 @@ Also see:
 - [Architect Data changelog](https://github.com/architect/arc-data/blob/master/changelog.md)
 ---
 
+## [On master]
+
+### Added
+
+- Support for Architect 6
+  - Includes complete compatibility for Architect 4 + 5 users:
+    - If already using Functions, everything should just work!
+    - If using Arc 5 dependency-free, you can now drop your existing responses into Architect Functions's `res()` and everything should be solid
+- Takes over all responsibilities of now-deprecated `@architect/data`
+  - Previous data calls can be accessed with `arc.tables()`
+- Adds in the same `Cache-Control` defaults
+  - As always, they're able to be overriden with `cacheControl` param (or `headers['Cache-Control']`)
+
+### Changed
+
+- Hopefully nothing breaking – please send feedback on the RC!
+  - 3.3 RC: https://github.com/architect/functions/issues/57
+  - Slack: https://architecture-as-text.slack.com
+
+---
 
 ## [3.2.2] 2019-07-11
 
@@ -15,9 +35,7 @@ Also see:
 - `SESSION_DOMAIN` variable now supported in `jwe` sessions
 - `context` is now passed onto each middleware function
 
-
 ---
-
 
 ## [3.2.1] 2019-06-26
 
@@ -25,9 +43,7 @@ Also see:
 
 - Backwards-compatible refactoring of `events` publishing in preparation for Architect 6 service discovery
 
-
 ---
-
 
 ## [3.2.0] 2019-06-14
 
@@ -36,9 +52,7 @@ Also see:
 - For additional control of your user sessions, you may now define the [cookie Domain attribute](https://tools.ietf.org/html/rfc6265#section-5.2.3)
   - Because this needs to be set consistently across your app's usage of session, set this via the `SESSION_DOMAIN` environment variable
 
-
 ---
-
 
 ## [3.1.0] 2019-06-05
 
@@ -53,9 +67,7 @@ Also see:
     - Legacy method `arc.http.helpers.static('filename.ext')` will continue to be supported
   - Static helper tests
 
-
 ---
-
 
 ## [3.0.8] 2019-05-20
 
@@ -63,9 +75,7 @@ Also see:
 
 - `proxy.read()` calls without `config.bucket` specified work correctly again, fixes #38
 
-
 ---
-
 
 ## [3.0.7] 2019-05-11
 
@@ -81,9 +91,7 @@ Also see:
 
 - Updated dependencies
 
-
 ---
-
 
 ## [3.0.6] 2019-05-09
 
@@ -91,9 +99,7 @@ Also see:
 
 - Adds support for sending `delaySeconds` parameter on queue publish, closes #36 /ht @bardbachmann
 
-
 ---
-
 
 ## [3.0.3 - 3.0.5] - 2019-04-19
 
@@ -134,9 +140,7 @@ Also see:
 
 - `get /` encoding is now properly set when using `config.bucket.folder`
 
-
 ---
-
 
 ## [2.0.17 - 2.0.19] - 2019-04-02
 
@@ -147,9 +151,7 @@ Also see:
 - Fixes proxy path prefix check in testing environment
 - Found and removed some junk files in the NPM package
 
-
 ---
-
 
 ## [2.0.16] - 2019-03-27
 
@@ -161,9 +163,7 @@ Also see:
 
 - In `proxy.public()` config, the bucket folder prefix is now respected when working locally
 
-
 ---
-
 
 ## [2.0.15] - 2019-03-13
 
@@ -177,9 +177,7 @@ Also see:
 
 - Updated dependencies
 
-
 ---
-
 
 ## [2.0.13-14] - 2019-03-08
 
@@ -187,9 +185,7 @@ Also see:
 
 - Fixed local env check in `queues.publish` /ht @tobytailor
 
-
 ---
-
 
 ## [2.0.1-2.0.11] - 2019-02-26
 
@@ -219,9 +215,7 @@ And for fun:
 
 [Complete example project code here.](https://github.com/arc-repos/arc-example-proxy-plugins)
 
-
 ---
-
 
 ## [2.0.0] - 2019-02-03
 
@@ -234,9 +228,7 @@ And for fun:
 - arc.xml
 - arc.json
 
-
 ---
-
 
 ## [1.13.0] - 2018-01-31
 
@@ -251,9 +243,7 @@ let arc = require('@architect/functions')
 exports.handler = arc.proxy.public()
 ```
 
-
 ---
-
 
 ## [1.12.0] - 2018-01-16
 
@@ -274,9 +264,7 @@ exports.handler = async function WebSocketConnected(event) {
 }
 ```
 
-
 ---
-
 
 ## [1.11.1] - 2018-12-15
 
