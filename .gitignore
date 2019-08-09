@@ -1,5 +1,7 @@
+__pycache__
 _mock
 .nyc_output/
 arc-proxy-*
 coverage/
 node_modules/
+test/mock/*/src/*/*/vendor/
