@@ -13,10 +13,10 @@ Also see:
 - Support for Architect 6
   - Includes complete compatibility for Architect 4 + 5 users:
     - If already using Functions, everything should just work!
-    - If using Arc 5 dependency-free, you can now drop your existing responses into Architect Functions's `res()` and everything should be solid
+    - If using Arc 5 dependency-free, you can now drop your existing responses into Architect Functions's `res()` and everything should be solid; no signature changes should be required
 - Takes over all responsibilities of now-deprecated `@architect/data`
   - Previous data calls can be accessed with `arc.tables()`
-- Adds in the same `Cache-Control` defaults
+- Responses now include the same content type aware `Cache-Control` defaults as found in Architect 5
   - As always, they're able to be overriden with `cacheControl` param (or `headers['Cache-Control']`)
 
 ### Changed
