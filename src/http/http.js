@@ -136,6 +136,12 @@ function response(req, callback, params) {
     body
   }
 
+  let isArcFive = !process.env.ARC_CLOUDFORMATION
+  if (isArcFive) {
+    // FIX for backwards compat; vtl templates need this param
+    res.type = type
+  }
+
   // Set and/or update headers
   let headers = res.headers
   if (cacheControl) headers['Cache-Control'] = cacheControl
