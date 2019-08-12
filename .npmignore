@@ -4,6 +4,7 @@ _mock
 .eslintignore
 .eslintrc.js
 .git
+.github
 .nyc_output/
 .travis.yml
 appveyor.yml
