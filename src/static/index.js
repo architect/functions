@@ -8,7 +8,7 @@ let arc
  * Architect static asset helper
  * - Returns the live asset filename
  */
-module.exports = function static(assetPath, options) {
+module.exports = function _static(assetPath, options) {
   let arcFile = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
   let env = process.env.NODE_ENV
   let folder = process.env.ARC_STATIC_FOLDER ? '/' + process.env.ARC_STATIC_FOLDER : ''
@@ -72,10 +72,10 @@ module.exports = function static(assetPath, options) {
 }
 
 // Helper returns the @static value for the current NODE_ENV
-function getBucket(static) {
+function getBucket(_static) {
   let staging
   let production
-  static.forEach(thing=> {
+  _static.forEach(thing=> {
     if (thing[0] === 'staging') {
       staging = thing[1]
     }
