@@ -5,7 +5,7 @@
   "homepage": "https://github.com/architect/functions",
   "repository": {
     "type": "git",
-    "url": "https://github.com/architest/functions"
+    "url": "https://github.com/architect/functions"
   },
   "bugs": "https://github.com/architect/functions/issues",
   "main": "src/index",
