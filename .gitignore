@@ -5,3 +5,4 @@ arc-proxy-*
 coverage/
 node_modules/
 test/mock/*/src/*/*/vendor/
+src/http/get-index
