@@ -14,3 +14,4 @@ codecov.yaml
 contributing.md
 coverage/
 test/
+src/http/get-index
