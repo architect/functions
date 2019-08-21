@@ -2,7 +2,7 @@ let fs = require('fs')
 let path = require('path')
 let parse = require('@architect/parser')
 
-// TODO easy improvement…make this readJSON and readYAML one method
+// TODO easy improvement… make this readJSON and readYAML one method
 function read(filepath, callback) {
   fs.readFile(filepath, {encoding:'utf8'}, function done(err, result) {
     if (err) callback(err)
@@ -59,13 +59,13 @@ function readYAML(filepath, callback) {
  */
 module.exports = function readArc(callback) {
 
-  let arcDefault = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
+  let arcDefault      = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
   let arcInCurrentDir = path.join(process.cwd(), '.arc')
-  let arcInSharedDir = path.join(__dirname, '..', 'shared', '.arc')
-  let arcInRoot = path.join(process.cwd(), '..', '..', '..', '.arc')
-  let appArcInRoot = path.join(process.cwd(), '..', '..', '..', 'app.arc')
-  let jsonInRoot = path.join(process.cwd(), '..', '..', '..', 'arc.json')
-  let yamlInRoot = path.join(process.cwd(), '..', '..', '..', 'arc.yaml')
+  let arcInSharedDir  = path.join(__dirname, '..', 'shared', '.arc')
+  let arcInRoot       = path.join(process.cwd(), '..', '..', '..', '.arc')
+  let appArcInRoot    = path.join(process.cwd(), '..', '..', '..', 'app.arc')
+  let jsonInRoot      = path.join(process.cwd(), '..', '..', '..', 'arc.json')
+  let yamlInRoot      = path.join(process.cwd(), '..', '..', '..', 'arc.yaml')
 
   if (fs.existsSync(arcDefault)) {
     // Arc default path (used in Arc 4 as well as ARC_LOCAL)
