@@ -10,11 +10,11 @@ module.exports = function lookupWebsocketEndpoints(callback) {
     if (err) callback(err)
     else {
       let topic = param=> param.Name.split('/')[2] === 'ws'
-      let topics = result.Parameters.filter(topic).reduce((a, b)=> {
+      let wss = result.Parameters.filter(topic).reduce((a, b)=> {
         a[b.Name.split('/')[3]] = b.Value
         return a
       }, {})
-      callback(null, topics)
+      callback(null, wss)
     }
   })
 }
