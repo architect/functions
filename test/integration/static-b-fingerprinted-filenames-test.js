@@ -15,11 +15,12 @@ let origCwd = process.cwd()
 let static
 
 test('Set up mocked arc', t=> {
-  t.plan(1)
+  t.plan(2)
   mkdir(shared)
   fs.copyFileSync(join(mock, 'mock-arc-fingerprint'), join(shared, '.arc'))
   fs.copyFileSync(join(mock, 'mock-arc-fingerprint'), join(tmp, '.arc'))
-  t.ok(exists(join(shared, '.arc')), 'Mock .arc file ready')
+  t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
+  t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   process.chdir(tmp)
   // eslint-disable-next-line
   arc = require('../..') // module globally inspects arc file so need to require after chdir
