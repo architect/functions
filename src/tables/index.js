@@ -1,7 +1,7 @@
 let old = require('./old')
 let doc = require('./doc')
 let lookup = require('./lookup-tables')
-let readArc = require('../utils/read-local-arc')
+let readLocalArc = require('../utils/read-local-arc')
 let factory = require('./factory')
 let sandbox = require('./sandbox')
 let db = require('./db')
@@ -31,11 +31,16 @@ function tables(callback) {
     })
   }
   // Read Architect manifest if local / sandbox, otherwise use service reflection
-  if (process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL) {
-    readArc(function errback(err, arc) {
-      if (err) callback(err)
-      else callback(null, sandbox(arc))
-    })
+  let env = process.env.NODE_ENV
+  let runningLocally = !env || env === 'testing' || process.env.ARC_LOCAL
+  if (runningLocally) {
+    try {
+      let arc = readLocalArc()
+      callback(null, sandbox(arc))
+    }
+    catch (err) {
+      callback(err)
+    }
   }
   else {
     if (client) {

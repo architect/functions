@@ -1,12 +1,26 @@
 # Architect Functions changelog
 
 ---
-Also see:
-- [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
-- [Architect Data changelog](https://github.com/architect/arc-data/blob/master/changelog.md)
+Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [On master]
+## [3.3.3] 2019-08-22
+
+### Fixed
+
+- Fixed `arc.static()` (and deprecated `arc.http.helpers.static()`) calls in Arc 6, fixes #59 /ht @mikemaccana
+
+---
+
+## [3.3.1 - 3.3.2] 2019-08-20
+
+### Fixed
+
+- Fixed `arc.tables()` calls in Arc 6
+
+---
+
+## [3.3.0] 2019-08-12
 
 ### Added
 
