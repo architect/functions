@@ -15,27 +15,27 @@ let json = {hi: 'there'}
 let text = 'hi there'
 let xml = '<hi>there</hi>'
 
-let arc6 = {
-  /**
-   * New params introduced with Arc 6+ APG-proxy-Lambda
-   */
-  // Set isBase64Encoded (not technically new, but implemented differently)
-  isBase64Encoded: {
-    body: b64enc('hi there\n'),
-    isBase64Encoded: true
-  },
+// let arc6 = {
+//   /**
+//    * New params introduced with Arc 6+ APG-proxy-Lambda
+//    */
+//   // Set isBase64Encoded (not technically new, but implemented differently)
+//   isBase64Encoded: {
+//     body: b64enc('hi there\n'),
+//     isBase64Encoded: true
+//   },
 
-  // Should fail in Sandbox, or convert buffer to base64 encoded body with isBase64encoded param in Functions
-  buffer: {
-    body: Buffer.from('hi there\n'),
-  },
+//   // Should fail in Sandbox, or convert buffer to base64 encoded body with isBase64encoded param in Functions
+//   buffer: {
+//     body: Buffer.from('hi there\n'),
+//   },
 
-  // Base64 encoded with valid binary content type
-  encodedWithBinaryType: {
-    body: b64enc('hi there\n'),
-    headers: {'Content-Type': 'application/pdf'}
-  }
-}
+//   // Base64 encoded with valid binary content type
+//   encodedWithBinaryType: {
+//     body: b64enc('hi there\n'),
+//     headers: {'Content-Type': 'application/pdf'}
+//   }
+// }
 
 let arc5 = {
   /**
@@ -147,7 +147,7 @@ let arc = {
 }
 
 module.exports = {
-  arc6,
+  // arc6,
   arc5,
   arc4,
   arc

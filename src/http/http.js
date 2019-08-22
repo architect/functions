@@ -1,4 +1,4 @@
-let binaryTypes = require('./helpers/binary-types')
+// let binaryTypes = require('./helpers/binary-types')
 let read = require('./session/read')
 let write = require('./session/write')
 let bodyParser = require('./helpers/body-parser')
@@ -160,6 +160,7 @@ function response(req, callback, params) {
     res.headers.Location = params.location
   }
 
+  /*
   // Handle body encoding (if necessary)
   let isBinary = binaryTypes.some(t => res.headers['Content-Type'].includes(t))
   let bodyIsString = typeof res.body === 'string'
@@ -171,6 +172,7 @@ function response(req, callback, params) {
   }
   // Body is likely base64 & has binary MIME type, so flag it
   if (bodyIsString && isBinary) res.isBase64Encoded = true
+  */
 
   // Tag the new session
   if (params.session || params.cookie) {

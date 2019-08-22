@@ -11,7 +11,7 @@ module.exports = function parseBody (req) {
     return req.body
   }
   else {
-    // Paranoid deep copy
+    // Paranoid but necessary deep copy
     let request = JSON.parse(JSON.stringify(req))
     let headers = request.headers
     let contentType = type => headers && headers['Content-Type'] && headers['Content-Type'].includes(type) || headers && headers['content-type'] && headers['content-type'].includes(type)
@@ -19,16 +19,15 @@ module.exports = function parseBody (req) {
     let isString = typeof request.body === 'string'
     let isBase64 = request.isBase64Encoded
     let isParsing = isString && isBase64
-    let isJSON = contentType('application/json') && isParsing
-    let isFormURLEncoded = contentType('application/x-www-form-urlencoded') && isParsing
+    let isJSON = contentType('application/json')
+    let isFormURLEncoded = contentType('application/x-www-form-urlencoded')
     let isMultiPartFormData = contentType('multipart/form-data') && isParsing
     let isOctetStream = contentType('application/octet-stream') && isParsing
 
     if (isJSON) {
       try {
-        // Handles base64 + JSON-encoded payloads (>Arc 6)
-        let data = new Buffer.from(request.body, 'base64').toString()
-        request.body = JSON.parse(data) || {}
+        // Handles JSON-serialized payloads in Arc 6+ (what used to be done in Arc VTL)
+        request.body = JSON.parse(request.body) || {}
       }
       catch(e) {
         throw Error('Invalid request body encoding or invalid JSON')
@@ -36,8 +35,7 @@ module.exports = function parseBody (req) {
     }
 
     if (isFormURLEncoded) {
-      let data = new Buffer.from(request.body, 'base64').toString()
-      request.body = qs.parse(data)
+      request.body = qs.parse(request.body)
     }
 
     if (isMultiPartFormData || isOctetStream) {

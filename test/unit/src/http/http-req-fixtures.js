@@ -41,24 +41,24 @@ let arc6 = {
 
   // post /form (JSON)
   postJson: {
-    body: b64enc(JSON.stringify({hi: 'there'})),
+    body: JSON.stringify({hi: 'there'}),
     path: '/form',
     headers: {'Content-Type': 'application/json'},
     httpMethod: 'POST',
     pathParameters: null,
     queryStringParameters: null,
-    isBase64Encoded: true
+    isBase64Encoded: false
   },
 
   // post /form (form URL encoded)
   postFormURL: {
-    body: b64enc('hi=there'),
+    body: 'hi=there',
     path: '/form',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     httpMethod: 'POST',
     pathParameters: null,
     queryStringParameters: null,
-    isBase64Encoded: true
+    isBase64Encoded: false
   },
 
   // post /form (multipart form data)
@@ -85,35 +85,35 @@ let arc6 = {
 
   // put /form (JSON)
   putJson: {
-    body: b64enc(JSON.stringify({hi: 'there'})),
+    body: JSON.stringify({hi: 'there'}),
     path: '/form',
     headers: {'Content-Type': 'application/json'},
     httpMethod: 'PUT',
     pathParameters: null,
     queryStringParameters: null,
-    isBase64Encoded: true
+    isBase64Encoded: false
   },
 
   // patch /form (JSON)
   patchJson: {
-    body: b64enc(JSON.stringify({hi: 'there'})),
+    body: JSON.stringify({hi: 'there'}),
     path: '/form',
     headers: {'Content-Type': 'application/json'},
     httpMethod: 'PATCH',
     pathParameters: null,
     queryStringParameters: null,
-    isBase64Encoded: true
+    isBase64Encoded: false
   },
 
   // delete /form (JSON)
   deleteJson: {
-    body: b64enc(JSON.stringify({hi: 'there'})),
+    body: JSON.stringify({hi: 'there'}),
     path: '/form',
     headers: {'Content-Type': 'application/json'},
     httpMethod: 'DELETE',
     pathParameters: null,
     queryStringParameters: null,
-    isBase64Encoded: true
+    isBase64Encoded: false
   }
 }
 

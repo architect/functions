@@ -14,35 +14,35 @@ test('Set up env', t => {
   t.ok(responses, 'Loaded response fixtures')
 })
 
-test('Architect v6 dependency-free responses', t => {
-  // Init env var to keep from stalling on db reads in CI
-  process.env.SESSION_TABLE_NAME = 'jwe'
-  t.plan(14)
-  let run = (response, callback) => {
-    let handler = http((req, res) => res(response))
-    handler(request, {}, callback)
-  }
-  run(responses.arc6.isBase64Encoded, (err, res) => {
-    t.notOk(err, 'No error')
-    t.equal(responses.arc6.isBase64Encoded.body, res.body, match('res.body', res.body))
-    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
-    t.equal(res.statusCode, 200, 'Responded with 200')
-  })
-  run(responses.arc6.buffer, (err, res) => {
-    t.notOk(err, 'No error')
-    t.ok(typeof res.body === 'string', 'Received string (and not buffer) back')
-    t.equal(b64dec(res.body), 'hi there\n','Body properly auto-encoded')
-    t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
-    t.equal(res.statusCode, 200, 'Responded with 200')
-  })
-  run(responses.arc6.encodedWithBinaryType, (err, res) => {
-    t.notOk(err, 'No error')
-    t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
-    t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
-    t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
-    t.equal(res.statusCode, 200, 'Responded with 200')
-  })
-})
+// test('Architect v6 dependency-free responses', t => {
+//   // Init env var to keep from stalling on db reads in CI
+//   process.env.SESSION_TABLE_NAME = 'jwe'
+//   t.plan(14)
+//   let run = (response, callback) => {
+//     let handler = http((req, res) => res(response))
+//     handler(request, {}, callback)
+//   }
+//   run(responses.arc6.isBase64Encoded, (err, res) => {
+//     t.notOk(err, 'No error')
+//     t.equal(responses.arc6.isBase64Encoded.body, res.body, match('res.body', res.body))
+//     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+//     t.equal(res.statusCode, 200, 'Responded with 200')
+//   })
+//   run(responses.arc6.buffer, (err, res) => {
+//     t.notOk(err, 'No error')
+//     t.ok(typeof res.body === 'string', 'Received string (and not buffer) back')
+//     t.equal(b64dec(res.body), 'hi there\n','Body properly auto-encoded')
+//     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
+//     t.equal(res.statusCode, 200, 'Responded with 200')
+//   })
+//   run(responses.arc6.encodedWithBinaryType, (err, res) => {
+//     t.notOk(err, 'No error')
+//     t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
+//     t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
+//     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
+//     t.equal(res.statusCode, 200, 'Responded with 200')
+//   })
+// })
 
 test('Architect v5 dependency-free responses', t => {
   t.plan(9)
