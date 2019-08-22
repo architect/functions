@@ -17,12 +17,13 @@ let shared = join(tmp, 'node_modules', '@architect', 'shared')
 let origCwd = process.cwd()
 
 test('Set up mocked files', t=> {
-  t.plan(2)
+  t.plan(3)
   mkdir(shared)
   fs.copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
   fs.copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
   fs.copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
-  t.ok(exists(join(shared, '.arc')), 'Mock .arc file ready')
+  t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
+  t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
   process.chdir(tmp)
   // eslint-disable-next-line
