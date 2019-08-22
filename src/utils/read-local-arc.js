@@ -22,7 +22,7 @@ function read(filepath, type) {
  */
 module.exports = function readLocalArc() {
   // Arc <6 paths where we used to copy project manifest to shared
-  let arcOldDefault      = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
+  let arcOldDefault   = path.join(process.cwd(), 'node_modules', '@architect', 'shared', '.arc')
   let arcInCurrentDir = path.join(process.cwd(), '.arc')
   let arcInSharedDir  = path.join(__dirname, '..', 'shared', '.arc')
   // Arc 6+ paths where project manifest needs to be read from root
