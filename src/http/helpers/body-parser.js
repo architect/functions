@@ -6,7 +6,8 @@ let qs = require('querystring')
  */
 module.exports = function parseBody (req) {
   let ctype = req.headers['Content-Type'] || req.headers['content-type']
-  let passthru = !req.body || !req.headers || !ctype || !Object.getOwnPropertyNames(req.body).length
+  let passthru =  !req.body || !req.headers || !ctype ||
+                  req.body instanceof Object // Arc 5 VTL-parsed object compat
   if (passthru) {
     return req.body
   }

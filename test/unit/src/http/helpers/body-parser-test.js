@@ -8,7 +8,7 @@ let b64encode = i => new Buffer.from(i).toString('base64')
 let hi = {hi: 'there'}
 let hiBase64 = {base64: b64encode('hi there')} // Arc 5
 let hiBase64file = b64encode('hi there\n') // text file style
-let hiFormURL = b64encode('hi=there')
+let hiFormURL = 'hi=there'
 
 // Content types
 let json = {'Content-Type': 'application/json'}
@@ -26,14 +26,14 @@ test('Architect v6+ requests', t => {
   t.equals(str(parseBody(req)), str(null), `body matches ${str(req.body)}`)
 
   req = {
-    body: b64encode(str(hi)),
+    body: str(hi),
     headers: json,
-    isBase64Encoded: true
+    isBase64Encoded: false
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
   // Test faulty encoding on JSON posts
-  req.body = str(hi)
+  req.body = str(hi) + 'woops'
   t.throws(() => str(parseBody(req)), 'Raw JSON fails')
   req.body = b64encode('hello there')
   t.throws(() => str(parseBody(req)), 'Base64 encoded non-JSON string fails')
@@ -41,7 +41,7 @@ test('Architect v6+ requests', t => {
   req = {
     body: hiFormURL,
     headers: formURLencoded,
-    isBase64Encoded: true
+    isBase64Encoded: false
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
   // Not test faulty encoding on form URL-encoded posts; you'll always get something back

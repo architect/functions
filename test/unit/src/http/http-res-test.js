@@ -3,7 +3,7 @@ let test = require('tape')
 let requests = require('./http-req-fixtures')
 let responses = require('./http-res-fixtures')
 
-let b64dec = i => new Buffer.from(i, 'base64').toString()
+// let b64dec = i => new Buffer.from(i, 'base64').toString()
 let str = i => JSON.stringify(i)
 let match = (copy, item) => `${copy} matches: ${item}`
 let request = requests.arc5.getIndex
@@ -12,11 +12,11 @@ test('Set up env', t => {
   t.plan(2)
   t.ok(http, 'Loaded HTTP')
   t.ok(responses, 'Loaded response fixtures')
+  process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
 // test('Architect v6 dependency-free responses', t => {
 //   // Init env var to keep from stalling on db reads in CI
-//   process.env.SESSION_TABLE_NAME = 'jwe'
 //   t.plan(14)
 //   let run = (response, callback) => {
 //     let handler = http((req, res) => res(response))
