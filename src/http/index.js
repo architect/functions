@@ -9,7 +9,7 @@ let url = require('./helpers/url')
 let read = require('./session/read')
 let write = require('./session/write')
 // Middleware
-let middleware = require('./middleware')
+let _async = require('./async')
 // Proxy
 let proxy = require('./proxy')
 
@@ -20,7 +20,8 @@ http.helpers = {
   url
 }
 http.session = {read, write}
-http.middleware = middleware
+http.async = _async
+http.middleware = _async
 http.proxy = proxy
 
 module.exports = http
