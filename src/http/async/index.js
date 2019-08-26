@@ -1,35 +1,68 @@
-// Create a combined function from the middleware steps provided
-// Each step is a regular Arc 4+ async/await route function, that may return
-//  - A falsy value - keep processing, ie move onto the next step
-//  - A modified request - keep processing, passing the modified request onto subsequent steps
-//  - A response - end processing and respond to the client
-function addMiddleware(...steps) {
+let read = require('../session/read')
+let write = require('../session/write')
+let bodyParser = require('../helpers/body-parser')
+let interpolate = require('../helpers/params')
+let responseFormatter = require('../_res-fmt')
+
+/**
+ * `arc.http.async` accepts one or more async functions
+ *
+ * Each function is a regular Arc 4+ async/await route function, that may return:
+ * - A falsy value .......... move onto the next function
+ * - A modified `request` ... move onto the next function, passing the mutated `request` on to any subsequent functions
+ * - A `response` ........... end execution and respond to the client
+ */
+function httpAsync(...fns) {
   let combined = async function (request, context) {
     // Running combined function!
-    var response
-    for (let step of steps) {
-      // Running step ${step.name}
-      var middleWareResult = await step(request, context)
-      var isRequest = middleWareResult && middleWareResult.hasOwnProperty('httpMethod')
+    let params
+    let first = true
+    for (let fn of fns) {
+      // Only parse the request for the first function
+      if (first) {
+        first = false
+        let session = await read(request)
+        let req = interpolate(Object.assign({}, request, {session}))
+        req.body = bodyParser(req)
+        request = req
+      }
+      // Run the function
+      let result = await fn(request, context)
+      let isRequest = result && result.hasOwnProperty('httpMethod')
       if (isRequest) {
-        // Middleware ${step.name} has returned a modified request, continuing...
-        request = middleWareResult
+        // Function returned a modified request, continuing...
+        request = result
       } else {
-        if (middleWareResult) {
-          response = middleWareResult
-          // Got a response from ${step.name}, finishing...
+        if (result) {
+          params = result
+          // Got a response, finishing...
           break
         }
-        // Did not get a result from ${step.name}, continuing...
+        // Did not get a result from, continuing...
       }
     }
     // Finished combined function!
-    if (!response) {
-      throw new Error(`Finished all middleware steps without returning a response.`)
+    if (!params) {
+      throw new Error(`Finished all functions without returning a response.`)
     }
-    return response
+    return response(request, params)
   }
   return combined
 }
 
-module.exports = addMiddleware
+async function response(req, params) {
+  // Format the response
+  let res = responseFormatter(params)
+
+  // Tag the new session
+  if (params.session || params.cookie) {
+    let session = params.session || params.cookie
+    session = Object.assign({}, req.session, session)
+    // save the session
+    let cookie = await write(session)
+    res.headers['Set-Cookie'] = cookie
+  }
+  return res
+}
+
+module.exports = httpAsync

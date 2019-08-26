@@ -399,4 +399,3 @@ test('Architect v5: delete /form', t => {
   // Unset env var for future testing (ostensibly)
   delete process.env.SESSION_TABLE_NAME
 })
-
