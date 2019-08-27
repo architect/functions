@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.3.4] 2019-08-27
+## [3.3.5] 2019-08-27
 
 ### Added
 
@@ -26,11 +26,12 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ---
 
-## [3.3.3] 2019-08-22
+## [3.3.3 - 3.3.4] 2019-08-22
 
 ### Fixed
 
 - Fixed `arc.static()` (and deprecated `arc.http.helpers.static()`) calls in Arc 6, fixes #59 /ht @mikemaccana
+- Fixed sometimes-broken paths to API gateway
 
 ---
 
