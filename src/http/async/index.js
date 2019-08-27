@@ -12,13 +12,20 @@ let responseFormatter = require('../_res-fmt')
  * - A modified `request` ... move onto the next function, passing the mutated `request` on to any subsequent functions
  * - A `response` ........... end execution and respond to the client
  */
-function httpAsync(...fns) {
+module.exports = function httpAsync (...fns) {
+
+  // Ensure we've been passed only functions
+  fns.forEach(f=> {
+    if (typeof f != 'function')
+      throw TypeError(f + ' not a function')
+  })
+
+  // Return an AWS Lambda async function signature
   let combined = async function (request, context) {
-    // Running combined function!
     let params
     let first = true
     for (let fn of fns) {
-      // Only parse the request for the first function
+      // Only parse the request obj of the first function
       if (first) {
         first = false
         let session = await read(request)
@@ -58,11 +65,9 @@ async function response(req, params) {
   if (params.session || params.cookie) {
     let session = params.session || params.cookie
     session = Object.assign({}, req.session, session)
-    // save the session
+    // Save the session
     let cookie = await write(session)
     res.headers['Set-Cookie'] = cookie
   }
   return res
 }
-
-module.exports = httpAsync

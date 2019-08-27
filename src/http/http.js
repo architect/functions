@@ -7,28 +7,27 @@ let responseFormatter = require('./_res-fmt')
 /**
  * `arc.http` accepts one or more functions with an express-style sig
  */
-module.exports = function http(...fns) {
+module.exports = function http (...fns) {
 
-  // ensure we have been passed only functions
+  // Ensure we've been passed only functions
   fns.forEach(f=> {
     if (typeof f != 'function')
       throw TypeError(f + ' not a function')
   })
 
-  // return an aws lambda function signature
+  // Return an AWS Lambda continuation passing function signature
   return function lambda(request, context, callback) {
 
-    // verify the request is configured by arc
+    // Verify the request is configured by arc
     if (!request.headers)
       request.headers = {}
 
-    // cache the functions
+    // Cache the functions
     let cache = fns.slice()
 
     // read the session
     read(request, function _read(err, session) {
-
-      // fail loudly if the session isn't setup correctly
+      // Fail loudly if the session isn't set up correctly
       if (err)
         throw err
 

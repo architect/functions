@@ -99,7 +99,7 @@ module.exports = function responseFormatter(params) {
   if (cors) headers['Access-Control-Allow-Origin'] = '*'
   if (params.isBase64Encoded) res.isBase64Encoded = true
   if (params.location) {
-    res.statusCode = 302
+    res.statusCode = providedStatus || 302
     res.headers.Location = params.location
   }
 

@@ -9,9 +9,6 @@ let str = i => JSON.stringify(i)
 let match = (copy, item) => `${copy} matches: ${item}`
 let request = requests.arc5.getIndex
 
-// Init env var to keep from stalling on db reads in CI
-process.env.SESSION_TABLE_NAME = 'jwe'
-
 // TODO write error tests
 
 test('Set up env', t => {
@@ -23,6 +20,8 @@ test('Set up env', t => {
 })
 
 test('Architect v6 dependency-free responses', async t => {
+  // Init env var to keep from stalling on db reads in CI
+  process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(11)
   let run = async response => {
     let fn = () => response
