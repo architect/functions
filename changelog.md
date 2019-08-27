@@ -4,6 +4,28 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.3.4] 2019-08-27
+
+### Added
+
+- Added Architect 6 compatibility to `arc.http.async`, the new method name for `async/await` middleware
+  - All `async/await` functions run through `arc.http.async` now automatically have client sessions attached and decoded, parsed bodes (if applicable)
+  - Learn more about [upgrading to Arc 6 + `arc.http.async` here](https://arc.codes/guides/upgrade/#arc-http-async)
+
+
+### Changed
+
+- `arc.http.middleware` (formerly `arc.middleware`) is now `arc.http.async`
+  - These methods are functionally the same
+  - The old aliases will remain for a while to come, but we suggest moving any deprecated calls over to their new equivalents by mid-2020
+
+
+### Fixed
+
+- Fixed minor issue where status code of `302` couldn't be overridden when using both `location` and `statusCode` (or `status`, or `code`) response params
+
+---
+
 ## [3.3.3] 2019-08-22
 
 ### Fixed
