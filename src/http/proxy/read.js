@@ -64,10 +64,10 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
       response = transform({
         Key,         // TODO rename to file
         config,
+        isBinary,
         defaults: {  // TODO rename to response
           headers,
-          body: result.Body,
-          isBinary
+          body: result.Body
         },
       })
 
