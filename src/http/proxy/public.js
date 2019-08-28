@@ -10,7 +10,7 @@ let read = require('./read')
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
-module.exports = function proxyPublic(config) {
+module.exports = function proxyPublic(config={}) {
   return async function proxy(req) {
 
     let Bucket = process.env.ARC_STATIC_BUCKET
