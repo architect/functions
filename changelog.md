@@ -4,27 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.3.6] 2019-08-27
-
-### Added
-
-- Added ability to set custom headers on any `arc.http.proxy` request
-
-
-### Fixed
-
-- Fixed bug preventing emitting binary assets via `arc.http.proxy`
-- Fixed munged headers and content-type in proxy plugins, fixes @architect/architect#432
-
----
-
-## [3.3.5] 2019-08-27
+## [3.3.5 - 3.3.6] 2019-08-27
 
 ### Added
 
 - Added Architect 6 compatibility to `arc.http.async`, the new method name for `async/await` middleware
   - All `async/await` functions run through `arc.http.async` now automatically have client sessions attached and decoded, parsed bodes (if applicable)
   - Learn more about [upgrading to Arc 6 + `arc.http.async` here](https://arc.codes/guides/upgrade/#arc-http-async)
+- Added ability to set custom headers on any `arc.http.proxy` request
 
 
 ### Changed
@@ -37,6 +24,9 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Fixed
 
 - Fixed minor issue where status code of `302` couldn't be overridden when using both `location` and `statusCode` (or `status`, or `code`) response params
+- Fixed bug preventing emitting binary assets via `arc.http.proxy`
+- Fixed munged headers and content-type in proxy plugins, fixes @architect/architect#432
+
 
 ---
 
