@@ -4,6 +4,20 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.3.6] 2019-08-27
+
+### Added
+
+- Added ability to set custom headers on any `arc.http.proxy` request
+
+
+### Fixed
+
+- Fixed bug preventing emitting binary assets via `arc.http.proxy`
+- Fixed munged headers and content-type in proxy plugins, fixes @architect/architect#432
+
+---
+
 ## [3.3.5] 2019-08-27
 
 ### Added
