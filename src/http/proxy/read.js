@@ -1,3 +1,4 @@
+let binaryTypes = require('../helpers/binary-types')
 let mime = require('mime-types')
 let path = require('path')
 let aws = require('aws-sdk')
@@ -57,6 +58,7 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
 
     // No ETag found, return the blob
     if (!matchedETag) {
+      let isBinary = binaryTypes.some(type => result.ContentType.includes(type) || mime.contentType(path.extname(Key)).includes(type))
 
       // Transform first to allow for any proxy plugin mutations
       response = transform({
@@ -64,7 +66,8 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
         config,
         defaults: {  // TODO rename to response
           headers,
-          body: result.Body.toString()
+          body: result.Body,
+          isBinary
         },
       })
 
