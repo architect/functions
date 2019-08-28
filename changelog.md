@@ -10,7 +10,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 - Added Architect 6 compatibility to `arc.http.async`, the new method name for `async/await` middleware
   - All `async/await` functions run through `arc.http.async` now automatically have client sessions attached and decoded, parsed bodes (if applicable)
-  - Learn more about [upgrading to Arc 6 + `arc.http.async` here](https://arc.codes/guides/upgrade/#arc-http-async)
+  - Learn more about [upgrading to Arc 6 + `arc.http.async` here](https://arc.codes/guides/upgrade#arc-http-async)
 - Added ability to set custom headers on any `arc.http.proxy` request
 
 
