@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.3.7] 2019-08-28
+
+### Changed
+
+- Makes passing config to `arc.http.proxy` entirely optional
+
+---
+
 ## [3.3.5 - 3.3.6] 2019-08-27
 
 ### Added
