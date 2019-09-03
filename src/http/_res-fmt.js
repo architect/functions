@@ -1,6 +1,6 @@
 let binaryTypes = require('./helpers/binary-types')
 
-module.exports = function responseFormatter(params) {
+module.exports = function responseFormatter(req, params) {
   let isError = params instanceof Error // Doesn't really pertain to async
   let buffer
   let bodyIsBuffer = params.body instanceof Buffer
@@ -80,7 +80,8 @@ module.exports = function responseFormatter(params) {
   }
 
   let isArcFive = !process.env.ARC_CLOUDFORMATION
-  if (isArcFive) {
+  let isNotProxy = !req.resource || req.resource && req.resource !== '/{proxy+}'
+  if (isArcFive && isNotProxy) {
     // FIX for backwards compat; vtl templates need this param
     res.type = type
   }

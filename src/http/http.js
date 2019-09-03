@@ -52,7 +52,7 @@ module.exports = function http (...fns) {
  */
 function response(req, callback, params) {
   // Format the response
-  let res = responseFormatter(params)
+  let res = responseFormatter(req, params)
 
   // Tag the new session
   if (params.session || params.cookie) {

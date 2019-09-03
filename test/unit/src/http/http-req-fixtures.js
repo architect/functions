@@ -154,6 +154,19 @@ let arc5 = {
     queryStringParameters: {}
   },
 
+  // get /{proxy+}
+  getProxyPlus: {
+    body: {},
+    path: '/nature/hiking',
+    resource: '/{proxy+}',
+    headers,
+    method: 'GET',
+    httpMethod: 'GET',
+    params: {proxy: '/nature/hiking'},
+    query: {},
+    queryStringParameters: {}
+  },
+
   // post /form
   //   accounts for both JSON and form URL-encoded bodies
   post: {

@@ -59,7 +59,7 @@ module.exports = function httpAsync (...fns) {
 
 async function response(req, params) {
   // Format the response
-  let res = responseFormatter(params)
+  let res = responseFormatter(req, params)
 
   // Tag the new session
   if (params.session || params.cookie) {

@@ -68,7 +68,7 @@ test('Architect v5 dependency-free responses', t => {
 })
 
 test('Architect v5 + Functions', t => {
-  t.plan(19)
+  t.plan(20)
   let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -78,6 +78,7 @@ test('Architect v5 + Functions', t => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
     t.equal(res.statusCode, 200, 'Responded with 200')
+    t.ok(res.type, 'Responded with res.type set')
   })
   run(responses.arc5.cacheControl, (err, res) => {
     t.notOk(err, 'No error')
@@ -106,6 +107,22 @@ test('Architect v5 + Functions', t => {
     t.notOk(err, 'No error')
     t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+})
+
+test('Architect v5 + Functions + /{proxy+}', t => {
+  process.env.SESSION_TABLE_NAME = 'jwe'
+  t.plan(4)
+  let request = requests.arc5.getProxyPlus
+  let run = (response, callback) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, callback)
+  }
+  run(responses.arc5.body, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+    t.notOk(res.type, 'Responded without res.type set')
   })
 })
 

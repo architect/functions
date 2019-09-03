@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.3.8] 2019-09-03
+
+### Fixed
+
+- Fixes `arc.http` / `arc.http.async` responses to `/{proxy+}` requests
+
+---
+
 ## [3.3.7] 2019-08-28
 
 ### Changed
