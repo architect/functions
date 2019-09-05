@@ -82,7 +82,7 @@ module.exports = function responseFormatter(req, params) {
   let notSix = !process.env.ARC_CLOUDFORMATION
   let notNew = !process.env.ARC_HTTP && notSix
   let notProxy = process.env.ARC_HTTP && process.env.ARC_HTTP != 'aws_proxy'
-  let isArcFive = notSix || notNew || notProxy
+  let isArcFive = (notSix || notNew) && notProxy
   let isNotProxy = !req.resource || req.resource && req.resource !== '/{proxy+}'
   if (isArcFive && isNotProxy) {
     // FIX for backwards compat; vtl templates need this param
