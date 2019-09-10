@@ -110,6 +110,10 @@ test('Architect v5 + Functions', t => {
   })
 })
 
+/**
+ * Proxy + ARC_HTTP + ARC_CLOUDFORMATION response logic
+ * - broken into individual test blocks because tape gets aggro in setting/unsetting env vars
+ */
 test('Architect v5 + Functions + /{proxy+}', t => {
   process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(4)
@@ -123,6 +127,99 @@ test('Architect v5 + Functions + /{proxy+}', t => {
     t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
     t.equal(res.statusCode, 200, 'Responded with 200')
     t.notOk(res.type, 'Responded without res.type set')
+  })
+})
+
+test('Architect v5 + Functions + ARC_HTTP = aws', t => {
+  t.plan(5)
+  process.env.ARC_HTTP = 'aws'
+  let run = (response, callback) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, (err, res) => {
+      t.equal(process.env.ARC_HTTP, 'aws', 'Set: ARC_HTTP = aws')
+      callback(err, res)
+    })
+  }
+  run(responses.arc5.body, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+    t.ok(res.type, 'Responded with res.type set with ARC_HTTP = aws')
+  })
+})
+
+test('Architect v5 + Functions + ARC_HTTP = aws_proxy', t => {
+  t.plan(5)
+  process.env.ARC_HTTP = 'aws_proxy'
+  let run = (response, callback) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, (err, res) => {
+      t.equal(process.env.ARC_HTTP, 'aws_proxy', 'Set: ARC_HTTP = aws_proxy')
+      callback(err, res)
+    })
+  }
+  run(responses.arc5.body, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+    t.notOk(res.type, 'Responded without res.type set with ARC_HTTP = aws_proxy')
+  })
+})
+
+test('Architect v5 + Functions + ARC_HTTP = other', t => {
+  t.plan(5)
+  process.env.ARC_HTTP = 'other' // tests !aws && !aws_proxy ARC_HTTP values
+  let run = (response, callback) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, (err, res) => {
+      t.equal(process.env.ARC_HTTP, 'other', 'Set: ARC_HTTP = other')
+      callback(err, res)
+    })
+  }
+  run(responses.arc5.body, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+    t.notOk(res.type, 'Responded without res.type set with ARC_HTTP = other')
+  })
+})
+
+test('Architect v5 + Functions + !ARC_HTTP + !ARC_CLOUDFORMATION', t => {
+  t.plan(6)
+  delete process.env.ARC_HTTP
+  let run = (response, callback) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, (err, res) => {
+      t.notOk(process.env.ARC_HTTP, 'ARC_HTTP not set')
+      t.notOk(process.env.ARC_CLOUDFORMATION, 'ARC_CLOUDFORMATION not set')
+      callback(err, res)
+    })
+  }
+  run(responses.arc5.body, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+    t.ok(res.type, 'Responded with res.type set (default behavior)')
+  })
+})
+
+test('Architect v5 + Functions + ARC_CLOUDFORMATION = true', t => {
+  t.plan(6)
+  process.env.ARC_CLOUDFORMATION = true
+  let run = (response, callback) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, (err, res) => {
+      t.ok(process.env.ARC_CLOUDFORMATION, 'Set: ARC_CLOUDFORMATION = true')
+      callback(err, res)
+    })
+  }
+  run(responses.arc5.body, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+    t.notOk(res.type, 'Responded without res.type set with ARC_CLOUDFORMATION = true')
+    delete process.env.ARC_CLOUDFORMATION
+    t.notOk(process.env.ARC_CLOUDFORMATION, 'Unset: ARC_CLOUDFORMATION = true')
   })
 })
 

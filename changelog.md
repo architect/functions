@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [Coming soon] 2019-09-09
+## [On branch] 2019-09-09
 
 ### Changed
 
@@ -14,6 +14,22 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Fixed
 
 - Fixes issue where binary assets delivered via `sandbox` / root may not be properly encoded
+
+---
+
+## [On master] 2019-09-09
+
+### Fixed
+
+- Fixed minor issue in `ARC_HTTP` env var check
+
+---
+
+## [3.3.9 - 3.3.10] 2019-09-09
+
+### Added
+
+- Adds `ARC_HTTP` env var check to Arc v5 response formatter
 
 ---
 
