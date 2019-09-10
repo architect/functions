@@ -79,13 +79,24 @@ module.exports = function responseFormatter(req, params) {
     body
   }
 
-  let notSix = !process.env.ARC_CLOUDFORMATION
-  let notNew = !process.env.ARC_HTTP && notSix
-  let notProxy = process.env.ARC_HTTP && process.env.ARC_HTTP != 'aws_proxy'
-  let isArcFive = (notSix || notNew) && notProxy
-  let isNotProxy = !req.resource || req.resource && req.resource !== '/{proxy+}'
-  if (isArcFive && isNotProxy) {
-    // FIX for backwards compat; vtl templates need this param
+  /**
+   * Only send res.type for non-proxy responses in Arc 5; attributes of each env:
+   * Arc 6:
+   * - ARC_CLOUDFORMATION
+   * - ARC_HTTP === 'aws_proxy'
+   * Arc 5:
+   * - !ARC_CLOUDFORMATION
+   * - !ARC_HTTP || ARC_HTTP === 'aws'
+   * Sandbox:
+   * - !ARC_CLOUDFORMATION
+   * - !ARC_HTTP
+   */
+  let notArcSix = !process.env.ARC_CLOUDFORMATION
+  let notArcProxy = !process.env.ARC_HTTP || process.env.ARC_HTTP === 'aws'
+  let isArcFive = notArcSix && notArcProxy
+  let notProxyReq = !req.resource || req.resource && req.resource !== '/{proxy+}'
+  if (isArcFive && notProxyReq) {
+    // Fixes backwards compatibility: Arc vtl needs this param
     res.type = type
   }
 
