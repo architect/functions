@@ -6,6 +6,19 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ## [On branch] 2019-09-09
 
+### Changed
+
+- Internal change to normalize response shapes from `http.proxy.public` + `http.proxy.read`
+
+
+### Fixed
+
+- Fixes issue where binary assets delivered via `sandbox` / root may not be properly encoded
+
+---
+
+## [On master] 2019-09-09
+
 ### Fixed
 
 - Fixed minor issue in `ARC_HTTP` env var check

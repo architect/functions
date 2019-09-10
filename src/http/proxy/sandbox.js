@@ -1,3 +1,5 @@
+let binaryTypes = require('../helpers/binary-types')
+let normalizeResponse = require('./response')
 let mime = require('mime-types')
 let path = require('path')
 let fs = require('fs')
@@ -9,7 +11,7 @@ module.exports = async function sandbox({Key, config}) {
   // additive change... after 6.x we can rely on this env var in sandbox
   let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || path.join(process.cwd(), '..', '..', '..', 'public')
 
-  // Lookup the blob in ./public
+  // Look up the blob
   // assuming we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
   let filePath = path.join(basePath, Key)
 
@@ -17,17 +19,28 @@ module.exports = async function sandbox({Key, config}) {
     if (!fs.existsSync(filePath))
       throw ReferenceError(`${filePath} not found`)
 
-    let body = await readFile(filePath, {encoding: 'utf8'})
+    let body = await readFile(filePath)
     let type = mime.contentType(path.extname(Key))
+    let isBinary = binaryTypes.some(t => type.includes(t))
 
-    return transform({
+    let response = transform({
       Key,
       config,
+      isBinary,
       defaults: {
         headers: {'content-type': type},
         body
       }
     })
+
+    // Normalize response
+    response = normalizeResponse({
+      response,
+      Key,
+      config
+    })
+
+    return response
   }
   catch(e) {
     // look for public/404.html
