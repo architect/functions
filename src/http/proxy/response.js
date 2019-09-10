@@ -47,13 +47,13 @@ module.exports = function normalizeResponse ({response, result, Key, config}) {
   let isArcFive = notArcSix && notArcProxy
   let isHTML = response.headers['Content-Type'].includes('text/html')
   if (isArcFive && isHTML) {
-    // Non-HTML types will get picked up and populated by Arc 5 VTL
-    response.type = response.headers['Content-Type']
+    // This is a deprecated code path that may be removed when Arc 5 exits LTS status
     // Only return string bodies for certain types, and ONLY in Arc 5
     response.body = Buffer.from(response.body).toString()
+    response.type = response.headers['Content-Type'] // Re-set type or it will fall back to JSON
   }
   else {
-    // Base64 everything else on the way out to enable binary support
+    // Base64 everything else on the way out to enable text + binary support
     response.body = Buffer.from(response.body).toString('base64')
     response.isBase64Encoded = true
   }

@@ -96,6 +96,7 @@ module.exports = function responseFormatter(req, params) {
   let isArcFive = notArcSix && notArcProxy
   let notProxyReq = !req.resource || req.resource && req.resource !== '/{proxy+}'
   if (isArcFive && notProxyReq) {
+    // This is a deprecated code path that may be removed when Arc 5 exits LTS status
     // Fixes backwards compatibility: Arc vtl needs this param
     res.type = type
   }

@@ -14,6 +14,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Fixed
 
 - Fixes issue where binary assets delivered via `sandbox` / root may not be properly encoded
+- Fixes issue where `http.proxy.public` + `http.proxy.read` may not have delivered correctly formatted responses in Architect 5
 - Fixed minor issue in `ARC_HTTP` env var check
 
 ---
