@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [On branch] 2019-09-09
+## [On master] 2019-09-09
 
 ### Changed
 
@@ -14,13 +14,6 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Fixed
 
 - Fixes issue where binary assets delivered via `sandbox` / root may not be properly encoded
-
----
-
-## [On master] 2019-09-09
-
-### Fixed
-
 - Fixed minor issue in `ARC_HTTP` env var check
 
 ---
