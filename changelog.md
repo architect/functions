@@ -4,6 +4,22 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [On branch] 2019-09-09
+
+### Fixed
+
+- Fixed minor issue in `ARC_HTTP` env var check
+
+---
+
+## [3.3.9 - 3.3.10] 2019-09-09
+
+### Added
+
+- Adds `ARC_HTTP` env var check to Arc v5 response formatter
+
+---
+
 ## [3.3.8] 2019-09-03
 
 ### Fixed
