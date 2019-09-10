@@ -11,10 +11,6 @@ module.exports = function normalizeResponse ({response, result, Key, config}) {
   ]
   response.headers = response.headers || {}
 
-  // Base64 everything on the way out to enable binary support
-  response.body = Buffer.from(response.body).toString('base64')
-  response.isBase64Encoded = true
-
   // Establish Content-Type
   let contentType =
     response.headers['Content-Type'] || // Possibly get content-type passed via proxy plugins
@@ -44,6 +40,22 @@ module.exports = function normalizeResponse ({response, result, Key, config}) {
   if (response.headers['cache-control']) {
     response.headers['Cache-Control'] = response.headers['cache-control']
     delete response.headers['cache-control']
+  }
+
+  let notArcSix = !process.env.ARC_CLOUDFORMATION
+  let notArcProxy = !process.env.ARC_HTTP || process.env.ARC_HTTP === 'aws'
+  let isArcFive = notArcSix && notArcProxy
+  let isHTML = response.headers['Content-Type'].includes('text/html')
+  if (isArcFive && isHTML) {
+    // Non-HTML types will get picked up and populated by Arc 5 VTL
+    response.type = response.headers['Content-Type']
+    // Only return string bodies for certain types, and ONLY in Arc 5
+    response.body = Buffer.from(response.body).toString()
+  }
+  else {
+    // Base64 everything else on the way out to enable binary support
+    response.body = Buffer.from(response.body).toString('base64')
+    response.isBase64Encoded = true
   }
   return response
 }
