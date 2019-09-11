@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [On master] 2019-09-09
+## [3.3.11] 2019-09-09
 
 ### Changed
 
