@@ -14,6 +14,8 @@ module.exports = async function sandbox({Key, config}) {
   // Look up the blob
   // assuming we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
   let filePath = path.join(basePath, Key)
+  let staticFolder = process.env.ARC_STATIC_FOLDER
+  if (filePath.includes(staticFolder)) filePath = filePath.replace(`${staticFolder}${path.sep}`, '')
 
   try {
     if (!fs.existsSync(filePath))
