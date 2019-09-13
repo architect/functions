@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [On branch] 2019-09-13
+
+### Fixed
+
+- `http.proxy` now correctly responds to requests if your environment includes an `ARC_STATIC_FOLDER` env var
+
+---
+
 ## [3.3.11] 2019-09-09
 
 ### Changed
