@@ -50,7 +50,7 @@
     "aws-sdk-mock": "^4.5.0",
     "browserify": "^16.5.0",
     "codecov": "^3.5.0",
-    "cross-env": "^5.2.1",
+    "cross-env": "^6.0.0",
     "eslint": "^5.16.0",
     "mkdirp": "^0.5.1",
     "nyc": "^14.1.1",
