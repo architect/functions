@@ -4,7 +4,21 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.3.12] 2019-09-24
+## [3.3.13] 2019-09-25
+
+### Changed
+
+- Updated deps
+
+### Fixed
+
+- Restored `http.proxy.public` settings that were erroneously removed in a previous update
+  - `bucket.staging`, `bucket.production`, `bucket.folder`, and `cacheControl` are now restored
+- Fixes a proxy issue in Architect 5 / LTS projects where SPA requests for pages would not have loaded correctly
+
+---
+
+## [3.3.13] 2019-09-24
 
 ### Fixed
 
