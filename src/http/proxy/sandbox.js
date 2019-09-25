@@ -7,7 +7,7 @@ let util = require('util')
 let readFile = util.promisify(fs.readFile)
 let transform = require('./transform')
 
-module.exports = async function sandbox({Key, config}) {
+module.exports = async function sandbox({Key, isProxy, config}) {
   // additive change... after 6.x we can rely on this env var in sandbox
   let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || path.join(process.cwd(), '..', '..', '..', 'public')
 
@@ -39,6 +39,7 @@ module.exports = async function sandbox({Key, config}) {
     response = normalizeResponse({
       response,
       Key,
+      isProxy,
       config
     })
 

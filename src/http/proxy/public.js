@@ -7,13 +7,24 @@ let read = require('./read')
  * @param config.spa - boolean, forces index.html no matter the folder depth
  * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
  * @param config.alias - object, map of root rel urls to map to fully qualified root rel urls
+ * @param config.bucket - object, {staging, production} override the s3 bucket names
+ * @param config.bucket.staging - object, {staging, production} override the s3 bucket names
+ * @param config.bucket.production - object, {staging, production} override the s3 bucket names
+ * @param config.bucket.folder - string, bucket folder
+ * @param config.cacheControl - string, set a custom Cache-Control max-age header value
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
 module.exports = function proxyPublic(config={}) {
   return async function proxy(req) {
 
-    let Bucket = process.env.ARC_STATIC_BUCKET
+    let isProduction = process.env.NODE_ENV === 'production'
+    let configBucket = config.bucket
+    let bucketSetting = isProduction
+      ? configBucket && configBucket['production']
+      : configBucket && configBucket['staging']
+    // Ok, all that out of the way, let's set the actual bucket, eh?
+    let Bucket = process.env.ARC_STATIC_BUCKET || bucketSetting
     let Key // resolved below
 
     if (config && config.spa) {
@@ -38,8 +49,9 @@ module.exports = function proxyPublic(config={}) {
     }
 
     // allow bucket folder prefix
-    if (process.env.ARC_STATIC_FOLDER) {
-      Key = `${process.env.ARC_STATIC_FOLDER}/${Key}`
+    let folder = process.env.ARC_STATIC_FOLDER || configBucket && configBucket.folder
+    if (folder) {
+      Key = `${folder}/${Key}`
     }
 
     // strip staging/ and production/ from req urls
@@ -51,6 +63,9 @@ module.exports = function proxyPublic(config={}) {
     let find = k => k.toLowerCase() === 'if-none-match'
     let IfNoneMatch = req.headers && req.headers[Object.keys(req.headers).find(find)]
 
-    return await read({Key, Bucket, IfNoneMatch, config})
+    // Ensure response shape is correct for proxy SPA responses
+    let isProxy = req.resource === '/{proxy+}'
+
+    return await read({Key, Bucket, IfNoneMatch, isProxy, config})
   }
 }
