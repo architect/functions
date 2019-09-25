@@ -57,7 +57,7 @@ module.exports = function _publish(params, callback) {
     })
   }
 
-  let isLocal = process.env.NODE_ENV === 'testing' || process.env.hasOwnProperty('ARC_LOCAL')
+  let isLocal = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
   let exec = isLocal ? _local : _live
   exec(params, callback)
   return promise
