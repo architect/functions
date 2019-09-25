@@ -18,11 +18,12 @@ let sandbox = require('./sandbox')
  * @param {Object} params.config
  * @returns {Object} {statusCode, headers, body}
  */
-module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
+module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}) {
 
   // early exit if we're running in the sandbox
-  if (process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL)
-    return await sandbox({Key, config})
+  let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
+  if (local)
+    return await sandbox({Key, isProxy, config})
 
   let headers = {}
   let response = {}
@@ -58,10 +59,10 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
 
       // Transform first to allow for any proxy plugin mutations
       response = transform({
-        Key,         // TODO rename to file
+        Key,
         config,
         isBinary,
-        defaults: {  // TODO rename to response
+        defaults: {
           headers,
           body: result.Body
         },
@@ -72,6 +73,7 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
         response,
         result,
         Key,
+        isProxy,
         config
       })
 
