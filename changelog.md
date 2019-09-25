@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.3.12] 2019-09-24
+
+### Fixed
+
+- Improved detection of `proxy` and `ws` when running locally with NODE_ENV not set to `testing`, and `ARC_LOCAL` set
+
+---
+
 ## [3.3.12] 2019-09-13
 
 ### Fixed
