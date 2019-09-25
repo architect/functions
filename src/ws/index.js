@@ -31,7 +31,8 @@ function send({id, payload}, callback) {
     })
   }
 
-  let exec = process.env.NODE_ENV === 'testing'? sandbox : run
+  let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
+  let exec = local ? sandbox : run
 
   exec({
     id,

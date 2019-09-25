@@ -21,7 +21,7 @@ let sandbox = require('./sandbox')
 module.exports = async function read({Bucket, Key, IfNoneMatch, config}) {
 
   // early exit if we're running in the sandbox
-  if (process.env.NODE_ENV === 'testing')
+  if (process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL)
     return await sandbox({Key, config})
 
   let headers = {}
