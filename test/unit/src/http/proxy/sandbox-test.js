@@ -46,4 +46,6 @@ test('File read with ARC_STATIC_FOLDER set', async t => {
   let publicfile = fs.readFileSync(join(path, filename)).toString()
   let result = await sandbox(_basicRead)
   t.equal(Buffer.from(result.body, 'base64').toString(), publicfile, 'File contents match disk')
+  delete process.env.ARC_SANDBOX_PATH_TO_STATIC
+  delete process.env.ARC_STATIC_FOLDER
 })
