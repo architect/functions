@@ -19,7 +19,7 @@ module.exports = async function sandbox({Key, isProxy, config}) {
 
   try {
     if (!fs.existsSync(filePath))
-      throw ReferenceError(`${filePath} not found`)
+      throw ReferenceError(`NoSuchKey: ${filePath} not found`)
 
     let body = await readFile(filePath)
     let type = mime.contentType(path.extname(Key))
@@ -54,12 +54,16 @@ module.exports = async function sandbox({Key, isProxy, config}) {
       let body = await readFile(http404, {encoding: 'utf8'})
       return {headers, statusCode:404, body}
     }
-    let err = `
-      <h1>${e.name}</h1>
-      <pre>${e.code}</pre>
+    let statusCode = e.message.startsWith('NoSuchKey')
+      ? 404
+      : 500
+    let body = `
+      <h1>${e.message}</h1>
+      <h2>${e.name}</h2>
+      ${e.code ? `<pre>${e.code}</pre>` : ''}
       <p>${e.message}</p>
       <pre>${e.stack}</pre>
     `
-    return {headers, body:err}
+    return {headers, statusCode, body}
   }
 }
