@@ -1,7 +1,8 @@
 let sandbox = require('@architect/sandbox')
 let read = require('../../../../../src/http/session/read')
 let write = require('../../../../../src/http/session/write')
-let test= require('tape')
+let test = require('tape')
+let join = require('path').join
 
 test('http.session apis exist', t=> {
   t.plan(2)
@@ -28,6 +29,7 @@ test('jwe read and write implementations', async t=> {
 let end
 test('set up sandbox for ddb testing', async t=> {
   t.plan(1)
+  process.chdir(join(process.cwd(), 'test', 'mock', 'project'))
   end = await sandbox.start()
   t.ok(true, 'started sandbox')
 })
