@@ -25,9 +25,15 @@ module.exports = function proxyPublic(config={}) {
       : configBucket && configBucket['staging']
     // Ok, all that out of the way, let's set the actual bucket, eh?
     let Bucket = process.env.ARC_STATIC_BUCKET || bucketSetting
+    if (!Bucket) throw Error('Bucket must be configured, use ARC_STATIC_BUCKET or config object')
     let Key // resolved below
 
-    if (config && config.spa) {
+    // Allow unsetting of SPA mode with ARC_STATIC_SPA
+    let spa = process.env.ARC_STATIC_SPA === 'false'
+      ? false
+      : config && config.spa
+    if (!spa) config.spa = false
+    if (spa) {
       // if spa force index.html
       let isFolder = req.path.split('/').pop().indexOf('.') === -1
       Key = isFolder? 'index.html' : req.path.substring(1)
@@ -56,7 +62,8 @@ module.exports = function proxyPublic(config={}) {
 
     // strip staging/ and production/ from req urls
     if (Key.startsWith('staging/') || Key.startsWith('production/')) {
-      Key = Key.replace('staging/', '').replace('production/')
+      Key = Key.replace('staging/', '')
+               .replace('production/', '')
     }
 
     // normalize if-none-match header to lower case; it differs between environments

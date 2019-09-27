@@ -39,6 +39,7 @@ module.exports = function normalizeResponse ({response, result, Key, isProxy, co
     response.headers['Content-Type'] = response.headers['content-type']
     delete response.headers['content-type']
   }
+  // Probably unable to be set via this code path, but normalize jic
   if (response.headers['cache-control']) {
     response.headers['Cache-Control'] = response.headers['cache-control']
     delete response.headers['cache-control']

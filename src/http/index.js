@@ -22,6 +22,9 @@ http.helpers = {
 http.session = {read, write}
 http.async = _async
 http.middleware = _async
-http.proxy = proxy
+http.proxy = proxy.public
+// Legacy methods
+http.proxy.public = proxy.public
+http.proxy.read = proxy.read
 
 module.exports = http
