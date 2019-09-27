@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.3.14] 2019-09-26
+## [3.3.15] 2019-09-26
 
 ### Added
 
@@ -21,7 +21,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ---
 
-## [3.3.13] 2019-09-25
+## [3.3.14] 2019-09-25
 
 ### Changed
 
