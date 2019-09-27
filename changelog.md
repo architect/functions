@@ -4,6 +4,23 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.3.14] 2019-09-26
+
+### Added
+
+- Added more consistent and regular entry for proxy: `http.proxy`
+  - This is non-breaking: `http.proxy.public`, `http.proxy.read`, and even the older `proxy.public` methods are still available, although are deprecated. We suggest moving to them.
+  - `http.proxy` does the same as what `http.proxy.public` used to do; since the vast majority of use was around `http.proxy.public` and not `http.proxy.read`, it didn't make sense to have such a verbose method signature
+- `http.proxy`'s SPA setting can now be disabled with an env var – `ARC_STATIC_SPA = 'false'` (where `false` is a string, not a bool)
+  - You can still disable it via configuration as well (`{spa:false}`)
+- Lots and lots of tests around `http.proxy`
+
+### Fixed
+
+- Better 404 / file missing handling in `sandbox` when using `http.proxy` (or loading static assets without `@http get /` specified)
+
+---
+
 ## [3.3.13] 2019-09-25
 
 ### Changed
@@ -340,7 +357,7 @@ And for fun:
 
 ---
 
-## [1.13.0] - 2018-01-31
+## [1.13.0] - 2019-01-31
 
 ### Added
 
@@ -355,7 +372,7 @@ exports.handler = arc.proxy.public()
 
 ---
 
-## [1.12.0] - 2018-01-16
+## [1.12.0] - 2019-01-16
 
 ### Added
 
