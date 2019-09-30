@@ -47,7 +47,10 @@ module.exports = async function sandbox({Key, isProxy, config}) {
   }
   catch(e) {
     // look for public/404.html
-    let headers = {'content-type': 'text/html; charset=utf8;'}
+    let headers = {
+      'Content-Type': 'text/html; charset=utf8;',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+    }
     let http404 = path.join(basePath, '404.html')
     let exists = fs.existsSync(http404)
     if (exists) {
