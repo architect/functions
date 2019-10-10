@@ -1,4 +1,5 @@
 let binaryTypes = require('../helpers/binary-types')
+let templatizeResponse = require('./templatize')
 let normalizeResponse = require('./response')
 let mime = require('mime-types')
 let path = require('path')
@@ -7,7 +8,7 @@ let util = require('util')
 let readFile = util.promisify(fs.readFile)
 let transform = require('./transform')
 
-module.exports = async function sandbox({Key, isProxy, config}) {
+module.exports = async function sandbox({Key, isProxy, config, assets}) {
   // additive change... after 6.x we can rely on this env var in sandbox
   let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || path.join(process.cwd(), '..', '..', '..', 'public')
 
@@ -33,6 +34,14 @@ module.exports = async function sandbox({Key, isProxy, config}) {
         headers: {'content-type': type},
         body
       }
+    })
+
+    // Handle templating
+    response = templatizeResponse({
+      isBinary,
+      assets,
+      response,
+      isSandbox: true
     })
 
     // Normalize response

@@ -3,11 +3,16 @@ let sandbox = require('../../../../../src/http/proxy/sandbox')
 let fs = require('fs')
 let join = require('path').join
 
+let staticStub = {
+  'images/this-is-fine.gif': 'images/this-is-fine-a1c3e5.gif',
+  'publicfile.md': 'publicfile-b2d4f6.md'
+}
 let basicRead = {
-  Key: 'this-is-fine.gif',
-  isProxy: false,
+  Key: 'images/this-is-fine.gif',
+  isProxy: true,
   config: {spa: true}
 }
+let dec = i => Buffer.from(i, 'base64').toString()
 let path = join(process.cwd(), 'test', 'mock', 'project', 'public')
 
 test('Set up env', t => {
@@ -32,7 +37,7 @@ test('Basic file reads', async t => {
   _basicRead.Key = filename
   let publicfile = fs.readFileSync(join(path, filename)).toString()
   result = await sandbox(_basicRead)
-  t.equal(Buffer.from(result.body, 'base64').toString(), publicfile, 'File contents match disk')
+  t.equal(dec(result.body), publicfile, 'File contents match disk')
 })
 
 test('File read with ARC_STATIC_FOLDER set', async t => {
@@ -45,7 +50,25 @@ test('File read with ARC_STATIC_FOLDER set', async t => {
   _basicRead.Key = filename
   let publicfile = fs.readFileSync(join(path, filename)).toString()
   let result = await sandbox(_basicRead)
-  t.equal(Buffer.from(result.body, 'base64').toString(), publicfile, 'File contents match disk')
+  t.equal(dec(result.body), publicfile, 'File contents match disk')
+  delete process.env.ARC_STATIC_FOLDER
+
+})
+
+test('File parsed with local paths when fingerprinting is enabled', async t => {
+  t.plan(3)
+  // Local reads should remain the same with ARC_STATIC_FOLDER, which is intended for remote/S3 use only
+  let _basicRead = JSON.parse(JSON.stringify(basicRead))
+  let filename = 'publicfile.md'
+  let img = 'images/this-is-fine.gif'
+  _basicRead.Key = filename
+  _basicRead.assets = staticStub
+  let publicfile = fs.readFileSync(join(path, filename)).toString()
+  let result = await sandbox(_basicRead)
+  t.notEqual(dec(result.body), publicfile, `Contents containing template calls mutated: ${dec(result.body)}`)
+  t.ok(dec(result.body).includes(img), `Used non-fingerprinted filename in sandbox mode: ${img}`)
+  t.notOk(dec(result.body).includes(staticStub[img]), `Did not use fingerprinted filename in sandbox mode: ${staticStub[img]}`)
   delete process.env.ARC_SANDBOX_PATH_TO_STATIC
   delete process.env.ARC_STATIC_FOLDER
+  t.end()
 })

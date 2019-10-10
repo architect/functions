@@ -4,6 +4,19 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [On master]
+
+### Changed
+
+- Updated dependencies
+
+
+### Fixed
+
+- Fixed issue that may prevent `repl` from working with more recent versions of Functions
+
+---
+
 ## [3.3.15] 2019-09-26
 
 ### Added

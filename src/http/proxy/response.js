@@ -27,6 +27,8 @@ module.exports = function normalizeResponse ({response, result, Key, isProxy, co
     response.headers['Cache-Control'] = config.cacheControl
   else if (neverCache)
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+  else if (result && result.CacheControl)
+    response.headers['Cache-Control'] = result.CacheControl
   else
     response.headers['Cache-Control'] = 'max-age=86400'
 
