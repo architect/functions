@@ -1,5 +1,5 @@
 let binaryTypes = require('../helpers/binary-types')
-let exists = require('fs').existsSync
+let fs = require('fs')
 let {join} = require('path')
 let templatizeResponse = require('./templatize')
 let normalizeResponse = require('./response')
@@ -9,11 +9,18 @@ let aws = require('aws-sdk')
 let transform = require('./transform')
 let sandbox = require('./sandbox')
 
+// Try to hit disk to load the static manifest as little as possible
 let assets
 let staticManifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
-if (exists(staticManifest)) {
-  // eslint-disable-next-line
-  assets = require('@architect/shared/static.json')
+if (assets === false) {
+  null /*noop*/
+}
+else if (fs.existsSync(staticManifest) && !assets) {
+  let file = fs.readFileSync(staticManifest).toString()
+  assets = JSON.parse(file)
+}
+else {
+  assets = false
 }
 
 /**

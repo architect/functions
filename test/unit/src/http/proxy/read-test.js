@@ -60,9 +60,11 @@ let read = proxyquire('../../../../../src/http/proxy/read', {
 // Could maybe do this all in a single proxyquire, but having static.json appear in separate call adds extra insurance against any inadvertent static asset manifest requiring and default key fallback
 let readStatic = proxyquire('../../../../../src/http/proxy/read', {
   './sandbox': sandboxStub,
-  'fs': {existsSync: () => true},
+  'fs': {
+    existsSync: () => true,
+    readFileSync: () => JSON.stringify(staticStub)
+  },
   'aws-sdk': S3Stub,
-  '@architect/shared/static.json': staticStub
 })
 let basicRead = {
   Bucket: 'a-bucket',
