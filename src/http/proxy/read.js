@@ -1,6 +1,7 @@
 let binaryTypes = require('../helpers/binary-types')
 let exists = require('fs').existsSync
 let {join} = require('path')
+let templatizeResponse = require('./templatize')
 let normalizeResponse = require('./response')
 let mime = require('mime-types')
 let path = require('path')
@@ -9,7 +10,7 @@ let transform = require('./transform')
 let sandbox = require('./sandbox')
 
 let assets
-let staticManifest = join(process.cwd(), '@architect', 'shared', 'static.json')
+let staticManifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
 if (exists(staticManifest)) {
   // eslint-disable-next-line
   assets = require('@architect/shared/static.json')
@@ -32,7 +33,7 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
   // early exit if we're running in the sandbox
   let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
   if (local)
-    return await sandbox({Key, isProxy, config})
+    return await sandbox({Key, isProxy, config, assets})
 
   let headers = {}
   let response = {}
@@ -43,7 +44,14 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
     let s3 = new aws.S3
 
     // If the static asset manifest has the key, use that, otherwise fall back to the original Key
-    if (assets && assets[Key])
+    let contentType = mime.contentType(path.extname(Key))
+    let capture = [
+      'text/html',
+      'application/json',
+      // markdown?
+    ]
+    let isCaptured = capture.some(type => contentType.includes(type))
+    if (assets && assets[Key] && isCaptured)
       Key = assets[Key]
 
     let options = {Bucket, Key}
@@ -68,7 +76,7 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
 
     // No ETag found, return the blob
     if (!matchedETag) {
-      let isBinary = binaryTypes.some(type => result.ContentType.includes(type) || mime.contentType(path.extname(Key)).includes(type))
+      let isBinary = binaryTypes.some(type => result.ContentType.includes(type) || contentType.includes(type))
 
       // Transform first to allow for any proxy plugin mutations
       response = transform({
@@ -79,6 +87,13 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
           headers,
           body: result.Body
         },
+      })
+
+      // Handle templating
+      response = templatizeResponse({
+        isBinary,
+        assets,
+        response
       })
 
       // Normalize response
