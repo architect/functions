@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.4.0] 2019-10-10
+## [3.4.0 - 3.4.1] 2019-10-10
 
 ### Added
 
@@ -19,6 +19,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Changed
 
 - Updated dependencies
+- Changed static manifest loader to be more bundler friendly
 
 
 ### Fixed
