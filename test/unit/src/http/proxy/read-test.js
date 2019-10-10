@@ -7,10 +7,12 @@ let errorState
 let ContentType = 'image/gif'
 let ETag = 'etagvalue'
 let fileContents = 'this is just some file contents\n'
+let options
 let S3Stub = {
   S3: function ctor() {
     return {
-      getObject: function () {
+      getObject: function (opts) {
+        options = opts
         if (enable304) return {
           promise: async function () {
             let err = new Error('this will be a 304')
@@ -42,17 +44,32 @@ let sandboxStub = params => {
   params.sandbox = true // Super explicit ensuring return hit sandbox
   return params
 }
+let staticStub = {
+  'images/this-is-fine.gif': 'images/this-is-fine-a1c3e5.gif',
+  '@noCallThru': true
+}
 let read = proxyquire('../../../../../src/http/proxy/read', {
   './sandbox': sandboxStub,
-  'aws-sdk': S3Stub
+  'fs': {existsSync: () => false},
+  'aws-sdk': S3Stub,
 })
-
+// Could maybe do this all in a single proxyquire, but having static.json appear in separate call adds extra insurance against any inadvertent static asset manifest requiring and default key fallback
+let readStatic = proxyquire('../../../../../src/http/proxy/read', {
+  './sandbox': sandboxStub,
+  'fs': {existsSync: () => true},
+  'aws-sdk': S3Stub,
+  '@architect/shared/static.json': staticStub
+})
 let basicRead = {
   Bucket: 'a-bucket',
   Key: 'this-is-fine.gif',
   IfNoneMatch: 'abc123',
   isProxy: false,
   config: {spa: true}
+}
+let reset = () => {
+  // Make sure options are good!
+  options = {}
 }
 
 test('Set up env', t => {
@@ -110,4 +127,27 @@ test('S3 returns file; response is normalized & (maybe) transformed', async t =>
   t.notOk(result.headers['Cache-Control'].includes('no-cache'), 'Non HTML/JSON file is not anti-cached')
   t.equal(Buffer.from(result.body, 'base64').toString(), fileContents, 'Returns correct body value')
   t.ok(result.isBase64Encoded, 'Result is base64 encoded')
+})
+
+test('Fall back to non-fingerprinted when requested file is not found in static manifest', async t => {
+  t.plan(2)
+  reset()
+  await readStatic(basicRead)
+  t.equal(options.Bucket, basicRead.Bucket, `Used normal bucket: ${options.Bucket}`)
+  t.equal(options.Key, basicRead.Key, `Fall back to non-fingerprinted filename: ${options.Key}`)
+})
+
+test('Fingerprinted filename is used when fingerprint is enabled', async t => {
+  t.plan(2)
+  reset()
+  let fingerprintedRead = {
+    Bucket: 'a-fingerprinted-bucket',
+    Key: 'images/this-is-fine.gif',
+    IfNoneMatch: 'abc123',
+    isProxy: false,
+    config: {spa: true}
+  }
+  await readStatic(fingerprintedRead)
+  t.equal(options.Bucket, fingerprintedRead.Bucket, `Used alternate bucket: ${options.Bucket}`)
+  t.equal(options.Key, staticStub[fingerprintedRead.Key], `Read fingerprinted filename: ${options.Key}`)
 })

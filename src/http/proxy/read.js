@@ -1,10 +1,19 @@
 let binaryTypes = require('../helpers/binary-types')
+let exists = require('fs').existsSync
+let {join} = require('path')
 let normalizeResponse = require('./response')
 let mime = require('mime-types')
 let path = require('path')
 let aws = require('aws-sdk')
 let transform = require('./transform')
 let sandbox = require('./sandbox')
+
+let assets
+let staticManifest = join(process.cwd(), '@architect', 'shared', 'static.json')
+if (exists(staticManifest)) {
+  // eslint-disable-next-line
+  assets = require('@architect/shared/static.json')
+}
 
 /**
  * arc.proxy.read
@@ -29,9 +38,13 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
   let response = {}
 
   try {
-    // if client sends if-none-match, use it in s3 getObject params
+    // If client sends if-none-match, use it in S3 getObject params
     let matchedETag = false
     let s3 = new aws.S3
+
+    // If the static asset manifest has the key, use that, otherwise fall back to the original Key
+    if (assets && assets[Key])
+      Key = assets[Key]
 
     let options = {Bucket, Key}
     if (IfNoneMatch)
