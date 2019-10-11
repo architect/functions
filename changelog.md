@@ -4,7 +4,15 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.4.0 - 3.4.1] 2019-10-10
+## [3.4.3] 2019-10-11
+
+### Changed
+
+- Updated dependencies
+
+---
+
+## [3.4.0 - 3.4.2] 2019-10-10
 
 ### Added
 
