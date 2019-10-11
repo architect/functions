@@ -12,6 +12,13 @@ module.exports = async function sandbox({Key, isProxy, config, assets}) {
   // additive change... after 6.x we can rely on this env var in sandbox
   let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || path.join(process.cwd(), '..', '..', '..', 'public')
 
+  // Double check for assets in case we're running as proxy at root in sandbox
+  let staticManifest = path.join(basePath, 'static.json')
+  if (!assets && fs.existsSync(staticManifest)) {
+    let file = fs.readFileSync(staticManifest).toString()
+    assets = JSON.parse(file)
+  }
+
   // Look up the blob
   // assuming we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
   let filePath = path.join(basePath, Key)
