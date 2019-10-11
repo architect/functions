@@ -8,12 +8,13 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ### Added
 
-- Added support for `@static fingerprint true` in proxy requests
+- Added support for `@static fingerprint true` in root spa / proxy requests
   - This enables Architect projects to deliver fully fingerprinted static assets while also ensuring that each file is appropriately cached by clients and network infra
-  - Also supports build-free calls between your static assets
-    - Example: in `public/index.html`, use the following syntax to automatically replace the local filename reference to the to the deployed fingerprinted filename:
-    - `${arc.static('image.png')}` will be replaced by `image-a1c3e5.png`
+  - Also includes support for build-free calls between your fingerprinted static assets
+    - Example: in `public/index.html`, use the following syntax to automatically replace the local / human-friendly filename reference to the deployed fingerprinted filename:
+    - `${arc.static('image.png')}` will be automatically replaced by `image-a1c3e5.png`
     - Or `${STATIC('image.png')}` (which is the same thing, but shoutier)
+    - Note: although those look like JS template literal placeholders, they're intended to live inside non-executed, static files within `public/` (or `@static folder foo`)
 
 
 ### Changed
