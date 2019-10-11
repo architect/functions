@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
   "homepage": "https://github.com/architect/functions",
   "repository": {
