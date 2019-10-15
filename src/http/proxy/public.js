@@ -1,4 +1,5 @@
 let read = require('./read')
+let errors = require('../errors')
 
 /**
  * arc.proxy.public
@@ -25,7 +26,9 @@ module.exports = function proxyPublic(config={}) {
       : configBucket && configBucket['staging']
     // Ok, all that out of the way, let's set the actual bucket, eh?
     let Bucket = process.env.ARC_STATIC_BUCKET || bucketSetting
-    if (!Bucket) throw Error('Bucket must be configured, use ARC_STATIC_BUCKET or config object')
+    if (!Bucket) {
+      return errors.proxyConfig
+    }
     let Key // resolved below
 
     // Allow unsetting of SPA mode with ARC_STATIC_SPA

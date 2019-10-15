@@ -23,21 +23,17 @@ test('Set up env', t => {
 })
 
 test('Config: bucket', async t => {
-  t.plan(4)
+  t.plan(5)
   let proxy = await proxyPublic()
 
   // Test no bucket config
-  try {
-    await proxy(req)
-    t.fail('Should have errored')
-  }
-  catch (err) {
-    t.ok(err.message.includes('ARC_STATIC_BUCKET'), 'Missing bucket config')
-  }
+  let result = await proxy(req)
+  t.equal(result.statusCode, 502, 'Missing bucket config responds with 502')
+  t.ok(result.body.includes('Index not found'), 'Missing bucket config presents helpful error')
 
   // Test ARC_STATIC_BUCKET
   process.env.ARC_STATIC_BUCKET = productionBucket
-  let result = await proxy(req)
+  result = await proxy(req)
   t.equal(result.Bucket, productionBucket, 'ARC_STATIC_BUCKET sets bucket')
 
   // Test ARC_STATIC_BUCKET vs config
