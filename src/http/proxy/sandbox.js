@@ -1,4 +1,5 @@
 let binaryTypes = require('../helpers/binary-types')
+let {httpError} = require('../errors')
 let templatizeResponse = require('./templatize')
 let normalizeResponse = require('./response')
 let mime = require('mime-types')
@@ -73,16 +74,14 @@ module.exports = async function sandbox({Key, isProxy, config, assets}) {
       let body = await readFile(http404, {encoding: 'utf8'})
       return {headers, statusCode:404, body}
     }
-    let statusCode = e.message.startsWith('NoSuchKey')
-      ? 404
-      : 500
-    let body = `
-      <h1>${e.message}</h1>
-      <h2>${e.name}</h2>
-      ${e.code ? `<pre>${e.code}</pre>` : ''}
-      <p>${e.message}</p>
+    let notFound = e.message.startsWith('NoSuchKey')
+    let statusCode = notFound ? 404 : 500
+    let title = notFound ? 'Not found' : e.name
+    let message = `
+      ${e.message}<br>
       <pre>${e.stack}</pre>
     `
+    let body = httpError({statusCode, title, message}).body
     return {headers, statusCode, body}
   }
 }

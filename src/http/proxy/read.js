@@ -1,4 +1,5 @@
 let binaryTypes = require('../helpers/binary-types')
+let {httpError} = require('../errors')
 let fs = require('fs')
 let {join} = require('path')
 let templatizeResponse = require('./templatize')
@@ -130,14 +131,13 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
       return {headers, statusCode: 404, body: 'File not found'}
     }*/
     // final err fallback
-    return {
-      statusCode: e.name === 'NoSuchKey'? 404 : 500,
-      headers: {'content-type': 'text/html; charset=utf8;'},
-      body: `
-        <h1>${e.name === 'NoSuchKey'? 'Not Found' : e.name}</h1>
-        <p>${e.message}</p>
-        <pre>${e.stack}</pre>
-      `
-    }
+    let notFound = e.name === 'NoSuchKey'
+    let statusCode = notFound ? 404 : 500
+    let title = notFound ? 'Not Found' : e.name
+    let message = `
+      ${e.message}<br>
+      <pre>${e.stack}</pre>
+    `
+    return httpError({statusCode, title, message})
   }
 }

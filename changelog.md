@@ -4,6 +4,19 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [On branch]
+
+### Fixes
+
+- Fixes broken response when bucket is not configured as root proxy
+
+
+### Changed
+
+- Improves error states for missing static configs, 404s, etc.
+
+---
+
 ## [3.4.3] 2019-10-11
 
 ### Changed

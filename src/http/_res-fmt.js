@@ -1,3 +1,4 @@
+let {httpError} = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
 
 module.exports = function responseFormatter(req, params) {
@@ -33,21 +34,6 @@ module.exports = function responseFormatter(req, params) {
   // Cross-origin ritual sacrifice
   let cors = params.cors
 
-  // Status
-  let providedStatus = params.status || params.code || params.statusCode
-  let status = providedStatus || 200
-
-  // shorthand overrides
-  if (isError) {
-    status = providedStatus || 500
-    type = 'text/html; charset=utf8'
-    body = `
-      <h1>${params.name} ${status}</h1>
-      <h3>${params.message}</h3>
-      <pre>${params.stack}<pre>
-    `
-  }
-
   if (params.html) {
     type = 'text/html; charset=utf8'
     body = params.html
@@ -73,10 +59,25 @@ module.exports = function responseFormatter(req, params) {
     body = params.xml
   }
 
+  // Status
+  let providedStatus = params.status || params.code || params.statusCode
+  let statusCode = providedStatus || 200
+
   let res = {
     headers: Object.assign({}, {'Content-Type': type}, params.headers || {}),
-    statusCode: status,
+    statusCode,
     body
+  }
+
+  // Error override
+  if (isError) {
+    let statusCode = providedStatus || 500
+    let title = params.name
+    let message = `
+      ${params.message}<br>
+      <pre>${params.stack}<pre>
+    `
+    res = httpError({statusCode, title, message})
   }
 
   /**
