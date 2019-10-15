@@ -32,7 +32,7 @@ function httpError ({statusCode=502, title='Unknown error', message=''}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${statusCode}: ${title}</title>
+  <title>${title}</title>
   <style>
     * {
       margin: 0;
