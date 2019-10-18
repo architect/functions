@@ -50,7 +50,7 @@ module.exports = function WS(event) {
         let apiVersion = '2018-11-29'
         let domainName = event.requestContext.domainName
         let stage = event.requestContext.stage
-        let endpoint = `${domainName}/${event.requestContext.stage}`
+        let endpoint = `${domainName}/${stage}`
         let gateway = new aws.ApiGatewayManagementApi({apiVersion, endpoint})
         gateway.postToConnection({
           ConnectionId: id,
