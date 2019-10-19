@@ -31,7 +31,7 @@ test('Fingerprinting only enabled if static manifest is found', t=> {
   process.env.AWS_REGION = 'us-west-1'
   process.env.NODE_ENV = 'production'
   arc.static('index.html', {reload:true})
-  t.equals(arc.static('index.html'), `https://a-production-bucket.s3.us-west-1.amazonaws.com/index.html`)
+  t.equals(arc.static('index.html'), `/_static/index.html`)
 })
 
 test('Set up mocked static manifest', t=> {
@@ -41,20 +41,6 @@ test('Set up mocked static manifest', t=> {
   // eslint-disable-next-line
   static = require(join(shared, 'static.json'))
   t.ok(static['index.html'], 'Static manifest loaded')
-})
-
-test('Staging and production fingerprinted URL tests', t=> {
-  t.plan(4)
-  t.equals(arc.static('index.html'), `https://a-production-bucket.s3.us-west-1.amazonaws.com/${static['index.html']}`, 'Production fingerprinted URL matches')
-
-  process.env.NODE_ENV = 'staging'
-  t.equals(arc.static('index.html'), `https://a-staging-bucket.s3.us-west-1.amazonaws.com/${static['index.html']}`, 'Staging fingerprinted URL matches')
-
-  process.env.ARC_STATIC_BUCKET = 'a-totally-different-bucket'
-  t.equals(arc.static('index.html'), `https://a-totally-different-bucket.s3.us-west-1.amazonaws.com/${static['index.html']}`, 'Fingerprinted ARC_STATIC_BUCKET env var populates and matches')
-
-  process.env.ARC_STATIC_FOLDER = 'a-folder'
-  t.equals(arc.static('index.html'), `https://a-totally-different-bucket.s3.us-west-1.amazonaws.com/a-folder/${static['index.html']}`, 'Fingerprinted ARC_STATIC_FOLDER env var populates and matches')
 })
 
 test('Clean up env', t=> {
