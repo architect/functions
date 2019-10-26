@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [On master]
+
+### Added
+
+- Adds anti-caching and body parsing `application/vnd.api+json`; resolves #141, thanks @jkarsrud!
+
+---
+
 ## [3.4.4] 2019-10-15
 
 ### Fixes

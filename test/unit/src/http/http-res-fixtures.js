@@ -65,6 +65,12 @@ let arc5 = {
     headers: {'Content-Type': 'application/json; charset=uft8'}
   },
 
+  // Test default anti-caching on JSON API
+  noCacheControlJSONapi: {
+    body: json,
+    headers: {'Content-Type': 'application/vnd.api+json; charset=uft8'}
+  },
+
   // No default anti-caching on other content types
   noCacheControlOther: {
     body: text,

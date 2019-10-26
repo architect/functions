@@ -106,7 +106,8 @@ module.exports = function responseFormatter(req, params) {
   let headers = res.headers
   if (cacheControl) headers['Cache-Control'] = cacheControl
   let antiCache = type.includes('text/html') ||
-                  type.includes('application/json')
+                  type.includes('application/json') ||
+                  type.includes('application/vnd.api+json')
   if (headers && !headers['Cache-Control'] && antiCache) {
     headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   }

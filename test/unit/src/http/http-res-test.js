@@ -68,7 +68,7 @@ test('Architect v5 dependency-free responses', t => {
 })
 
 test('Architect v5 + Functions', t => {
-  t.plan(20)
+  t.plan(23)
   let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -93,6 +93,11 @@ test('Architect v5 + Functions', t => {
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.noCacheControlJSON, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc5.noCacheControlJSONapi, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
     t.equal(res.statusCode, 200, 'Responded with 200')
@@ -288,4 +293,3 @@ test('Test errors', t => {
   // Unset env var for future testing (ostensibly)
   delete process.env.SESSION_TABLE_NAME
 })
-

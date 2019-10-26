@@ -62,7 +62,7 @@ test('Content-Type setting', t => {
 })
 
 test('Cache-Control setting', t => {
-  t.plan(4)
+  t.plan(5)
   let _basicResponse = JSON.parse(JSON.stringify(basicResponse))
   let result = normalize(_basicResponse)
   t.equal(result.headers['Cache-Control'], 'max-age=86400', 'No anti-cache or cache setting set, defaults to 1 day')
@@ -72,6 +72,11 @@ test('Cache-Control setting', t => {
   _basicResponse.response.headers['Content-Type'] = 'application/json'
   result = normalize(_basicResponse)
   t.ok(result.headers['Cache-Control'].includes('no-cache'), 'JSON responses are anti-cached')
+
+  // JSON API
+  _basicResponse.response.headers['Content-Type'] = 'application/vnd.api+json'
+  result = normalize(_basicResponse)
+  t.ok(result.headers['Cache-Control'].includes('no-cache'), 'JSON API responses are anti-cached')
 
   // HTML
   _basicResponse.response.headers['Content-Type'] = 'text/html'
