@@ -2,7 +2,7 @@ let aws = require('aws-sdk')
 
 module.exports = function send({id, payload}, callback) {
   let api = new aws.ApiGatewayManagementApi({
-    apiVersion: '2018-11-29', 
+    apiVersion: '2018-11-29',
     endpoint: `https://${process.env.ARC_WSS_URL}/${process.env.NODE_ENV}`
   })
   api.postToConnection({
