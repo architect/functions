@@ -4,6 +4,12 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.5.5] 2019-10-25
+
+### Fixes
+
+- Fixes `arc.ws.send` for apps packaged with `@architect/package` **1.0.50** or later. AWS changed the `ApiGatewayMangementApi.postToConnection` interface paramter `endpoint` to no longer be suffixed with `@connections`
+
 ## [3.4.4] 2019-10-15
 
 ### Fixes
