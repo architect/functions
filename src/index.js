@@ -3,7 +3,7 @@ let http = require('./http')
 let queues = require('./queues')
 let _static = require('./static')
 let tables = require('./tables')
-let ws = require('./ws')
+let send = require('./ws')
 
 let arc = {
   events,
@@ -11,7 +11,7 @@ let arc = {
   queues,
   static: _static,
   tables,
-  ws,
+  ws: {send},
 }
 
 // backwards compat
