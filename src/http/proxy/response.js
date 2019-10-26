@@ -8,6 +8,7 @@ module.exports = function normalizeResponse ({response, result, Key, isProxy, co
   let noCache = [
     'text/html',
     'application/json',
+    'application/vnd.api+json'
   ]
   response.headers = response.headers || {}
 

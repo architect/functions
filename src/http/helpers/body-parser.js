@@ -19,7 +19,7 @@ module.exports = function parseBody (req) {
     let isString = typeof request.body === 'string'
     let isBase64 = request.isBase64Encoded
     let isParsing = isString && isBase64
-    let isJSON = contentType('application/json') && isParsing
+    let isJSON = (contentType('application/json') || contentType('application/vnd.api+json')) && isParsing
     let isFormURLEncoded = contentType('application/x-www-form-urlencoded') && isParsing
     let isMultiPartFormData = contentType('multipart/form-data') && isParsing
     let isOctetStream = contentType('application/octet-stream') && isParsing

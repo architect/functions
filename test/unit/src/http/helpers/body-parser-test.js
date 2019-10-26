@@ -17,7 +17,7 @@ let multiPartFormData = {'Content-Type': 'multipart/form-data'}
 let octetStream = {'Content-Type': 'application/octet-stream'}
 
 test('Architect v6+ requests', t => {
-  t.plan(7)
+  t.plan(8)
   // Pass through empty body (although in practice we'll never see this, as we transform to empty object)
   let req = {
     body: null,
@@ -28,6 +28,14 @@ test('Architect v6+ requests', t => {
   req = {
     body: b64encode(str(hi)),
     headers: json,
+    isBase64Encoded: true
+  }
+  t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
+
+  // Alt JSON API
+  req = {
+    body: b64encode(str(hi)),
+    headers: {'Content-Type': 'application/vnd.api+json'},
     isBase64Encoded: true
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
