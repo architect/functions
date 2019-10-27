@@ -22,6 +22,10 @@ module.exports = function reflectFactory(tables) {
     value: _doc
   })
 
+  data.reflect = async function reflect() {
+    return tables
+  }
+
   return data
 }
 

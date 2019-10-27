@@ -22,6 +22,14 @@ module.exports = function sandbox(arc) {
     value: doc
   })
 
+  data.reflect = async function reflect() {
+    let tables = arc.tables.map(t=> Object.keys(t)[0])
+    return tables.reduce(function visit(result, tablename) {
+      result[tablename] = `${appname}-staging-${tablename}`
+      return result
+    }, {})
+  }
+
   return data
 }
 
