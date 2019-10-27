@@ -93,6 +93,28 @@ test('Architect v6: get /nature/hiking', t => {
   handler(request, {}, end)
 })
 
+test('Architect v6: get /{proxy+}', t => {
+  t.plan(8)
+  let end = () => t.ok(true, 'Final callback called')
+  let request = reqs.arc6.getProxyPlus
+  let handler = http((req,res) => {
+    if (unNulled(request.body, req.body))
+      t.pass(match('req.body', req.body))
+    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.resource, req.resource, match('req.resource', req.resource))
+    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+    if (request.httpMethod === req.method)
+      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+    if (str(request.pathParameters) === str(req.pathParameters))
+      t.equal(str(req.params), str(req.pathParameters), match('req.params/pathParameters', req.params))
+    if (unNulled(request.queryStringParameters, req.query))
+      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+    t.ok(req.session, 'req.session is present')
+    res(basicResponse)
+  })
+  handler(request, {}, end)
+})
+
 test('Architect v6: post /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
@@ -299,27 +321,6 @@ test('Architect v5: get /nature/hiking', t => {
     if (str(request.query) === str(req.query))
       t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
     t.ok(req.session, 'req.session is present')
-    res(basicResponse)
-  })
-  handler(request, {}, end)
-})
-
-test('Architect v5: get /{proxy+}', t => {
-  t.plan(9)
-  let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc5.getProxyPlus
-  interpolate(request)
-  let handler = http((req,res) => {
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, `req.path interpolated, matches: "${req.path}"`)
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
-    t.equal(req.resource, '/{proxy+}', 'req.resource: /{proxy+} passed along')
     res(basicResponse)
   })
   handler(request, {}, end)

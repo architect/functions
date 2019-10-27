@@ -39,6 +39,17 @@ let arc6 = {
     queryStringParameters: null
   },
 
+  // get /{proxy+}
+  getProxyPlus: {
+    body: null,
+    path: '/nature/hiking',
+    resource: '/{proxy+}',
+    headers,
+    httpMethod: 'GET',
+    pathParameters: {proxy: '/nature/hiking'},
+    queryStringParameters: {}
+  },
+
   // post /form (JSON)
   postJson: {
     body: b64enc(JSON.stringify({hi: 'there'})),
@@ -150,19 +161,6 @@ let arc5 = {
     method: 'GET',
     httpMethod: 'GET',
     params: {activities:'hiking'},
-    query: {},
-    queryStringParameters: {}
-  },
-
-  // get /{proxy+}
-  getProxyPlus: {
-    body: {},
-    path: '/nature/hiking',
-    resource: '/{proxy+}',
-    headers,
-    method: 'GET',
-    httpMethod: 'GET',
-    params: {proxy: '/nature/hiking'},
     query: {},
     queryStringParameters: {}
   },

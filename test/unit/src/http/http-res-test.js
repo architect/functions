@@ -119,14 +119,15 @@ test('Architect v5 + Functions', t => {
  * Proxy + ARC_HTTP + ARC_CLOUDFORMATION response logic
  * - broken into individual test blocks because tape gets aggro in setting/unsetting env vars
  */
-test('Architect v5 + Functions + /{proxy+}', t => {
+test('Architect v6 + Functions + /{proxy+}', t => {
   process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(4)
-  let request = requests.arc5.getProxyPlus
+  let request = requests.arc6.getProxyPlus
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
   }
+  // Arc 5 body: just a basic body, nothing special
   run(responses.arc5.body, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
