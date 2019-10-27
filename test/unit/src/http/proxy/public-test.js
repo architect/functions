@@ -6,7 +6,7 @@ let proxyPublic = proxyquire('../../../../../src/http/proxy/public', {
 })
 let reqs = require('../http-req-fixtures')
 let req = reqs.arc6.getIndex
-let proxyReq = reqs.arc5.getProxyPlus
+let proxyReq = reqs.arc6.getProxyPlus
 
 let stagingBucket = 'my-staging-bucket'
 let productionBucket = 'my-production-bucket'
