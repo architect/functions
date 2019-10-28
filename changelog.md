@@ -19,6 +19,8 @@ let data = await arc.tables()
 let names = await data.reflect() // returns {arcfilename: 'generated-tablename'}
 ```
 
+- Adds anti-caching and body parsing `application/vnd.api+json`; resolves #141, thanks @jkarsrud!
+
 ## [3.4.4] 2019-10-15
 
 ### Fixes

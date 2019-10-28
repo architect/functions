@@ -68,7 +68,7 @@ test('Architect v5 dependency-free responses', t => {
 })
 
 test('Architect v5 + Functions', t => {
-  t.plan(20)
+  t.plan(23)
   let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -97,6 +97,11 @@ test('Architect v5 + Functions', t => {
     t.equal(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
+  run(responses.arc5.noCacheControlJSONapi, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
   run(responses.arc5.noCacheControlOther, (err, res) => {
     t.notOk(err, 'No error')
     let def = 'max-age=86400'
@@ -114,14 +119,15 @@ test('Architect v5 + Functions', t => {
  * Proxy + ARC_HTTP + ARC_CLOUDFORMATION response logic
  * - broken into individual test blocks because tape gets aggro in setting/unsetting env vars
  */
-test('Architect v5 + Functions + /{proxy+}', t => {
+test('Architect v6 + Functions + /{proxy+}', t => {
   process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(4)
-  let request = requests.arc5.getProxyPlus
+  let request = requests.arc6.getProxyPlus
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
   }
+  // Arc 5 body: just a basic body, nothing special
   run(responses.arc5.body, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
@@ -288,4 +294,3 @@ test('Test errors', t => {
   // Unset env var for future testing (ostensibly)
   delete process.env.SESSION_TABLE_NAME
 })
-

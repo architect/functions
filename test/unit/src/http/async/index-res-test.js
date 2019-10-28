@@ -65,7 +65,7 @@ test('Architect v5 dependency-free responses', async t => {
 
 test('Architect v5 + Functions', async t => {
   // Arc 5 `arc.http()` functionality backported to `arc.http.arc.http.async()`
-  t.plan(13)
+  t.plan(15)
   let run = async response => {
     let fn = () => response
     let handler = arc.http.async(fn)
@@ -84,6 +84,9 @@ test('Architect v5 + Functions', async t => {
     t.equal(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for HTML response')
     t.equal(res.statusCode, 200, 'Responded with 200')
   res = await run(responses.arc5.noCacheControlJSON)
+    t.equal(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  res = await run(responses.arc5.noCacheControlJSONapi)
     t.equal(res.headers['Cache-Control'], antiCache, 'Default anti-caching headers set for JSON response')
     t.equal(res.statusCode, 200, 'Responded with 200')
   res = await run(responses.arc5.noCacheControlOther)
