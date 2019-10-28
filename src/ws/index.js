@@ -1,12 +1,5 @@
 let sandbox = require('./send-sandbox')
-let old = require('./send-old')
 let run = require('./send')
-let urls = require('./urls')
-
-old.send = send
-old.urls = urls
-
-module.exports = old
 
 /**
  * arc.ws.send
@@ -19,7 +12,7 @@ module.exports = old
  * @param {Function} callback - a node style errback (optional)
  * @returns {Promise} - returned if no callback is supplied
  */
-function send({id, payload}, callback) {
+module.exports = function send({id, payload}, callback) {
 
   // create a promise if no callback is defined
   let promise
