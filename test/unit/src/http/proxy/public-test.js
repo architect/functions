@@ -154,11 +154,11 @@ test('Strip API Gateway warts', async t => {
   apigReq.path = '/staging/foo'
   let proxy = await proxyPublic(basicBucketConfig)
   let result = await proxy(apigReq)
-  t.equal(result.Key, 'foo', 'Leading staging/ is stripped from keys')
+  t.equal(result.Key, 'foo/index.html', 'Leading staging/ is stripped from keys')
 
   apigReq.path = '/production/foo'
   result = await proxy(apigReq)
-  t.equal(result.Key, 'foo', 'Leading production/ is stripped from keys')
+  t.equal(result.Key, 'foo/index.html', 'Leading production/ is stripped from keys')
 })
 
 test('IfNoneMatch param', async t => {

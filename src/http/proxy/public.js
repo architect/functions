@@ -1,3 +1,4 @@
+let {join} = require('path')
 let read = require('./read')
 let errors = require('../errors')
 
@@ -43,11 +44,15 @@ module.exports = function proxyPublic(config={}) {
     }
     else {
       // return index.html for root…otherwise passthru the path minus leading slash
-      Key = req.path === '/'? 'index.html' : req.path.substring(1)
-      // add index.html to any empty folder path
-      let isFolder = Key != 'index.html' && req.path.lastIndexOf('/') === req.path.length - 1
-      if (isFolder) {
-        Key = Key + 'index.html'
+      let last = req.path.split('/').filter(Boolean).pop()
+      let isFile = last? last.includes('.') : false
+      let isRoot = req.path === '/'
+
+      Key = isRoot? 'index.html' : req.path.substring(1)
+
+      // append default index.html to requests to folder paths
+      if (isRoot === false && isFile === false) {
+        Key = join(Key, 'index.html')
       }
     }
 
@@ -65,8 +70,7 @@ module.exports = function proxyPublic(config={}) {
 
     // strip staging/ and production/ from req urls
     if (Key.startsWith('staging/') || Key.startsWith('production/')) {
-      Key = Key.replace('staging/', '')
-               .replace('production/', '')
+      Key = Key.replace('staging/', '').replace('production/', '')
     }
 
     // normalize if-none-match header to lower case; it differs between environments
