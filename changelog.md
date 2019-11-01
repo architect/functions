@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.5.7] 2019-11-01
+
+### Adds
+
+- `arc.http.proxy` looks for default `index.html` when `ARC_STATIC_SPA=false`
+
+---
+
 ## [3.5.5 - 3.5.6] 2019-10-25
 
 ### Fixes
