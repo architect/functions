@@ -1,4 +1,3 @@
-let {join} = require('path')
 let read = require('./read')
 let errors = require('../errors')
 
@@ -52,7 +51,7 @@ module.exports = function proxyPublic(config={}) {
 
       // append default index.html to requests to folder paths
       if (isRoot === false && isFile === false) {
-        Key = join(Key, 'index.html')
+        Key = `${Key.replace(/\/$/, '')}/index.html`
       }
     }
 
