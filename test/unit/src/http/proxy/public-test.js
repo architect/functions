@@ -100,6 +100,7 @@ test('Config: SPA', async t => {
   trailingSlash.path = trailingSlash.path + '/'
   result = await proxy(trailingSlash)
   t.equal(result.Key, 'nature/hiking/index.html', 'spa:false to a dir calls $DIR/index.html')
+  console.log(result)
   delete process.env.ARC_STATIC_SPA
 })
 
@@ -153,12 +154,15 @@ test('Strip API Gateway warts', async t => {
   let apigReq = JSON.parse(JSON.stringify(req))
   apigReq.path = '/staging/foo'
   let proxy = await proxyPublic(basicBucketConfig)
+
   let result = await proxy(apigReq)
-  t.equal(result.Key, 'foo', 'Leading staging/ is stripped from keys')
+  t.equal(result.Key, 'foo/index.html', 'Leading staging/ is stripped from keys')
+  console.log(result)
 
   apigReq.path = '/production/foo'
   result = await proxy(apigReq)
-  t.equal(result.Key, 'foo', 'Leading production/ is stripped from keys')
+  t.equal(result.Key, 'foo/index.html', 'Leading production/ is stripped from keys')
+  console.log(result)
 })
 
 test('IfNoneMatch param', async t => {
