@@ -4,9 +4,17 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.5.8] 2019-11-04
+
+### Changed
+
+- Internal / testing changes only
+
+---
+
 ## [3.5.7] 2019-11-01
 
-### Adds
+### Added
 
 - `arc.http.proxy` looks for default `index.html` when `ARC_STATIC_SPA=false`
 
@@ -14,10 +22,10 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ## [3.5.5 - 3.5.6] 2019-10-25
 
-### Fixes
+### Fixed
 
 - Fixes `arc.ws.send` for apps packaged with `@architect/package` **1.0.50** or later. AWS changed the `ApiGatewayMangementApi.postToConnection` interface paramter `endpoint` to no longer be suffixed with `@connections`
-- Adds `data.reflect` to get table names 
+- Adds `data.reflect` to get table names
 
 ```javascript
 let arc = require('@architect/functions')
@@ -29,9 +37,11 @@ let names = await data.reflect() // returns {arcfilename: 'generated-tablename'}
 
 - Adds anti-caching and body parsing `application/vnd.api+json`; resolves #141, thanks @jkarsrud!
 
+---
+
 ## [3.4.4] 2019-10-15
 
-### Fixes
+### Fixed
 
 - Fixes broken response when bucket is not configured as root proxy
 
