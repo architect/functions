@@ -4,7 +4,8 @@
 
 > Runtime helper library for serverless apps built with [Architect][npm]
 
-[![Travis Build Status](https://travis-ci.com/architect/functions.svg?branch=master)](https://travis-ci.com/architect/functions) [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/k1ct9sv8xv9pbgg2/branch/master?svg=true)](https://ci.appveyor.com/project/ArchitectCI/functions/branch/master) [![codecov](https://codecov.io/gh/architect/functions/branch/master/graph/badge.svg)](https://codecov.io/gh/architect/functions)
+[![GitHub CI status](https://github.com/architect/functions/workflows/Node%20CI/badge.svg)](https://github.com/architect/functions/actions?query=workflow%3A%22Node+CI%22)
+<!-- [![codecov](https://codecov.io/gh/architect/functions/branch/master/graph/badge.svg)](https://codecov.io/gh/architect/functions) -->
 
 Check out the full docs: [arc.codes](https://arc.codes)
 
