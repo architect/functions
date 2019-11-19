@@ -1,7 +1,7 @@
 let old = require('./old')
 let doc = require('./doc')
-let lookup = require('./lookup-tables')
-let readLocalArc = require('../utils/read-local-arc')
+let lookup = require('../discovery')
+let readLocalArc = require('./read-local-arc')
 let factory = require('./factory')
 let sandbox = require('./sandbox')
 let db = require('./db')
@@ -47,7 +47,7 @@ function tables(callback) {
       callback(null, client)
     }
     else {
-      lookup(function done(err, tables) {
+      lookup.tables(function done(err, tables) {
         if (err) callback(err)
         else {
           client = factory(tables)

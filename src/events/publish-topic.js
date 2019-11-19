@@ -1,5 +1,5 @@
 let aws = require('aws-sdk')
-let lookup = require('./lookup-topics')
+let lookup = require('../discovery')
 let ledger = {}
 
 module.exports = function live({name, payload}, callback) {
@@ -18,7 +18,7 @@ module.exports = function live({name, payload}, callback) {
     publish(ledger[name], payload, callback)
   }
   else {
-    lookup(function done(err, found) {
+    lookup.events(function done(err, found) {
       if (err) callback(err)
       else if (!found.hasOwnProperty(name)) {
         callback(ReferenceError(`${name} not found`))
