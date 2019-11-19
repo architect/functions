@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [On master] 2019-11-19
+
+### Changed
+
+- Updated deps
+
+---
+
 ## [3.5.8] 2019-11-04
 
 ### Changed
