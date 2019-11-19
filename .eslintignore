@@ -1,2 +1,4 @@
+.nyc_output/
 arc-proxy-*
+coverage/
 src/http/get-index
