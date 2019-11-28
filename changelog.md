@@ -4,11 +4,31 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [On master] 2019-11-19
+
+## [3.4.11] 2019-11-28
+
+### Added
+
+- Adds `stagePath` option to `arc.static` for anyone using this with a bare API Gateway configuration
+
 
 ### Changed
 
-- Updated deps
+- `arc.static` now throws an error if the specified asset is not found
+- Updated dependencies
+
+---
+
+## [3.4.9 - 3.4.10] 2019-11-28
+
+### Changed
+
+- Updated dependencies
+
+
+### Fixed
+
+- Fixes issue where `events.publish` may sometimes fail with > 10 topics; thanks @dduran1967!
 
 ---
 
