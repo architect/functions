@@ -10,6 +10,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Added
 
 - Adds `stagePath` option to `arc.static` for anyone using this with a bare API Gateway configuration
+  - Example: `arc.static('foo.png', {stagePath: true})`
 
 
 ### Changed

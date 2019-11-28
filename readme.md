@@ -90,7 +90,7 @@ Returns the fully-qualified URI of a static asset for the project-relative `asse
 
 `options` is an object with the following currently-supported properties:
 
-- `reload`: will reload the `.arc` file before resolving the asset.
+- `stagePath`: boolean, prepends `/staging` or `/production` to the asset path; useful if the current app is being run on an naked (non-domain-mapped) API Gateway
 
 
 ## `arc.tables(callback)`
