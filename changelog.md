@@ -4,6 +4,13 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.4.12] 2019-12-01
+
+### Changed
+
+- Uses updated `ARC_WSS_URL` env var format (but retains backwards compatibility)
+
+---
 
 ## [3.4.11] 2019-11-28
 
