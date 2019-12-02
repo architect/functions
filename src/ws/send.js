@@ -4,7 +4,7 @@ module.exports = function send({id, payload}, callback) {
   let endpoint
   let ARC_WSS_URL = process.env.ARC_WSS_URL
   if (ARC_WSS_URL.endsWith('staging') || ARC_WSS_URL.endsWith('production')) {
-    endpoint = `https://${ARC_WSS_URL}`
+    endpoint = `https://${ARC_WSS_URL.replace('wss://', '')}`
   }
   else {
     // This was only alive for a few weeks, can prob safely retire this path mid 2020
