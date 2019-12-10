@@ -3,8 +3,8 @@ let jwt = require('node-webtokens');
 let alg = 'dir'
 let enc = 'A128GCM'
 
-// min key size is 16
-let fallback = Buffer.from('0000000000000000').toString('base64')
+// 32 bit key size
+let fallback = Buffer.from('12345678901234567890123456789012').toString('base64')
 
 // need to STRONGLY encourage setting ARC_APP_SECRET in the docs
 let key = process.env.ARC_APP_SECRET || fallback

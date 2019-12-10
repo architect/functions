@@ -4,6 +4,19 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.4.13] 2019-12-10
+
+### Changed
+
+- Internal change for JWE token issuance
+
+
+### Fixed
+
+- Local WebSockets (`arc.ws`) calls no longer always send port `3333`, and to now support custom ports
+
+---
+
 ## [3.4.12] 2019-12-01
 
 ### Changed
