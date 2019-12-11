@@ -1,7 +1,6 @@
 let old = require('./old')
 let doc = require('./doc')
 let lookup = require('../discovery')
-let readLocalArc = require('./read-local-arc')
 let factory = require('./factory')
 let sandbox = require('./sandbox')
 let db = require('./db')
@@ -34,27 +33,19 @@ function tables(callback) {
   let env = process.env.NODE_ENV
   let runningLocally = !env || env === 'testing' || process.env.ARC_LOCAL
   if (runningLocally) {
-    try {
-      let arc = readLocalArc()
-      callback(null, sandbox(arc))
-    }
-    catch (err) {
-      callback(err)
-    }
+    sandbox(callback)
+  }
+  else if (client) {
+    callback(null, client)
   }
   else {
-    if (client) {
-      callback(null, client)
-    }
-    else {
-      lookup.tables(function done(err, tables) {
-        if (err) callback(err)
-        else {
-          client = factory(tables)
-          callback(null, client)
-        }
-      })
-    }
+    lookup.tables(function done(err, tables) {
+      if (err) callback(err)
+      else {
+        client = factory(tables)
+        callback(null, client)
+      }
+    })
   }
   return promise
 }

@@ -5,32 +5,48 @@ let promisify = require('./promisify-object')
 /**
  * returns a data client
  */
-module.exports = function sandbox(arc) {
+module.exports = function sandbox(callback) {
 
-  let appname = arc.app[0]
-  let reduce = (a, b)=> Object.assign({}, a, b)
-  let tables = arc.tables.map(t=> Object.keys(t)[0]) //(t=> name(Object.keys(t)[0]))
+  /*
+  let tables = arc.tables.map(t=> Object.keys(t)[0])
   let data = tables.map(client(appname)).reduce(reduce, {})
+  */
+  db.listTables({}, function listed(err, result) {
+    if (err) callback(err)
+    else {
+      let reduce = (a, b)=> Object.assign({}, a, b)
+      let dontcare = tbl=> tbl != 'arc-sessions' || tbl.includes('production') === false
+      let tables = result.TableNames.filter(dontcare)
+      let data = tables.map(function fmt(tbl) {
+        let parts = tbl.split('-staging-')
+        let app = parts.shift()
+        let name = parts.join('')
+        return client(app)(name)
+      }).reduce(reduce, {})
 
-  Object.defineProperty(data, '_db', {
-    enumerable: false,
-    value: db
+      Object.defineProperty(data, '_db', {
+        enumerable: false,
+        value: db
+      })
+
+      Object.defineProperty(data, '_doc', {
+        enumerable: false,
+        value: doc
+      })
+
+      data.reflect = async function reflect() {
+        return tables.reduce(function visit(result, tbl) {
+          let parts = tbl.split('-staging-')
+          let app = parts.shift()
+          let name = parts.join('')
+          result[name] = `${app}-staging-${name}`
+          return result
+        }, {})
+      }
+
+      callback(null, data)
+    }
   })
-
-  Object.defineProperty(data, '_doc', {
-    enumerable: false,
-    value: doc
-  })
-
-  data.reflect = async function reflect() {
-    let tables = arc.tables.map(t=> Object.keys(t)[0])
-    return tables.reduce(function visit(result, tablename) {
-      result[tablename] = `${appname}-staging-${tablename}`
-      return result
-    }, {})
-  }
-
-  return data
 }
 
 function client(appname) {
