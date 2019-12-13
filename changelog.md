@@ -3,6 +3,11 @@
 ---
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
+## [3.4.14] 2019-12-13
+
+### Changed
+
+- Allow setting session TTL by passing a SESSION_TTL environment variable with the desired TTL in seconds
 
 ## [3.4.13] 2019-12-10
 

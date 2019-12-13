@@ -11,8 +11,9 @@ test('http.session apis exist', t=> {
 })
 
 test('jwe read and write implementations', async t=> {
-  t.plan(3)
+  t.plan(4)
   process.env.SESSION_TABLE_NAME = 'jwe'
+  process.env.SESSION_TTL = 14400
   let fakerequest = {}
   let session = await read(fakerequest)
   t.ok(session, 'read session cookie')
@@ -24,6 +25,7 @@ test('jwe read and write implementations', async t=> {
   t.comment(JSON.stringify(cookie))
   t.comment(JSON.stringify(inception))
   t.ok(inception.one === 1, 'read back again')
+  t.ok(cookie.includes(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
 let end
@@ -35,8 +37,9 @@ test('set up sandbox for ddb testing', async t=> {
 })
 
 test('ddb read and write implementations', async t=> {
-  t.plan(3)
+  t.plan(4)
   process.env.SESSION_TABLE_NAME = 'arc-sessions'
+  process.env.SESSION_TTL = 14400
   let fakerequest = {}
   let session = await read(fakerequest)
   t.ok(session, 'read session cookie')
@@ -48,6 +51,7 @@ test('ddb read and write implementations', async t=> {
   t.comment(JSON.stringify(cookie))
   t.comment(JSON.stringify(inception))
   t.equals(inception.one, 1, 'read back modified cookie')
+  t.ok(cookie.includes(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
 test('shutdown sandbox', async t=> {
