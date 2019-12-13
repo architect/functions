@@ -15,7 +15,7 @@ module.exports = function sandbox(callback) {
     if (err) callback(err)
     else {
       let reduce = (a, b)=> Object.assign({}, a, b)
-      let dontcare = tbl=> tbl != 'arc-sessions' || tbl.includes('production') === false
+      let dontcare = tbl=> tbl != 'arc-sessions' && tbl.includes('production') === false
       let tables = result.TableNames.filter(dontcare)
       let data = tables.map(function fmt(tbl) {
         let parts = tbl.split('-staging-')

@@ -8,6 +8,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Changed
 
 - Allow setting session TTL by passing a SESSION_TTL environment variable with the desired TTL in seconds
+- Removes `@architect/parser` dep
 
 ## [3.4.13] 2019-12-10
 
