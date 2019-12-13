@@ -66,7 +66,7 @@ function write(params, callback) {
       callback(err)
     }
     else {
-      let maxAge = 7.884e+8
+      let maxAge = process.env.SESSION_TTL || 7.884e+8
       let options = {
         maxAge,
         expires: new Date(Date.now() + maxAge * 1000),
