@@ -64,7 +64,7 @@ async function response(req, params) {
   // Tag the new session
   if (params.session || params.cookie) {
     let session = params.session || params.cookie
-    session = Object.assign({}, req.session, session)
+    session = Object.keys(session).length === 0? {} : Object.assign({}, req.session, session)
     // Save the session
     let cookie = await write(session)
     res.headers['Set-Cookie'] = cookie
