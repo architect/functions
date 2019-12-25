@@ -46,7 +46,7 @@
   "devDependencies": {
     "@architect/sandbox": "^1.4.17",
     "aws-sdk": "^2.582.0",
-    "aws-sdk-mock": "^4.5.0",
+    "aws-sdk-mock": "^5.0.0",
     "codecov": "^3.6.1",
     "cross-env": "^6.0.3",
     "eslint": "^6.7.2",
