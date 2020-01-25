@@ -2,17 +2,19 @@ let aws = require('aws-sdk')
 let lookup = require('../discovery')
 let ledger = {}
 
-module.exports = function live({name, payload, delaySeconds}, callback) {
+module.exports = function live({name, payload, delaySeconds, groupID}, callback) {
 
   function publish(QueueUrl, payload, callback) {
     let sqs = new aws.SQS
-    let DelaySeconds = delaySeconds || 0
-    console.log('sqs.sendMessage', JSON.stringify({QueueUrl, DelaySeconds:0, payload}))
-    sqs.sendMessage({
+    let params = {
       QueueUrl,
-      DelaySeconds,
+      DelaySeconds: delaySeconds || 0,
       MessageBody: JSON.stringify(payload)
-    }, callback)
+    }
+    if (QueueUrl.endsWith('.fifo')) {
+      params.MessageGroupId = groupID || name
+    }
+    sqs.sendMessage(params, callback)
   }
 
   let arn = ledger.hasOwnProperty(name)
