@@ -3,6 +3,13 @@
 ---
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
+## [3.5.0] 2020-01-24
+
+### Added
+
+- `arc.queues.publish` can now accept `groupID` for fifo queues
+- erase session with `return {session: {}, location: '/'}` syntax
+
 ## [3.4.14] 2019-12-13
 
 ### Changed
