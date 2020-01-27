@@ -50,7 +50,7 @@
     "codecov": "^3.6.2",
     "cross-env": "^6.0.3",
     "eslint": "^6.8.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.3",
     "nyc": "^15.0.0",
     "path-exists": "^4.0.0",
     "proxyquire": "^2.1.3",
