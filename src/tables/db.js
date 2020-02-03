@@ -1,7 +1,8 @@
 let aws = require('aws-sdk')
 let https = require('https')
 let DB = aws.DynamoDB
-let endpoint = new aws.Endpoint('http://localhost:5000')
+let port = process.env.ARC_TABLES_PORT || 5000
+let endpoint = new aws.Endpoint(`http://localhost:${port}`)
 
 if (typeof process.env.NODE_ENV === 'undefined')
   process.env.NODE_ENV = 'testing'

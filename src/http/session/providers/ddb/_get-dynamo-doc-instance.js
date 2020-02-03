@@ -1,7 +1,8 @@
 let aws = require('aws-sdk')
 let testing = process.env.NODE_ENV === 'testing'
 let passthru = !process.env.hasOwnProperty('SESSION_TABLE_NAME')
-let endpoint = new aws.Endpoint('http://localhost:5000')
+let port = process.env.ARC_TABLES_PORT || 5000
+let endpoint = new aws.Endpoint(`http://localhost:${port}`)
 let region = 'us-west-2'
 
 // if SESSION_TABLE_NAME isn't defined we mock the client and just pass session thru
