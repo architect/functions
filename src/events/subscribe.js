@@ -1,4 +1,11 @@
-var parallel = require('run-parallel')
+let parallel = require('run-parallel')
+
+let fallback = {
+  Records: [
+    JSON.stringify({ Sns: { Message: {} } })
+  ]
+}
+
 /**
  * // Example usage:
  *
@@ -14,6 +21,7 @@ var parallel = require('run-parallel')
 module.exports = function _subscribe(fn) {
   if (fn.constructor.name === 'AsyncFunction') {
     return async function lambda(event) {
+      event = event || fallback
       return await Promise.all(event.Records.map(async record=> {
         try {
           let result = JSON.parse(record.Sns.Message)
@@ -27,11 +35,12 @@ module.exports = function _subscribe(fn) {
   }
   else {
     // callback interface
-    return function _lambdaSignature(evt, ctx, callback) {
+    return function _lambdaSignature(event, context, callback) {
+      event = event || fallback
       // sns triggers send batches of records
       // so we're going to create a handler for each one
       // and execute them in parallel
-      parallel(evt.Records.map(function _iterator(record) {
+      parallel(event.Records.map(function _iterator(record) {
         // for each record we construct a handler function
         return function _actualHandler(callback) {
           try {
