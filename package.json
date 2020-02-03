@@ -44,7 +44,7 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/sandbox": "^1.5.8",
+    "@architect/sandbox": "^1.6.0",
     "aws-sdk": "^2.610.0",
     "aws-sdk-mock": "^5.0.0",
     "codecov": "^3.6.4",
