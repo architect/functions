@@ -4,11 +4,17 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [On branch]
+## [3.5.1] 2020-02-02
 
 ### Added
 
 - Added fallback event object for direct invocation of event functions using `arc.events.subscribe`
+
+
+### Changed
+
+- Updated tests for Sandbox soon to be setting `ARC_CLOUDFORMATION` env var
+- Updated dependencies
 
 ---
 

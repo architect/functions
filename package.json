@@ -44,13 +44,13 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/sandbox": "^1.5.7",
+    "@architect/sandbox": "^1.5.8",
     "aws-sdk": "^2.610.0",
     "aws-sdk-mock": "^5.0.0",
-    "codecov": "^3.6.2",
-    "cross-env": "^6.0.3",
+    "codecov": "^3.6.4",
+    "cross-env": "^7.0.0",
     "eslint": "^6.8.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.3",
     "nyc": "^15.0.0",
     "path-exists": "^4.0.0",
     "proxyquire": "^2.1.3",
