@@ -1,7 +1,8 @@
 let aws = require('aws-sdk')
 let https = require('https')
 let Doc = aws.DynamoDB.DocumentClient
-let endpoint = new aws.Endpoint('http://localhost:5000')
+let port = process.env.ARC_TABLES_PORT || 5000
+let endpoint = new aws.Endpoint(`http://localhost:${port}`)
 
 /**
  * Region here is a temp fix until we shore up various AWS init paths in utils.initAWS

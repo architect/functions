@@ -39,11 +39,12 @@ module.exports = function _publish(params, callback) {
   // check if we're running locally
   let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
   if (local) {
+    let port = process.env.ARC_EVENTS_PORT || 3334
 
     // if so send the mock request
     let req = http.request({
       method: 'POST',
-      port: 3334,
+      port,
       path: '/queues',
     })
     req.write(JSON.stringify(params))

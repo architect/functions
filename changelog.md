@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [On branch]
+
+### Added
+- Added support for running multiple Sandboxes at the same time
+  - No more conflicting events and ports when running multiple simultaneous local Architect projects
+
+---
+
 ## [3.5.1] 2020-02-02
 
 ### Added
