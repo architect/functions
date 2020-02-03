@@ -88,9 +88,6 @@ module.exports = function responseFormatter(req, params) {
    * Arc 5:
    * - !ARC_CLOUDFORMATION
    * - !ARC_HTTP || ARC_HTTP === 'aws'
-   * Sandbox:
-   * - !ARC_CLOUDFORMATION
-   * - !ARC_HTTP
    */
   let notArcSix = !process.env.ARC_CLOUDFORMATION
   let notArcProxy = !process.env.ARC_HTTP || process.env.ARC_HTTP === 'aws'

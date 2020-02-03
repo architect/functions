@@ -8,16 +8,33 @@ let str = i => JSON.stringify(i)
 let match = (copy, item) => `${copy} matches: ${item}`
 let request = requests.arc5.getIndex
 
+// Deal with Arc 6 specific env vars
+let arc6EnvVars = {
+  setup: function (t) {
+    process.env.ARC_CLOUDFORMATION = true
+    process.env.ARC_HTTP = 'aws_proxy'
+    t.ok(process.env.ARC_CLOUDFORMATION)
+    t.ok(process.env.ARC_HTTP)
+  },
+  teardown: function (t) {
+    delete process.env.ARC_CLOUDFORMATION
+    delete process.env.ARC_HTTP
+    t.notOk(process.env.ARC_CLOUDFORMATION)
+    t.notOk(process.env.ARC_HTTP)
+  }
+}
+
 test('Set up env', t => {
   t.plan(2)
   t.ok(http, 'Loaded HTTP')
   t.ok(responses, 'Loaded response fixtures')
+  // Init env var to keep from stalling on db reads in CI
+  process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
 test('Architect v6 dependency-free responses', t => {
-  // Init env var to keep from stalling on db reads in CI
-  process.env.SESSION_TABLE_NAME = 'jwe'
-  t.plan(14)
+  t.plan(18)
+  arc6EnvVars.setup(t)
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
@@ -42,6 +59,7 @@ test('Architect v6 dependency-free responses', t => {
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
+  arc6EnvVars.teardown(t)
 })
 
 test('Architect v5 dependency-free responses', t => {
@@ -120,8 +138,8 @@ test('Architect v5 + Functions', t => {
  * - broken into individual test blocks because tape gets aggro in setting/unsetting env vars
  */
 test('Architect v6 + Functions + /{proxy+}', t => {
-  process.env.SESSION_TABLE_NAME = 'jwe'
-  t.plan(4)
+  t.plan(8)
+  arc6EnvVars.setup(t)
   let request = requests.arc6.getProxyPlus
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
@@ -134,6 +152,7 @@ test('Architect v6 + Functions + /{proxy+}', t => {
     t.equal(res.statusCode, 200, 'Responded with 200')
     t.notOk(res.type, 'Responded without res.type set')
   })
+  arc6EnvVars.teardown(t)
 })
 
 test('Architect v5 + Functions + ARC_HTTP = aws', t => {
@@ -174,7 +193,7 @@ test('Architect v5 + Functions + ARC_HTTP = aws_proxy', t => {
 
 test('Architect v5 + Functions + ARC_HTTP = other', t => {
   t.plan(5)
-  process.env.ARC_HTTP = 'other' // tests !aws && !aws_proxy ARC_HTTP values
+  process.env.ARC_HTTP = 'other' // tests !aws && !aws_proxy ARC_HTTP values (jic)
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, (err, res) => {
