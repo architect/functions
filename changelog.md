@@ -9,6 +9,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Added
 - Added support for running multiple Sandboxes at the same time
   - No more conflicting events and ports when running multiple simultaneous local Architect projects!
+  - Also, you can now manually configure your `@events` port with `ARC_EVENTS_PORT`, and `@tables` port with `ARC_EVENTS_PORT`
 
 ---
 
