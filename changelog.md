@@ -4,6 +4,13 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.7.0] 2020-02-10
+
+### Added
+
+- Added support for porting express apps with `arc.http.express`
+
+---
 ## [3.6.0] 2020-02-03
 
 ### Added
