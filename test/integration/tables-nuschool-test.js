@@ -29,6 +29,7 @@ test('Set up mocked files', t=> {
   // eslint-disable-next-line
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
+
 test('starts the db server', t=> {
   t.plan(1)
   server = sandbox.db.start(function _start() {

@@ -1,13 +1,11 @@
 let old = require('./old')
-let doc = require('./doc')
 let lookup = require('../discovery')
 let factory = require('./factory')
 let sandbox = require('./sandbox')
-let db = require('./db')
+let dynamo = require('./dynamo')
 
 // cheap client cache
 let client = false
-
 
 /**
  * // example usage:
@@ -50,9 +48,11 @@ function tables(callback) {
   return promise
 }
 
-// export for direct/fast use
-tables.doc = doc
-tables.db = db
+// Export directly for fast use
+tables.doc = dynamo.direct.doc
+tables.db = dynamo.direct.db
+
+// Legacy compat methods
 tables.insert = old.insert
 tables.modify = old.modify
 tables.update = old.update
