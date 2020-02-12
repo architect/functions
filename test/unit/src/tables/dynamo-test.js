@@ -43,7 +43,7 @@ test('Set up env', t => {
   // Session x callback
   dynamo.session((err, doc) => {
     if (err) t.fail(err)
-    t.ok(doc, 'Got DynamoDB sesion document object (callback)')
+    t.ok(doc, 'Got DynamoDB session document object (callback)')
   })
 
   reset(t)
@@ -98,11 +98,11 @@ test('Local port + region configuration', t => {
   // Session x callback
   dynamo.session((err, doc) => {
     if (err) t.fail(err)
-    t.equal(doc.options.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-    t.equal(doc.options.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.options.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-    t.equal(doc.options.endpoint.port, defaultPort, `Doc configured 'port' property is ${defaultPort}`)
-    t.equal(doc.service.config.region, defaultRegion, `Doc configured 'region' property is ${defaultRegion}`)
+    t.equal(doc.options.endpoint.host, host, `Session doc configured 'host' property is ${host}`)
+    t.equal(doc.options.endpoint.hostname, localhost, `Session doc configured 'hostname' property is ${localhost}`)
+    t.equal(doc.options.endpoint.href, `http://${host}/`, `Session doc configured 'href' property is http://${host}/`)
+    t.equal(doc.options.endpoint.port, defaultPort, `Session doc configured 'port' property is ${defaultPort}`)
+    t.equal(doc.service.config.region, defaultRegion, `Session doc configured 'region' property is ${defaultRegion}`)
   })
 
   reset(t)
@@ -154,18 +154,18 @@ test('Local port + region configuration', t => {
   // Session x callback
   dynamo.session((err, doc) => {
     if (err) t.fail(err)
-    t.equal(doc.options.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-    t.equal(doc.options.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.options.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-    t.equal(doc.options.endpoint.port, customPort, `Doc configured 'port' property is ${customPort}`)
-    t.equal(doc.service.config.region, customRegion, `Doc configured 'region' property is ${customRegion}`)
+    t.equal(doc.options.endpoint.host, host, `Session doc configured 'host' property is ${host}`)
+    t.equal(doc.options.endpoint.hostname, localhost, `Session doc configured 'hostname' property is ${localhost}`)
+    t.equal(doc.options.endpoint.href, `http://${host}/`, `Session doc configured 'href' property is http://${host}/`)
+    t.equal(doc.options.endpoint.port, customPort, `Session doc configured 'port' property is ${customPort}`)
+    t.equal(doc.service.config.region, customRegion, `Session doc configured 'region' property is ${customRegion}`)
   })
 
   reset(t)
 })
 
 test('Live AWS infra config', t => {
-  t.plan(10)
+  t.plan(11)
 
   // Defaults
   process.env.NODE_ENV = 'testing'
@@ -173,16 +173,27 @@ test('Live AWS infra config', t => {
   // eslint-disable-next-line
   dynamo = require(file)
 
+  // DB x callback
   dynamo.db((err, db) => {
     if (err) t.fail(err)
     t.notOk(db.config.httpOptions.agent, 'DB HTTP agent options not set')
   })
+  // DB x direct
+  t.notOk(dynamo.direct.db.config.httpOptions.agent, 'DB HTTP agent options not set')
+
+  // Doc x callback
   dynamo.doc((err, doc) => {
     if (err) t.fail(err)
     t.notOk(doc.service.config.httpOptions.agent, 'Doc HTTP agent options not set')
   })
-  t.notOk(dynamo.direct.db.config.httpOptions.agent, 'DB HTTP agent options not set')
+  // Doc x direct
   t.notOk(dynamo.direct.doc.service.config.httpOptions.agent, 'Doc HTTP agent options not set')
+
+  // Session x callback (session table not configured)
+  dynamo.session((err, doc) => {
+    if (err) t.fail(err)
+    t.notOk(doc.service.config.httpOptions.agent, 'Session doc HTTP agent options not set')
+  })
 
   reset(t)
 
@@ -218,7 +229,7 @@ test('Live AWS infra config', t => {
   process.env.SESSION_TABLE_NAME = 'foo'
   dynamo.session((err, doc) => {
     if (err) t.fail(err)
-    t.ok(doc.service.config.httpOptions.agent.options, 'Doc HTTP agent options set')
+    t.ok(doc.service.config.httpOptions.agent.options, 'Session doc HTTP agent options set')
   })
 
   reset(t)
