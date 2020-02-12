@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.7.1] 2020-02-12
+
+### Fixed
+
+- Refactor of internal DynamoDB client instantiation; resolves issues using Functions with some test harnesses (like Jest); fixes #238, thanks @konsumer!
+
+---
+
 ## [3.7.0] 2020-02-10
 
 ### Added

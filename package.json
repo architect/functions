@@ -45,10 +45,10 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/sandbox": "^1.6.0",
-    "aws-sdk": "^2.615.0",
+    "@architect/sandbox": "^1.7.0",
+    "aws-sdk": "^2.616.0",
     "aws-sdk-mock": "^5.0.0",
-    "codecov": "^3.6.4",
+    "codecov": "^3.6.5",
     "cross-env": "^7.0.0",
     "eslint": "^6.8.0",
     "mkdirp": "^1.0.3",

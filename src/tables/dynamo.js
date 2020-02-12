@@ -14,7 +14,7 @@ function getDynamo (type, callback) {
   let port = process.env.ARC_TABLES_PORT || 5000
   let local = {
     endpoint: new aws.Endpoint(`http://localhost:${port}`),
-    region: process.env.AWS_REGION || 'us-west-2'
+    region: process.env.AWS_REGION || 'us-west-2' // Do not assume region is set!
   }
   let DB = aws.DynamoDB
   let Doc = aws.DynamoDB.DocumentClient
