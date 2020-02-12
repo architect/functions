@@ -1,6 +1,5 @@
 let aws = require('aws-sdk')
 let https = require('https')
-// let clients = {}
 
 /**
  * Instantiates Dynamo service interfaces
@@ -29,6 +28,7 @@ function getDynamo (type, callback) {
     aws.config.update({
       httpOptions: {agent}
     })
+    // TODO? migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`?
   }
 
   if (type === 'db') {
