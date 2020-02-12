@@ -9,6 +9,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Fixed
 
 - Refactor of internal DynamoDB client instantiation; resolves issues using Functions with some test harnesses (like Jest); fixes #238, thanks @konsumer!
+- Note: `3.7.1` was an erroneous re-publish of `3.7.0`, please use `3.7.2`
 
 ---
 
