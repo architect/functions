@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "3.7.0",
+  "version": "3.7.1-RC.0",
   "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
   "homepage": "https://github.com/architect/functions",
   "repository": {
@@ -11,8 +11,8 @@
   "main": "src/index",
   "scripts": {
     "lint": "eslint --fix .",
-    "test:unit": "cross-env PORT=6666 ARC_EVENTS_PORT=6667 ARC_TABLES_PORT=6668 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape test/unit/**/*-test.js test/unit/**/**/*-test.js | tap-spec",
-    "test:integration": "cross-env PORT=6666 ARC_EVENTS_PORT=6667 ARC_TABLES_PORT=6668 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape test/integration/*-test.js | tap-spec",
+    "test:unit": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape test/unit/**/*-test.js test/unit/**/**/*-test.js | tap-spec",
+    "test:integration": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape test/integration/*-test.js | tap-spec",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
     "test": "npm run lint && npm run test:integration && npm run coverage",
     "rc": "npm version prerelease --preid RC"
@@ -45,10 +45,10 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/sandbox": "^1.6.0",
-    "aws-sdk": "^2.615.0",
+    "@architect/sandbox": "^1.7.0",
+    "aws-sdk": "^2.616.0",
     "aws-sdk-mock": "^5.0.0",
-    "codecov": "^3.6.4",
+    "codecov": "^3.6.5",
     "cross-env": "^7.0.0",
     "eslint": "^6.8.0",
     "mkdirp": "^1.0.3",
