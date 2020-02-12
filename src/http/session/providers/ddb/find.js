@@ -1,8 +1,8 @@
-let getDoc = require('./_get-dynamo-doc-instance')
+let dynamo = require('../../../../tables/dynamo').session
 let create = require('./create')
 
 module.exports = function _find(name, _idx, callback) {
-  getDoc(function _gotDoc(err, db) {
+  dynamo(function _gotDB(err, db) {
     if (err) callback(err)
     else {
       db.get({

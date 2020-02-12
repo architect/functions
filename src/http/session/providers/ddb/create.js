@@ -1,6 +1,6 @@
 let uid = require('uid-safe')
 let week = require('./_week-from-now')
-let getDoc = require('./_get-dynamo-doc-instance')
+let dynamo = require('../../../../tables/dynamo').session
 let crsf = require('csrf')
 let parallel = require('run-parallel')
 
@@ -24,7 +24,7 @@ module.exports = function _create(name, payload, callback) {
     results.push({_ttl: week()})
     let keys = results.reduce((a, b)=> Object.assign(a, b))
     let session = Object.assign(payload, keys)
-    getDoc(function _gotDoc(err, db) {
+    dynamo(function _gotDB(err, db) {
       if (err) callback(err)
       else {
         db.put({

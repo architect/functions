@@ -1,10 +1,10 @@
-var getDoc = require('./_get-dynamo-doc-instance')
-var week = require('./_week-from-now')
+let dynamo = require('../../../../tables/dynamo').session
+let week = require('./_week-from-now')
 
 module.exports = function _update(name, payload, callback) {
-  var _ttl = week()
-  var session = Object.assign(payload, {_ttl})
-  getDoc(function _gotDoc(err, db) {
+  let _ttl = week()
+  let session = Object.assign(payload, {_ttl})
+  dynamo(function _gotDB(err, db) {
     if (err) callback(err)
     else {
       db.put({
