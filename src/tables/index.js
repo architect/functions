@@ -27,16 +27,19 @@ function tables(callback) {
       }
     })
   }
-  // Read Architect manifest if local / sandbox, otherwise use service reflection
-  let env = process.env.NODE_ENV
-  let runningLocally = !env || env === 'testing' || process.env.ARC_LOCAL
-  if (runningLocally) {
-    sandbox(callback)
-  }
-  else if (client) {
+  /**
+   * Read Architect manifest if local / sandbox, otherwise use service reflection
+   * - Key on `staging` / `production` and not on `testing`
+   * - Why? Some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
+   */
+  let isStagingOrProd = process.env.NODE_ENV === 'staging' ||
+                        process.env.NODE_ENV === 'production'
+  let arcLocal = process.env.ARC_LOCAL
+
+  if (client) {
     callback(null, client)
   }
-  else {
+  else if (isStagingOrProd && !arcLocal) {
     lookup.tables(function done(err, tables) {
       if (err) callback(err)
       else {
@@ -44,6 +47,9 @@ function tables(callback) {
         callback(null, client)
       }
     })
+  }
+  else {
+    sandbox(callback)
   }
   return promise
 }
