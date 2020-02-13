@@ -4,6 +4,20 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.7.5] 2020-02-13
+
+### Changed
+
+- Functions now ensures `NODE_ENV` is one of `testing`, `staging`, or `production` (defaulting to `testing`)
+- Updated dependencies
+
+
+### Fixed
+
+- Improves reliability of using Architect Functions in certain test harnesses that may automatically set `NODE_ENV`
+
+---
+
 ## [3.7.2 - 3.7.4] 2020-02-12
 
 ### Fixed
