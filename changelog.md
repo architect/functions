@@ -4,11 +4,12 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.7.1] 2020-02-12
+## [3.7.2 - 3.7.3] 2020-02-12
 
 ### Fixed
 
 - Refactor of internal DynamoDB client instantiation; resolves issues using Functions with some test harnesses (like Jest); fixes #238, thanks @konsumer!
+- Fixes issue that caused Sandbox to stall when called via the Architect CLI
 - Note: `3.7.1` was an erroneous re-publish of `3.7.0`, please use `3.7.2`
 
 ---
