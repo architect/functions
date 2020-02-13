@@ -9,8 +9,7 @@ let https = require('https')
 function getDynamo (type, callback) {
   if (!type) throw ReferenceError('Must supply Dynamo service interface type')
 
-  let isStagingOrProd = process.env.NODE_ENV === 'staging' ||
-                        process.env.NODE_ENV === 'production'
+  let testing = process.env.NODE_ENV === 'testing'
   let arcLocal = process.env.ARC_LOCAL
   let port = process.env.ARC_TABLES_PORT || 5000
   let local = {
@@ -28,7 +27,7 @@ function getDynamo (type, callback) {
    * - Also: some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
    * - *Why this matters*: using https.Agent (and not http.Agent) will stall the Sandbox
    */
-  if (isStagingOrProd && !arcLocal) {
+  if (!testing && !arcLocal) {
     let agent = new https.Agent({
       keepAlive: true,
       maxSockets: 50, // Node can set to Infinity; AWS maxes at 50; check back on this every once in a while
@@ -41,15 +40,15 @@ function getDynamo (type, callback) {
   }
 
   if (type === 'db') {
-    dynamo = isStagingOrProd
-      ? new DB
-      : new DB(local)
+    dynamo = testing
+      ? new DB(local)
+      : new DB
   }
 
   if (type === 'doc') {
-    dynamo = isStagingOrProd
-      ? new Doc
-      : new Doc(local)
+    dynamo = testing
+      ? new Doc(local)
+      : new Doc
   }
 
   if (type === 'session') {
@@ -63,9 +62,9 @@ function getDynamo (type, callback) {
         callback()
       }
     }
-    dynamo = isStagingOrProd
-      ? (passthru ? mock : new Doc)
-      : new Doc(local)
+    dynamo = testing
+      ? new Doc(local)
+      : (passthru ? mock : new Doc)
   }
 
   if (!callback) return dynamo

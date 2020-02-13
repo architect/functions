@@ -27,9 +27,11 @@ function tables(callback) {
       }
     })
   }
-  // Read Architect manifest if local / sandbox, otherwise use service reflection
-  let env = process.env.NODE_ENV
-  let runningLocally = !env || env === 'testing' || process.env.ARC_LOCAL
+  /**
+   * Read Architect manifest if local / sandbox, otherwise use service reflection
+   */
+  let testing = process.env.NODE_ENV === 'testing'
+  let runningLocally = testing || process.env.ARC_LOCAL
   if (runningLocally) {
     sandbox(callback)
   }
