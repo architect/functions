@@ -1,4 +1,5 @@
 let aws = require('aws-sdk')
+let http = require('http')
 let https = require('https')
 
 /**
@@ -20,11 +21,19 @@ function getDynamo (type, callback) {
   let dynamo // Assigned below
 
   function updateConfig () {
-    let agent = new https.Agent({
+    let settings = {
       keepAlive: true,
       maxSockets: 50,
       rejectUnauthorized: true,
-    })
+    }
+    /**
+     * This module may be loaded by @arc/arc via repl
+     * - The `direct` interfaces will instantiate before NODE_ENV is set
+     * - Thus, unlike most other scenarios, don't assume the presence of NODE_ENV
+     */
+    let agent = !process.env.NODE_ENV || testing
+     ? new http.Agent(settings)
+     : new https.Agent(settings)
     aws.config.update({
       httpOptions: {agent}
     })
