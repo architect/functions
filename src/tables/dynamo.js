@@ -1,5 +1,4 @@
 let aws = require('aws-sdk')
-let http = require('http')
 let https = require('https')
 
 /**
@@ -10,7 +9,9 @@ let https = require('https')
 function getDynamo (type, callback) {
   if (!type) throw ReferenceError('Must supply Dynamo service interface type')
 
-  let testing = process.env.NODE_ENV === 'testing'
+  let isStagingOrProd = process.env.NODE_ENV === 'staging' ||
+                        process.env.NODE_ENV === 'production'
+  let arcLocal = process.env.ARC_LOCAL
   let port = process.env.ARC_TABLES_PORT || 5000
   let local = {
     endpoint: new aws.Endpoint(`http://localhost:${port}`),
@@ -20,20 +21,19 @@ function getDynamo (type, callback) {
   let Doc = aws.DynamoDB.DocumentClient
   let dynamo // Assigned below
 
-  function updateConfig () {
-    let settings = {
+  /**
+   * This module may be loaded by @arc/arc via repl
+   * - The `direct` interfaces will instantiate before NODE_ENV is set
+   * - Thus, unlike most other scenarios, don't assume the presence of NODE_ENV
+   * - Also: some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
+   * - *Why this matters*: using https.Agent (and not http.Agent) will stall the Sandbox
+   */
+  if (isStagingOrProd && !arcLocal) {
+    let agent = new https.Agent({
       keepAlive: true,
-      maxSockets: 50,
+      maxSockets: 50, // Node can set to Infinity; AWS maxes at 50; check back on this every once in a while
       rejectUnauthorized: true,
-    }
-    /**
-     * This module may be loaded by @arc/arc via repl
-     * - The `direct` interfaces will instantiate before NODE_ENV is set
-     * - Thus, unlike most other scenarios, don't assume the presence of NODE_ENV
-     */
-    let agent = !process.env.NODE_ENV || testing
-     ? new http.Agent(settings)
-     : new https.Agent(settings)
+    })
     aws.config.update({
       httpOptions: {agent}
     })
@@ -41,28 +41,18 @@ function getDynamo (type, callback) {
   }
 
   if (type === 'db') {
-    if (!testing) {
-      updateConfig()
-    }
-    dynamo = testing
-      ? new DB(local)
-      : new DB
+    dynamo = isStagingOrProd
+      ? new DB
+      : new DB(local)
   }
 
   if (type === 'doc') {
-    if (!testing) {
-      updateConfig()
-    }
-    dynamo = testing
-      ? new Doc(local)
-      : new Doc
+    dynamo = isStagingOrProd
+      ? new Doc
+      : new Doc(local)
   }
 
   if (type === 'session') {
-    if (!testing) {
-      updateConfig()
-    }
-
     // if SESSION_TABLE_NAME isn't defined we mock the client and just pass session thru
     let passthru = !process.env.SESSION_TABLE_NAME
     let mock = {
@@ -73,9 +63,9 @@ function getDynamo (type, callback) {
         callback()
       }
     }
-    dynamo = testing
-      ? new Doc(local)
-      : (passthru ? mock : new Doc)
+    dynamo = isStagingOrProd
+      ? (passthru ? mock : new Doc)
+      : new Doc(local)
   }
 
   if (!callback) return dynamo
