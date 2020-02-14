@@ -5,16 +5,11 @@ let parallel = require('run-parallel')
 /**
  * returns a data client
  */
-module.exports = function reflectFactory(tables) {
-  parallel([
-    dynamo.db,
-    dynamo.doc
-  ],
-  function _done(err, results) {
+module.exports = function reflectFactory(tables, callback) {
+  let {db, doc} = dynamo
+  parallel({db, doc}, function done(err, {db, doc}) {
     if (err) throw err
     else {
-      let db = results[0]
-      let doc = results[1]
 
       let data = Object.keys(tables).reduce((client, tablename)=> {
         client[tablename] = factory(tables[tablename])
@@ -80,7 +75,7 @@ module.exports = function reflectFactory(tables) {
         })
       }
 
-      return data
+      callback(null, data)
     }
   })
 }

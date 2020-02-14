@@ -1,3 +1,4 @@
+let waterfall = require('run-waterfall')
 let old = require('./old')
 let lookup = require('../discovery')
 let factory = require('./factory')
@@ -39,13 +40,21 @@ function tables(callback) {
     callback(null, client)
   }
   else {
+    waterfall([
+      lookup.tables,
+      factory,
+      function(created, callback) {
+        client = created
+        callback(null, client)
+      }
+    ], callback)
+    /*
     lookup.tables(function done(err, tables) {
       if (err) callback(err)
       else {
-        client = factory(tables)
-        callback(null, client)
+        factory(tables, callback)
       }
-    })
+    })*/
   }
   return promise
 }
