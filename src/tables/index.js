@@ -48,13 +48,6 @@ function tables(callback) {
         callback(null, client)
       }
     ], callback)
-    /*
-    lookup.tables(function done(err, tables) {
-      if (err) callback(err)
-      else {
-        factory(tables, callback)
-      }
-    })*/
   }
   return promise
 }
