@@ -1,22 +1,24 @@
 let waterfall = require('run-waterfall')
-let old = require('./old')
-let lookup = require('../discovery')
+let discovery = require('./discovery')
 let factory = require('./factory')
-let sandbox = require('./sandbox')
 let dynamo = require('./dynamo')
+let compat = require('./compat')
 
 // cheap client cache
 let client = false
 
 /**
- * // example usage:
- * let arc = require('architect/functions')
+ * @param {function} errback (optional)
+ * @returns {promise} resolves a dynamo client prebound with tablenames
  *
- * exports.handler = async function http(req) {
- *  let data = await arc.tables()
- *  await data.tacos.put({taco: 'pollo'})
- *  return {statusCode: 200}
- * }
+ *  // example usage:
+ *  let arc = require('architect/functions')
+ *
+ *  exports.handler = async function http(req) {
+ *    let data = await arc.tables()
+ *    await data.tacos.put({taco: 'pollo'})
+ *    return {statusCode: 200}
+ *  }
  */
 function tables(callback) {
   let promise
@@ -28,22 +30,14 @@ function tables(callback) {
       }
     })
   }
-  /**
-   * Read Architect manifest if local / sandbox, otherwise use service reflection
-   */
-  let testing = process.env.NODE_ENV === 'testing'
-  let runningLocally = testing || process.env.ARC_LOCAL
-  if (runningLocally) {
-    sandbox(callback)
-  }
-  else if (client) {
+  if (client) {
     callback(null, client)
   }
   else {
     waterfall([
-      lookup.tables,
+      discovery,
       factory,
-      function(created, callback) {
+      function cache(created, callback) {
         client = created
         callback(null, client)
       }
@@ -57,13 +51,13 @@ tables.doc = dynamo.direct.doc
 tables.db = dynamo.direct.db
 
 // Legacy compat methods
-tables.insert = old.insert
-tables.modify = old.modify
-tables.update = old.update
-tables.remove = old.remove
-tables.destroy = old.destroy
-tables.all = old.all
-tables.save = old.save
-tables.change = old.change
+tables.insert = compat.insert
+tables.modify = compat.modify
+tables.update = compat.update
+tables.remove = compat.remove
+tables.destroy = compat.destroy
+tables.all = compat.all
+tables.save = compat.save
+tables.change = compat.change
 
 module.exports = tables

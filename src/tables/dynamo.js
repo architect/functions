@@ -6,8 +6,10 @@ let https = require('https')
  * - Internal APIs should use `db` + `doc` to instantiate DynamoDB interfaces
  * - Avoid using `direct.db` + `direct.doc`: as it's an issue vector for using Functions in certain test harnesses!
  */
-function getDynamo (type, callback) {
-  if (!type) throw ReferenceError('Must supply Dynamo service interface type')
+function getDynamo(type, callback) {
+
+  if (!type)
+    throw ReferenceError('Must supply Dynamo service interface type')
 
   let testing = process.env.NODE_ENV === 'testing'
   let arcLocal = process.env.ARC_LOCAL
