@@ -1,4 +1,4 @@
-let http = require('../../../../src').http
+let http = require('../../../src').http
 let test = require('tape')
 let requests = require('./http-req-fixtures')
 let responses = require('./http-res-fixtures')

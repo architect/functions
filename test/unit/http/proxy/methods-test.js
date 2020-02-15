@@ -1,5 +1,5 @@
 let test = require('tape')
-let arc = require('../../../../../src')
+let arc = require('../../../../src')
 
 // Ensure compatibility with legacy proxy methods
 test('Primary proxy method', t => {

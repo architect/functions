@@ -11,8 +11,8 @@ function getDynamo(type, callback) {
   if (!type)
     throw ReferenceError('Must supply Dynamo service interface type')
 
-  let testing = process.env.NODE_ENV === 'testing'
-  let arcLocal = process.env.ARC_LOCAL
+  let testing = process.env.NODE_ENV === 'testing' || typeof process.env.NODE_ENV === 'undefined'
+  let arcLocal = !!process.env.ARC_LOCAL
   let port = process.env.ARC_TABLES_PORT || 5000
   let local = {
     endpoint: new aws.Endpoint(`http://localhost:${port}`),
@@ -28,8 +28,10 @@ function getDynamo(type, callback) {
    * - Thus, unlike most other scenarios, don't assume the presence of NODE_ENV
    * - Also: some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
    * - *Why this matters*: using https.Agent (and not http.Agent) will stall the Sandbox
+   * - we could consider migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`
    */
-  if (!testing && !arcLocal) {
+  if (type.startsWith('direct') === false && testing === false && arcLocal === false) {
+    //console.log(process.env.NODE_ENV, {testing, arcLocal})
     let agent = new https.Agent({
       keepAlive: true,
       maxSockets: 50, // Node can set to Infinity; AWS maxes at 50; check back on this every once in a while
@@ -38,16 +40,16 @@ function getDynamo(type, callback) {
     aws.config.update({
       httpOptions: {agent}
     })
-    // TODO? migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`?
   }
 
-  if (type === 'db') {
+
+  if (type.startsWith('db')) {
     dynamo = testing
       ? new DB(local)
       : new DB
   }
 
-  if (type === 'doc') {
+  if (type.startsWith('doc')) {
     dynamo = testing
       ? new Doc(local)
       : new Doc
@@ -78,7 +80,7 @@ module.exports = {
   doc: getDynamo.bind({}, 'doc'),
   session: getDynamo.bind({}, 'session'),
   direct: {
-    db: getDynamo('db'),
-    doc: getDynamo('doc')
+    db: getDynamo('db-direct'),
+    doc: getDynamo('doc-direct')
   }
 }

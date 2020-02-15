@@ -1,6 +1,6 @@
 let test = require('tape')
 let sinon = require('sinon')
-let arc = require('../../../../../src')
+let arc = require('../../../../src')
 let requests = require('../http-req-fixtures')
 let responses = require('../http-res-fixtures')
 

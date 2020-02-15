@@ -1,4 +1,4 @@
-let parseBody = require('../../../../../src/http/helpers/body-parser')
+let parseBody = require('../../../../src/http/helpers/body-parser')
 let test = require('tape')
 
 let str = i => JSON.stringify(i)

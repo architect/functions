@@ -1,6 +1,6 @@
 let sandbox = require('@architect/sandbox')
-let read = require('../../../../../src/http/session/read')
-let write = require('../../../../../src/http/session/write')
+let read = require('../../../../src/http/session/read')
+let write = require('../../../../src/http/session/write')
 let test = require('tape')
 let join = require('path').join
 

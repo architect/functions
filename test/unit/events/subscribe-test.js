@@ -1,6 +1,6 @@
 let test = require('tape')
 let sinon = require('sinon')
-let subscribe = require('../../../../src/events/subscribe')
+let subscribe = require('../../../src/events/subscribe')
 
 test('events.subscribe should invoke provided handler for each SNS event Record', t => {
   t.plan(2)

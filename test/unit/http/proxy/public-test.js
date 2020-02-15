@@ -1,7 +1,7 @@
 let test = require('tape')
 let proxyquire = require('proxyquire')
 let readStub = params => params
-let proxyPublic = proxyquire('../../../../../src/http/proxy/public', {
+let proxyPublic = proxyquire('../../../../src/http/proxy/public', {
   './read': readStub
 })
 let reqs = require('../http-req-fixtures')
@@ -28,6 +28,7 @@ test('Config: bucket', async t => {
 
   // Test no bucket config
   let result = await proxy(req)
+
   t.equal(result.statusCode, 502, 'Missing bucket config responds with 502')
   t.ok(result.body.includes('Index not found'), 'Missing bucket config presents helpful error')
 

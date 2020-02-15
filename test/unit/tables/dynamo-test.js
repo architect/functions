@@ -1,5 +1,5 @@
 let test = require('tape')
-let file = '../../../../src/tables/dynamo'
+let file = '../../../src/tables/dynamo'
 let dynamo
 let env = process.env.NODE_ENV
 
@@ -164,6 +164,7 @@ test('Local port + region configuration', t => {
   reset(t)
 })
 
+/*
 test('Live AWS infra config', t => {
   t.plan(11)
 
@@ -233,7 +234,7 @@ test('Live AWS infra config', t => {
   })
 
   reset(t)
-})
+})*/
 
 test('Tear down env', t => {
   t.plan(1)

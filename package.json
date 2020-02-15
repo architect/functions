@@ -10,7 +10,7 @@
   "bugs": "https://github.com/architect/functions/issues",
   "main": "src/index",
   "scripts": {
-    "one": "NODE_ENV=testing QUIET=1 node test/unit/src/tables/factory-test.js | tap-spec",
+    "one": "NODE_ENV=testing tape test/unit/src/tables/*-test.js | tap-spec",
     "lint": "eslint --fix .",
     "test:unit": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape test/unit/**/*-test.js test/unit/**/**/*-test.js | tap-spec",
     "test:integration": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape test/integration/*-test.js | tap-spec",

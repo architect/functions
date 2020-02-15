@@ -1,3 +1,5 @@
+let promisify = require('./promisify')
+
 module.exports = function clientFactory(doc, TableName) {
   return promisify({
     delete(key, callback) {
@@ -37,26 +39,4 @@ module.exports = function clientFactory(doc, TableName) {
       doc.update(params, callback)
     }
   })
-}
-
-function promisify(obj) {
-  function promised(fn) {
-    return function _promisified(params, callback) {
-      if (!callback) {
-        return new Promise(function(res, rej) {
-          fn(params, function(err, result) {
-            err ? rej(err) : res(result)
-          })
-        })
-      }
-      else {
-        fn(params, callback)
-      }
-    }
-  }
-  var copy = {}
-  Object.keys(obj).forEach(k=> {
-    copy[k] = promised(obj[k])
-  })
-  return copy
 }

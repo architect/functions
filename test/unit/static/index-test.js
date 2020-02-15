@@ -8,7 +8,7 @@ let fs = {
   })),
   existsSync: () => manifestExists
 }
-let arcStatic = proxyquire('../../../../src/static', {fs})
+let arcStatic = proxyquire('../../../src/static', {fs})
 
 function reset () {
   delete process.env.NODE_ENV
