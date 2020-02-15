@@ -5,11 +5,11 @@ let arc = require('../../../')
 let end
 let cwd = process.cwd()
 
-test('start', async t => {
+test('Start sandbox', async t => {
   t.plan(1)
   process.chdir(path.join(__dirname, '..', '..', 'mock'))
-  end = await sandbox.start()
-  t.ok(true, 'ended')
+  end = await sandbox.start({quiet: true})
+  t.ok(end, 'Sandbox started')
 })
 
 test('reflect', async t => {
@@ -23,9 +23,15 @@ test('reflect', async t => {
   //console.log(result2)
 })
 
-test('db.end', async t => {
+test('Close sandbox', async t => {
   t.plan(1)
   await end()
-  t.ok(true, 'ended')
+  // Hacky: Sandbox should really be cleaning up after its own env vars
+  delete process.env.NODE_ENV
+  delete process.env.ARC_HTTP
+  delete process.env.SESSION_TABLE_NAME
+  delete process.env.ARC_STATIC_BUCKET
+  delete process.env.ARC_WSS_URL
+  t.ok(true, 'Sandbox closed')
   process.chdir(cwd)
 })
