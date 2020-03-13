@@ -12,13 +12,14 @@ const {join} = require('path')
  * @returns {string} path - the resolved asset path (eg. /_static/index-xxx.js)
  */
 module.exports = function _static(asset, options={}) {
-  let key = asset[0] === '/'? asset.substring(1) : asset
+  let key = asset[0] === '/' ? asset.substring(1) : asset
+  let isIndex = asset === '/'
   let manifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
   let exists = existsSync(manifest)
   let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
   let stagePath = options.stagePath && !local ? '/' + process.env.NODE_ENV : ''
   let path = `${stagePath}/_static`
-  if (!local && exists) {
+  if (!local && exists && !isIndex) {
     let read = p=> readFileSync(p).toString()
     let pkg = JSON.parse(read(manifest))
     let asset = pkg[key]
@@ -26,5 +27,5 @@ module.exports = function _static(asset, options={}) {
       throw ReferenceError('Could not find asset in static.json (asset fingerprint manifest)')
     return `${path}/${asset}`
   }
-  return `${path}/${key}`
+  return `${path}/${isIndex ? '' : key}`
 }
