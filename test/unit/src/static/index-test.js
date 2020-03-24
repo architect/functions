@@ -33,6 +33,15 @@ test('Local env returns non-fingerprinted path', t => {
   t.equal(asset, '/_static/foo.png', 'Returned non-fingerprinted path with stagePath option present')
 })
 
+test('Staging env returns _static path if root is requested', t => {
+  t.plan(1)
+  reset()
+  manifestExists = false
+  process.env.NODE_ENV = 'staging'
+  let asset = arcStatic('/')
+  t.equal(asset, '/_static/', 'Returned _static path')
+})
+
 test('Staging env returns non-fingerprinted path if static manifest is not present', t => {
   t.plan(1)
   reset()
