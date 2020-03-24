@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.7.7 - 3.7.8] 2020-03-12
+## [3.7.7 - 3.8.0] 2020-03-12
 
 ### Fixed
 
