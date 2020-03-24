@@ -71,8 +71,8 @@ module.exports = function proxyPublic(config={}) {
     }
 
     // strip staging/ and production/ from req urls
-    if (Key.startsWith('staging/') || Key.startsWith('production/')) {
-      Key = Key.replace('staging/', '').replace('production/', '')
+    if (Key.startsWith('staging/') || Key.startsWith('production/') || Key.startsWith('_static/')) {
+      Key = Key.replace('staging/', '').replace('production/', '').replace('_static/', '')
     }
 
     // normalize if-none-match header to lower case; it differs between environments

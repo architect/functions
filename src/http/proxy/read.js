@@ -126,9 +126,9 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
     if (notFound) {
       try {
         let folder = process.env.ARC_STATIC_FOLDER || config.bucket && config.bucket.folder? config.bucket.folder : false
-        let Key =  folder? `${folder}/404.html` : '404.html'
+        let notFound = folder? `${folder}/404.html` : '404.html'
         let s3 = new aws.S3
-        let result = await s3.getObject({ Bucket, Key }).promise()
+        let result = await s3.getObject({ Bucket, Key: notFound }).promise()
         let body = result.Body.toString()
         return {headers, statusCode: 404, body}
       }
@@ -136,7 +136,7 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
         let statusCode = err.name === 'NoSuchKey'? 404 : 500
         let title = err.name
         let message = `
-          ${err.message}<br>
+          ${err.message } <pre><b>${ Key }</b></pre><br>
           <pre>${err.stack}</pre>
         `
         return httpError({statusCode, title, message})
