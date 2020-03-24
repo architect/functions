@@ -116,28 +116,39 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
       // Add ETag
       response.headers.ETag = result.ETag
     }
+
+    if (!response.statusCode)
+      response.statusCode = 200
     return response
   }
   catch(e) {
-    /* TODO move this logic elsewhere / this blocks real errors! look for 404.html on s3
-    try {
-      let Key = bucket && bucket.folder ? `${bucket.folder}/404.html` : '404.html'
-      let s3 = new aws.S3
-      let result = await s3.getObject({Bucket, Key}).promise()
-      let body = result.Body.toString()
-      return {headers, statusCode: 404, body}
-    }
-    catch(err) {
-      return {headers, statusCode: 404, body: 'File not found'}
-    }*/
-    // final err fallback
     let notFound = e.name === 'NoSuchKey'
-    let statusCode = notFound ? 404 : 500
-    let title = notFound ? 'Not Found' : e.name
-    let message = `
-      ${e.message}<br>
-      <pre>${e.stack}</pre>
-    `
-    return httpError({statusCode, title, message})
+    if (notFound) {
+      try {
+        let folder = process.env.ARC_STATIC_FOLDER || config.bucket && config.bucket.folder? config.bucket.folder : false
+        let Key =  folder? `${folder}/404.html` : '404.html'
+        let s3 = new aws.S3
+        let result = await s3.getObject({ Bucket, Key }).promise()
+        let body = result.Body.toString()
+        return {headers, statusCode: 404, body}
+      }
+      catch(err) {
+        let statusCode = err.name === 'NoSuchKey'? 404 : 500
+        let title = err.name
+        let message = `
+          ${err.message}<br>
+          <pre>${err.stack}</pre>
+        `
+        return httpError({statusCode, title, message})
+      }
+    }
+    else {
+      let title = e.name
+      let message = `
+        ${e.message}<br>
+        <pre>${e.stack}</pre>
+      `
+      return httpError({statusCode: 500, title, message})
+    }
   }
 }

@@ -122,7 +122,7 @@ test('Throw 404 error on missing key (aka file not found)', async t => {
   errorState = 'NoSuchKey'
   let result = await read(basicRead)
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if S3 file is not found')
-  t.ok(result.body.includes('Not Found'), 'Error message included in response')
+  t.ok(result.body.includes('NoSuchKey'), 'Error message included in response')
   errorState = false
 })
 

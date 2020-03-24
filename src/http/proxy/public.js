@@ -35,19 +35,22 @@ module.exports = function proxyPublic(config={}) {
     let spa = process.env.ARC_STATIC_SPA === 'false'
       ? false
       : config && config.spa
+
+    let path = req.path || req.rawPath
+
     if (!spa) config.spa = false
     if (spa) {
       // if spa force index.html
-      let isFolder = req.path.split('/').pop().indexOf('.') === -1
-      Key = isFolder? 'index.html' : req.path.substring(1)
+      let isFolder = path.split('/').pop().indexOf('.') === -1
+      Key = isFolder? 'index.html' : path.substring(1)
     }
     else {
       // return index.html for root…otherwise passthru the path minus leading slash
-      let last = req.path.split('/').filter(Boolean).pop()
+      let last = path.split('/').filter(Boolean).pop()
       let isFile = last? last.includes('.') : false
-      let isRoot = req.path === '/'
+      let isRoot = path === '/'
 
-      Key = isRoot? 'index.html' : req.path.substring(1)
+      Key = isRoot? 'index.html' : path.substring(1)
 
       // append default index.html to requests to folder paths
       if (isRoot === false && isFile === false) {
@@ -56,9 +59,9 @@ module.exports = function proxyPublic(config={}) {
     }
 
     // allow alias override of Key
-    let aliasing = config && config.alias && config.alias.hasOwnProperty(req.path)
+    let aliasing = config && config.alias && config.alias.hasOwnProperty(path)
     if (aliasing) {
-      Key = config.alias[req.path].substring(1) // remove leading /
+      Key = config.alias[path].substring(1) // remove leading /
     }
 
     // allow bucket folder prefix
@@ -77,7 +80,7 @@ module.exports = function proxyPublic(config={}) {
     let IfNoneMatch = req.headers && req.headers[Object.keys(req.headers).find(find)]
 
     // Ensure response shape is correct for proxy SPA responses
-    let isProxy = req.resource === '/{proxy+}'
+    let isProxy = req.resource === '/{proxy+}' || !!req.rawPath
 
     return await read({Key, Bucket, IfNoneMatch, isProxy, config})
   }
