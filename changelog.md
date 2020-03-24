@@ -4,11 +4,12 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.7.7] 2020-03-12
+## [3.7.7 - 3.7.8] 2020-03-12
 
 ### Fixed
 
 - Calling `static()` with the root path (e.g. `static('/')`) now returns `/_static/`; thanks Paul!
+- `arc.http.proxy` now supports API Gateway HTTP APIs request/response payload V2
 
 ---
 
