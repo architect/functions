@@ -4,7 +4,15 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.7.5 - 3.7.7] 2020-02-13
+## [3.7.7] 2020-03-12
+
+### Fixed
+
+- Calling `static()` with the root path (e.g. `static('/')`) now returns `/_static/`; thanks Paul!
+
+---
+
+## [3.7.5 - 3.7.6] 2020-02-13
 
 ### Changed
 
