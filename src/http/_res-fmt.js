@@ -14,7 +14,7 @@ module.exports = function responseFormatter(req, params) {
    *   where possible, normalize headers to pascal-kebab case (lolsigh)
    */
   // Body
-  let body = params.body || '\n'
+  let body = params.body || ''
 
   // Headers: Cache-Control
   let cacheControl = params.cacheControl ||

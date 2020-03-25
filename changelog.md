@@ -4,6 +4,15 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.8.1] 2020-03-24
+
+### Fixed
+
+- Mocks API Gateway's current behavior of not sending a body when response is headers / status code only; fixes #254, /ht @alexbepple
+  - (Back in the day it used to default to sending `\n` because reasons.)
+
+---
+
 ## [3.7.7 - 3.8.0] 2020-03-12
 
 ### Fixed
