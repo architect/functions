@@ -11,6 +11,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 - Mocks API Gateway's current behavior of not sending a body when response is headers / status code only; fixes #254, /ht @alexbepple
   - (Back in the day it used to default to sending `\n` because reasons.)
 - Fixed and improved events.subscribe fallback object (handy for local testing)
+- Fixed local predicate for `arc.tables` to ensure `ARC_LOCAL` can speak to live AWS infra
 
 ---
 
