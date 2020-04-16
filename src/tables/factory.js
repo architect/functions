@@ -31,7 +31,7 @@ module.exports = function reflectFactory(tables, callback) {
       }
 
       data._name = function _name(name) {
-        return tables.filter(t => RegExp(`^.*${name}$`).test(t))
+        return tables[name]
       }
 
       function factory(TableName) {

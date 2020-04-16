@@ -4,6 +4,15 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+
+## [3.8.2] 2020-04-16
+
+### Fixed
+
+- Fix `arc.tables._name` calls, ht @filmaj
+
+---
+
 ## [3.8.1] 2020-03-24
 
 ### Fixed
