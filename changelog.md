@@ -4,6 +4,11 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## vNext
+
+### Fixed
+- Support for Lambda payload version 2 in session
+
 ## [3.8.1] 2020-03-24
 
 ### Fixed

@@ -32,8 +32,14 @@ function read(req, callback) {
       }
     })
   }
-  let hasCookie = req.headers && (req.headers.Cookie || req.headers.cookie)
-  let jar = cookie.parse(hasCookie? (req.headers.Cookie || req.headers.cookie) : '')
+  // TODO: uppercase 'Cookie' is not the header name on AWS Lambda; it's
+  // lowercase 'cookie' on lambda...
+  let rawCookie = req.headers && (req.headers.Cookie || req.headers.cookie)
+  // Lambda payload version 2 puts the cookies in an array on the request
+  if (!rawCookie && req.cookies) {
+    rawCookie = req.cookies.join(';')
+  }
+  let jar = cookie.parse(rawCookie || '')
   let token = jwe.parse(jar._idx)
   callback(null, token.valid? token.payload : {})
   return promise
