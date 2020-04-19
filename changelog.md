@@ -4,12 +4,9 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## vNext
-
 ### Fixed
-- Support for Lambda payload version 2 in session
 
-## [3.8.1] 2020-03-24
+## [3.8.1 - 3.8.2] 2020-03-24 - 2020-04-19
 
 ### Fixed
 
@@ -17,6 +14,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
   - (Back in the day it used to default to sending `\n` because reasons.)
 - Fixed and improved events.subscribe fallback object (handy for local testing)
 - Fixed local predicate for `arc.tables` to ensure `ARC_LOCAL` can speak to live AWS infra
+- Support for Lambda payload version 2 in session (for API Gateway HTTP APIs)
 
 ---
 
