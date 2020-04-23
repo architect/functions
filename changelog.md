@@ -4,12 +4,19 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-
-## [3.8.2] 2020-04-16
+## [3.8.3] 2020-04-16
 
 ### Fixed
 
-- Fix `arc.tables._name` calls, ht @filmaj
+- Fix `arc.tables._name` calls, thanks @filmaj!
+
+---
+
+## [3.8.2] 2020-04-19
+
+### Fixed
+
+- Support for Lambda payload version 2 in session (for API Gateway HTTP APIs)
 
 ---
 
