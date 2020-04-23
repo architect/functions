@@ -4,11 +4,12 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.8.3] 2020-04-16
+## [3.8.3 - 3.8.4] 2020-04-16
 
 ### Fixed
 
-- Fix `arc.tables._name` calls, thanks @filmaj!
+- Fixed `arc.http.helpers.url` to now respect `ARC_LOCAL` flag, thanks @filmaj!
+- Fixed `arc.tables._name` calls, thanks @filmaj!
 
 ---
 
