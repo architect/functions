@@ -10,7 +10,7 @@
 module.exports = function url(url) {
   let staging = process.env.NODE_ENV === 'staging'
   let production = process.env.NODE_ENV === 'production'
-  if (staging || production)
+  if (!process.env.ARC_LOCAL && (staging || production))
     return `/${process.env.NODE_ENV}${url}`
   return url // fallthru for NODE_ENV=testing
 }
