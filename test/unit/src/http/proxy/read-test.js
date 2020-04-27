@@ -10,13 +10,13 @@ let fileContents = 'this is just some file contents\n'
 
 // Response generator
 let response
-function createResponse(ct, fc, ...args) {
+function createResponse(ct, fc, args) {
   response = {
     ContentType: ct || ContentType,
     ETag,
     Body: Buffer.from(fc || fileContents),
-    ...args
   }
+  if (args) Object.assign(response, args)
 }
 
 let options
@@ -141,6 +141,20 @@ test('S3 returns file; response is normalized & (maybe) transformed', async t =>
   t.plan(5)
   let result = await read(basicRead)
   t.equal(result.headers['Content-Type'], ContentType, 'Returns correct content type')
+  t.equal(result.headers['ETag'], ETag, 'Returns correct ETag value')
+  t.notOk(result.headers['Cache-Control'].includes('no-cache'), 'Non HTML/JSON file is not anti-cached')
+  t.equal(Buffer.from(result.body, 'base64').toString(), fileContents, 'Returns correct body value')
+  t.ok(result.isBase64Encoded, 'Result is base64 encoded')
+})
+
+test('S3 files with ContentEncoding property pass through to response headers', async t => {
+  t.plan(6)
+  reset()
+  let ContentEncoding = 'gzip'
+  createResponse(null, null, { ContentEncoding })
+  let result = await read(basicRead)
+  t.equal(result.headers['Content-Type'], ContentType, 'Returns correct content type')
+  t.equal(result.headers['Content-Encoding'], ContentEncoding, 'Returns correct content encoding')
   t.equal(result.headers['ETag'], ETag, 'Returns correct ETag value')
   t.notOk(result.headers['Cache-Control'].includes('no-cache'), 'Non HTML/JSON file is not anti-cached')
   t.equal(Buffer.from(result.body, 'base64').toString(), fileContents, 'Returns correct body value')

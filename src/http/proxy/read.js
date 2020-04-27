@@ -84,6 +84,7 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
 
     // No ETag found, return the blob
     if (!matchedETag) {
+      let contentEncoding = result.ContentEncoding
       let isBinary = binaryTypes.some(type => result.ContentType.includes(type) || contentType.includes(type))
 
       // Transform first to allow for any proxy plugin mutations
@@ -115,6 +116,8 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
 
       // Add ETag
       response.headers.ETag = result.ETag
+      // If encoded, add that too
+      if (contentEncoding) response.headers['Content-Encoding'] = contentEncoding
     }
 
     if (!response.statusCode)
