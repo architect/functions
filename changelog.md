@@ -4,6 +4,22 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+
+## [3.9.0] 2020-04-27
+
+### Added
+
+- Adds S3 `ContentEncoding` for `arc.http.proxy` / `arc.http.proxy.read`
+  - This means you can now publish and read larger files out of S3 in the compressed format of your choosing!
+
+
+### Changed
+
+- Updated dependencies
+
+
+---
+
 ## [3.8.3 - 3.8.4] 2020-04-16
 
 ### Fixed
