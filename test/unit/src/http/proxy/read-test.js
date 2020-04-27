@@ -7,6 +7,18 @@ let errorState
 let ContentType = 'image/gif'
 let ETag = 'etagvalue'
 let fileContents = 'this is just some file contents\n'
+
+// Response generator
+let response
+function createResponse(ct, fc, ...args) {
+  response = {
+    ContentType: ct || ContentType,
+    ETag,
+    Body: Buffer.from(fc || fileContents),
+    ...args
+  }
+}
+
 let options
 let S3Stub = {
   S3: function ctor() {
@@ -29,11 +41,7 @@ let S3Stub = {
         }
        else return {
           promise: async function () {
-            return {
-              ContentType,
-              ETag,
-              Body: Buffer.from(fileContents)
-            }
+            return response
           }
         }
       }
@@ -77,11 +85,14 @@ let dec = i => Buffer.from(i, 'base64').toString()
 let reset = () => {
   // Make sure options are good!
   options = {}
+  createResponse()
 }
 
 test('Set up env', t => {
-  t.plan(1)
+  t.plan(2)
   t.ok(read, 'Loaded read')
+  reset()
+  t.ok(response, 'Response ready')
 })
 
 test('Route reads to sandbox', async t => {
@@ -162,7 +173,7 @@ test('Fingerprint: filename is passed through / not interpolated for non-capture
 test('Fingerprint: filename is interpolated for captured requests (html, json, etc.)', async t => {
   t.plan(3)
   reset()
-  ContentType = 'text/html'
+  createResponse('text/html')
   let fingerprintedRead = {
     Bucket: 'a-fingerprinted-bucket',
     Key: 'index.html',
@@ -179,8 +190,8 @@ test('Fingerprint: filename is interpolated for captured requests (html, json, e
 test('Fingerprint: template calls are replaced inline on non-captured requests', async t => {
   t.plan(5)
   reset()
-  ContentType = 'text/javascript'
   fileContents = 'this is just some file contents with an image <img src=${STATIC(\'images/this-is-fine.gif\')}>\n and another image <img src=${arc.static(\'images/hold-onto-your-butts.gif\')}> among other things \n'
+  createResponse('text/javascript', fileContents)
   let fingerprintedRead = {
     Bucket: 'a-fingerprinted-bucket',
     Key: 'app-a1c3e5.js',
@@ -197,10 +208,10 @@ test('Fingerprint: template calls are replaced inline on non-captured requests',
 })
 
 test('Fingerprint: template calls are replaced inline on captured requests', async t => {
-  // t.plan(3)
+  t.plan(5)
   reset()
-  ContentType = 'text/html'
   fileContents = 'this is just some file contents with an image <img src=${STATIC(\'images/this-is-fine.gif\')}>\n and another image <img src=${arc.static(\'images/hold-onto-your-butts.gif\')}> among other things \n'
+  createResponse('text/html', fileContents)
   let fingerprintedRead = {
     Bucket: 'a-fingerprinted-bucket',
     Key: 'index.html',
@@ -214,5 +225,4 @@ test('Fingerprint: template calls are replaced inline on captured requests', asy
   t.notEqual(fileContents, result.body, `Contents containing template calls mutated: ${result.body}`)
   t.ok(result.body.includes(staticStub['images/this-is-fine.gif']), `Contents now include fingerprinted asset: ${staticStub['images/this-is-fine.gif']}`)
   t.ok(result.body.includes(staticStub['images/hold-onto-your-butts.gif']), `Contents now include fingerprinted asset: ${staticStub['images/hold-onto-your-butts.gif']}`)
-  t.end()
 })
