@@ -5,7 +5,11 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ---
 
 
-## [3.9.0] 2020-04-27
+## [3.9.0 - 3.9.1] 2020-04-27 - 2020-05-06
+
+### Fixed
+
+- `arc.http.express` POST request could fail if `req.body` was null
 
 ### Added
 
