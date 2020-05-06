@@ -23,7 +23,7 @@ module.exports = function fmt(req) {
     }
   }
 
-  if (isFormURLEncoded) {
+  if (isFormURLEncoded && req.body) {
     let data = new Buffer.from(req.body, 'base64').toString()
     fix.body = qs.parse(data)
   }
