@@ -4,78 +4,96 @@ let errors = require('../errors')
 /**
  * arc.proxy.public
  *
+ * Primary interface for reading static assets out of S3
+ *
  * @param config - object, for configuration
- * @param config.spa - boolean, forces index.html no matter the folder depth
- * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
  * @param config.alias - object, map of root rel urls to map to fully qualified root rel urls
  * @param config.bucket - object, {staging, production} override the s3 bucket names
  * @param config.bucket.staging - object, {staging, production} override the s3 bucket names
  * @param config.bucket.production - object, {staging, production} override the s3 bucket names
  * @param config.bucket.folder - string, bucket folder
  * @param config.cacheControl - string, set a custom Cache-Control max-age header value
+ * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
+ * @param config.spa - boolean, forces index.html no matter the folder depth
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
 module.exports = function proxyPublic(config={}) {
   return async function proxy(req) {
 
-    let isProduction = process.env.NODE_ENV === 'production'
+    let { ARC_STATIC_BUCKET, ARC_STATIC_FOLDER, ARC_STATIC_SPA, NODE_ENV } = process.env
+
+    let isProduction = NODE_ENV === 'production'
+    let path = req.path || req.rawPath
+    let isFolder = path.split('/').pop().indexOf('.') === -1
+    let Key // Assigned below
+
+    /**
+     * Bucket config
+     */
     let configBucket = config.bucket
     let bucketSetting = isProduction
       ? configBucket && configBucket['production']
       : configBucket && configBucket['staging']
     // Ok, all that out of the way, let's set the actual bucket, eh?
-    let Bucket = process.env.ARC_STATIC_BUCKET || bucketSetting
+    let Bucket = ARC_STATIC_BUCKET || bucketSetting
     if (!Bucket) {
       return errors.proxyConfig
     }
-    let Key // resolved below
 
-    // Allow unsetting of SPA mode with ARC_STATIC_SPA
-    let spa = process.env.ARC_STATIC_SPA === 'false'
+    /**
+     * Configure SPA + set up the file to be requested
+     */
+    let spa = ARC_STATIC_SPA === 'false'
       ? false
       : config && config.spa
-
-    let path = req.path || req.rawPath
-
     if (!spa) config.spa = false
     if (spa) {
-      // if spa force index.html
-      let isFolder = path.split('/').pop().indexOf('.') === -1
-      Key = isFolder? 'index.html' : path.substring(1)
+      // If SPA: force index.html
+      Key = isFolder ? 'index.html' : path.substring(1)
     }
     else {
-      // return index.html for root…otherwise passthru the path minus leading slash
+      // Return index.html for root, otherwise pass the path
       let last = path.split('/').filter(Boolean).pop()
-      let isFile = last? last.includes('.') : false
+      let isFile = last ? last.includes('.') : false
       let isRoot = path === '/'
 
-      Key = isRoot? 'index.html' : path.substring(1)
+      Key = isRoot? 'index.html' : path.substring(1) // Always remove leading slash
 
-      // append default index.html to requests to folder paths
+      // Append default index.html to requests to folder paths
       if (isRoot === false && isFile === false) {
         Key = `${Key.replace(/\/$/, '')}/index.html`
       }
     }
 
-    // allow alias override of Key
+    /**
+     * Alias
+     *   Allows a Key to be manually overridden
+     */
     let aliasing = config && config.alias && config.alias.hasOwnProperty(path)
     if (aliasing) {
-      Key = config.alias[path].substring(1) // remove leading /
+      Key = config.alias[path].substring(1) // Always remove leading slash
     }
 
-    // allow bucket folder prefix
-    let folder = process.env.ARC_STATIC_FOLDER || configBucket && configBucket.folder
+    /**
+     * Folder prefix
+     *   Enables a bucket folder at root to be specified
+     */
+    let folder = ARC_STATIC_FOLDER || configBucket && configBucket.folder
     if (folder) {
       Key = `${folder}/${Key}`
     }
 
-    // strip staging/ and production/ from req urls
-    if (Key.startsWith('staging/') || Key.startsWith('production/') || Key.startsWith('_static/')) {
+    /**
+     * Strip `staging/` and `production/` from HTTP API req urls
+     */
+    if (Key.startsWith('staging/') ||
+        Key.startsWith('production/') ||
+        Key.startsWith('_static/')) {
       Key = Key.replace('staging/', '').replace('production/', '').replace('_static/', '')
     }
 
-    // normalize if-none-match header to lower case; it differs between environments
+    // Normalize if-none-match header to lower case; it differs between environments
     let find = k => k.toLowerCase() === 'if-none-match'
     let IfNoneMatch = req.headers && req.headers[Object.keys(req.headers).find(find)]
 
