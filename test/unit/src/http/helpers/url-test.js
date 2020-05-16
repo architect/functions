@@ -1,5 +1,6 @@
 let test = require('tape')
 let url = require('../../../../../src/http/helpers/url')
+let env = process.env.NODE_ENV
 
 function reset () {
   delete process.env.NODE_ENV
@@ -47,5 +48,6 @@ test('Production env returns production-prefixed URL', t => {
 
 test('Reset', t => {
   reset()
+  process.env.NODE_ENV = env
   t.end()
 })
