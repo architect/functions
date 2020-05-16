@@ -49,10 +49,6 @@ let S3Stub = {
   },
   '@noCallThru': true
 }
-let sandboxStub = params => {
-  params.sandbox = true // Super explicit ensuring return hit sandbox
-  return params
-}
 let staticStub = {
   'images/this-is-fine.gif': 'images/this-is-fine-a1c3e5.gif',
   'images/hold-onto-your-butts.gif': 'images/hold-onto-your-butts-b2d4f6.gif',
@@ -60,14 +56,12 @@ let staticStub = {
   'index.html': 'index-b2d4f6.html',
   '@noCallThru': true
 }
-let read = proxyquire('../../../../../src/http/proxy/s3', {
-  '../local': sandboxStub,
+let read = proxyquire('../../../../../../src/http/proxy/s3', {
   'fs': {existsSync: () => false},
   'aws-sdk': S3Stub,
 })
 // Could maybe do this all in a single proxyquire, but having static.json appear in separate call adds extra insurance against any inadvertent static asset manifest requiring and default key fallback
-let readStatic = proxyquire('../../../../../src/http/proxy/s3', {
-  '../local': sandboxStub,
+let readStatic = proxyquire('../../../../../../src/http/proxy/s3', {
   'fs': {
     existsSync: () => true,
     readFileSync: () => JSON.stringify(staticStub)
@@ -93,21 +87,6 @@ test('Set up env', t => {
   t.ok(read, 'Loaded read')
   reset()
   t.ok(response, 'Response ready')
-})
-
-test('Route reads to sandbox', async t => {
-  t.plan(4)
-  process.env.NODE_ENV = 'testing'
-  let result = await read(basicRead)
-  t.notOk(process.env.ARC_LOCAL, 'ARC_LOCAL is not set')
-  t.ok(result.sandbox, `NODE_ENV = 'testing' runs reads from sandbox`)
-  delete process.env.NODE_ENV
-
-  process.env.ARC_LOCAL = true
-  t.notOk(process.env.NODE_ENV, 'NODE_ENV is not set')
-  result = await read(basicRead)
-  t.ok(result.sandbox, `ARC_LOCAL runs reads from sandbox`)
-  delete process.env.ARC_LOCAL
 })
 
 test('S3 returns NotModified (i.e. respond with 304)', async t => {

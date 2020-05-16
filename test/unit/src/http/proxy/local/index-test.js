@@ -1,5 +1,5 @@
 let test = require('tape')
-let sandbox = require('../../../../../src/http/proxy/local')
+let sandbox = require('../../../../../../src/http/proxy/local')
 let fs = require('fs')
 let join = require('path').join
 

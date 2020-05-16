@@ -1,5 +1,5 @@
 let test = require('tape')
-let normalize = require('../../../../../src/http/proxy/utils/response')
+let normalize = require('../../../../../../src/http/proxy/format/response')
 
 let ContentType = 'image/gif'
 let ETag = 'etagvalue'

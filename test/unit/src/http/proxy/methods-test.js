@@ -20,20 +20,47 @@ test('Primary proxy method', t => {
   t.equal(proxyPublic.name, 'proxyPublic', 'arc.proxy.public is the proxyPublic function')
 })
 
-test('Secondary proxy.read method', t => {
+test('Secondary proxy.read method (local)', t => {
   t.plan(6)
+  let env = process.env.NODE_ENV
+  process.env.NODE_ENV = 'testing'
+
   // Current
   let httpProxyRead = arc.http.proxy.read
   t.equal(typeof httpProxyRead, 'function', 'arc.http.proxy.read is a function')
-  t.equal(httpProxyRead.name, 'read', 'arc.http.proxy.read is the read function')
+  t.equal(httpProxyRead.name, 'readLocal', 'arc.http.proxy.read is the readLocal function')
 
   // Legacy
   let httpProxyPublicRead = arc.http.proxy.public.read
   t.equal(typeof httpProxyPublicRead, 'function', 'arc.http.proxy.public.read is a function')
-  t.equal(httpProxyPublicRead.name, 'read', 'arc.http.proxy.public.read is the read function')
+  t.equal(httpProxyPublicRead.name, 'readLocal', 'arc.http.proxy.public.read is the readLocal function')
 
   // Like, really legacy
   let proxyPublicRead = arc.proxy.public.read
   t.equal(typeof proxyPublicRead, 'function', 'arc.proxy.public.read is a function')
-  t.equal(proxyPublicRead.name, 'read', 'arc.proxy.public.read is the read function')
+  t.equal(proxyPublicRead.name, 'readLocal', 'arc.proxy.public.read is the readLocal function')
+
+  process.env.NODE_ENV = env
+})
+
+test('Secondary proxy.read method (AWS)', t => {
+  t.plan(2)
+  // Just check to make sure switching to S3 works
+  // Legacy signatures will by default work if above tests pass
+
+  let env = process.env.NODE_ENV
+  process.env.NODE_ENV = 'staging'
+
+  let read = '../../../../../src/http/proxy/read'
+  delete require.cache[require.resolve(read)]
+  // eslint-disable-next-line
+  let httpProxyRead = require(read)
+
+  t.equal(typeof httpProxyRead, 'function', 'arc.http.proxy.read is a function')
+  t.equal(httpProxyRead.name, 'readS3', 'arc.http.proxy.read is the readS3 function')
+
+  process.env.NODE_ENV = env
+  delete require.cache[require.resolve(read)]
+  // eslint-disable-next-line
+  require(read)
 })
