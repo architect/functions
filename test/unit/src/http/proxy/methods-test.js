@@ -7,17 +7,17 @@ test('Primary proxy method', t => {
   // Current
   let httpProxy = arc.http.proxy
   t.equal(typeof httpProxy, 'function', 'arc.http.proxy is a function')
-  t.equal(httpProxy.name, 'proxyPublic', 'arc.http.proxy is the proxyPublic function')
+  t.equal(httpProxy.name, 'proxy', 'arc.http.proxy is the proxy function')
 
   // Legacy
   let httpProxyPublic = arc.http.proxy.public
   t.equal(typeof httpProxyPublic, 'function', 'arc.http.proxy.public is a function')
-  t.equal(httpProxyPublic.name, 'proxyPublic', 'arc.http.proxy.public is the proxyPublic function')
+  t.equal(httpProxyPublic.name, 'proxy', 'arc.http.proxy.public is the proxy function')
 
   // Like, really legacy
   let proxyPublic = arc.proxy.public
   t.equal(typeof proxyPublic, 'function', 'arc.proxy.public is a function')
-  t.equal(proxyPublic.name, 'proxyPublic', 'arc.proxy.public is the proxyPublic function')
+  t.equal(proxyPublic.name, 'proxy', 'arc.proxy.public is the proxy function')
 })
 
 test('Secondary proxy.read method (local)', t => {

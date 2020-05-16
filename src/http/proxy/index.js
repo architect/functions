@@ -2,7 +2,7 @@ let read = require('./read')
 let errors = require('../errors')
 
 /**
- * arc.proxy.public
+ * arc.http.proxy
  *
  * Primary interface for reading static assets out of S3
  *
@@ -18,8 +18,8 @@ let errors = require('../errors')
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
-module.exports = function proxyPublic (config={}) {
-  return async function proxy (req) {
+function proxy (config={}) {
+  return async function httpProxy (req) {
 
     let { ARC_STATIC_BUCKET, ARC_STATIC_FOLDER, ARC_STATIC_SPA, NODE_ENV } = process.env
 
@@ -100,6 +100,11 @@ module.exports = function proxyPublic (config={}) {
     // Ensure response shape is correct for proxy SPA responses
     let isProxy = req.resource === '/{proxy+}' || !!req.rawPath
 
-    return await read({Key, Bucket, IfNoneMatch, isProxy, config})
+    return await read({ Key, Bucket, IfNoneMatch, isFolder, isProxy, config })
   }
+}
+
+module.exports = {
+  proxy,  // default
+  read    // read a specific file
 }
