@@ -60,14 +60,14 @@ let staticStub = {
   'index.html': 'index-b2d4f6.html',
   '@noCallThru': true
 }
-let read = proxyquire('../../../../../src/http/proxy/read', {
-  './sandbox': sandboxStub,
+let read = proxyquire('../../../../../src/http/proxy/s3', {
+  '../local': sandboxStub,
   'fs': {existsSync: () => false},
   'aws-sdk': S3Stub,
 })
 // Could maybe do this all in a single proxyquire, but having static.json appear in separate call adds extra insurance against any inadvertent static asset manifest requiring and default key fallback
-let readStatic = proxyquire('../../../../../src/http/proxy/read', {
-  './sandbox': sandboxStub,
+let readStatic = proxyquire('../../../../../src/http/proxy/s3', {
+  '../local': sandboxStub,
   'fs': {
     existsSync: () => true,
     readFileSync: () => JSON.stringify(staticStub)

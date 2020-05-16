@@ -1,15 +1,15 @@
-let binaryTypes = require('../helpers/binary-types')
-let {httpError} = require('../errors')
-let templatizeResponse = require('./templatize')
-let normalizeResponse = require('./response')
+let binaryTypes = require('../../helpers/binary-types')
+let { httpError } = require('../../errors')
+let templatizeResponse = require('../format/templatize')
+let normalizeResponse = require('../format/response')
 let mime = require('mime-types')
 let path = require('path')
 let fs = require('fs')
 let util = require('util')
 let readFile = util.promisify(fs.readFile)
-let transform = require('./transform')
+let transform = require('../format/transform')
 
-module.exports = async function sandbox({Key, isProxy, config, assets}) {
+module.exports = async function readLocal ({Key, isProxy, config, assets}) {
   // additive change... after 6.x we can rely on this env var in sandbox
   let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || path.join(process.cwd(), '..', '..', '..', 'public')
 
