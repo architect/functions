@@ -1,9 +1,9 @@
 let test = require('tape')
 let proxyquire = require('proxyquire')
 let readStub = params => params
-let proxyPublic = proxyquire('../../../../../src/http/proxy/public', {
+let httpProxy = proxyquire('../../../../../src/http/proxy', {
   './read': readStub
-})
+}).proxy
 let reqs = require('../http-req-fixtures')
 let req = reqs.arc6.getIndex
 let proxyReq = reqs.arc6.getProxyPlus
@@ -19,12 +19,12 @@ let basicBucketConfig = {
 
 test('Set up env', t => {
   t.plan(1)
-  t.ok(proxyPublic, 'Loaded public')
+  t.ok(httpProxy, 'Loaded arc.http.proxy')
 })
 
 test('Config: bucket', async t => {
   t.plan(5)
-  let proxy = await proxyPublic()
+  let proxy = await httpProxy()
 
   // Test no bucket config
   let result = await proxy(req)
@@ -37,7 +37,7 @@ test('Config: bucket', async t => {
   t.equal(result.Bucket, productionBucket, 'ARC_STATIC_BUCKET sets bucket')
 
   // Test ARC_STATIC_BUCKET vs config
-  proxy = await proxyPublic({
+  proxy = await httpProxy({
     bucket:{
       production: stagingBucket
     }
@@ -47,7 +47,7 @@ test('Config: bucket', async t => {
   delete process.env.ARC_STATIC_BUCKET
 
   // Test config.bucket
-  proxy = await proxyPublic({
+  proxy = await httpProxy({
     bucket:{
       staging: stagingBucket
     }
@@ -60,7 +60,7 @@ test('Config: SPA', async t => {
   t.plan(6)
 
   // Test spa:true to get /
-  let proxy = await proxyPublic({
+  let proxy = await httpProxy({
     bucket:{
       staging: stagingBucket
     },
@@ -70,7 +70,7 @@ test('Config: SPA', async t => {
   t.equal(result.Key, 'index.html', 'spa:true calls root index.html requesting /')
 
   // Test spa: true to get /{proxy+}
-  proxy = await proxyPublic({
+  proxy = await httpProxy({
     bucket:{
       staging: stagingBucket
     },
@@ -81,7 +81,7 @@ test('Config: SPA', async t => {
 
   // Test spa:false
   process.env.ARC_STATIC_SPA = 'false'
-  proxy = await proxyPublic({
+  proxy = await httpProxy({
     bucket:{
       staging: stagingBucket
     },
@@ -107,7 +107,7 @@ test('Config: SPA', async t => {
 /*
 // TODO Test config.alias? (undocumented, may retire)
 test('Config: alias', t => {
-  proxy = await proxyPublic({
+  proxy = await httpProxy({
     alias: req.path
   })
   t.end()
@@ -119,7 +119,7 @@ test('Config: folder', async t => {
 
   // Test ARC_STATIC_FOLDER
   process.env.ARC_STATIC_FOLDER = folder
-  let proxy = await proxyPublic({
+  let proxy = await httpProxy({
     bucket:{
       staging: stagingBucket
     }
@@ -128,7 +128,7 @@ test('Config: folder', async t => {
   t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_FOLDER sets folder')
 
   // Test ARC_STATIC_FOLDER vs config
-  proxy = await proxyPublic({
+  proxy = await httpProxy({
     bucket:{
       staging: stagingBucket,
       folder: 'rando'
@@ -139,7 +139,7 @@ test('Config: folder', async t => {
   delete process.env.ARC_STATIC_FOLDER
 
   // Test folder
-  proxy = await proxyPublic({
+  proxy = await httpProxy({
     bucket:{
       staging: stagingBucket,
       folder
@@ -153,7 +153,7 @@ test('Strip API Gateway warts', async t => {
   t.plan(2)
   let apigReq = JSON.parse(JSON.stringify(req))
   apigReq.path = '/staging/foo'
-  let proxy = await proxyPublic(basicBucketConfig)
+  let proxy = await httpProxy(basicBucketConfig)
 
   let result = await proxy(apigReq)
   t.equal(result.Key, 'foo/index.html', 'Leading staging/ is stripped from keys')
@@ -169,7 +169,7 @@ test('IfNoneMatch param', async t => {
   t.plan(1)
   let ifNoneMatchReq = JSON.parse(JSON.stringify(req))
   ifNoneMatchReq.headers['If-None-Match'] = 'foo'
-  let proxy = await proxyPublic(basicBucketConfig)
+  let proxy = await httpProxy(basicBucketConfig)
   let result = await proxy(ifNoneMatchReq)
   t.equal(result.IfNoneMatch, 'foo', 'IfNoneMatch param correctly set')
 })
@@ -177,14 +177,14 @@ test('IfNoneMatch param', async t => {
 // isProxy
 test('isProxy param', async t => {
   t.plan(1)
-  let proxy = await proxyPublic(basicBucketConfig)
+  let proxy = await httpProxy(basicBucketConfig)
   let result = await proxy(proxyReq)
   t.ok(result.isProxy, 'isProxy param correctly set')
 })
 
 test('Read shape', async t => {
   t.plan(5)
-  let proxy = await proxyPublic(basicBucketConfig)
+  let proxy = await httpProxy(basicBucketConfig)
   let result = await proxy(req)
   let checkParam = param => result.hasOwnProperty(param)
   t.ok(checkParam('Key'), 'Read params include Key')
