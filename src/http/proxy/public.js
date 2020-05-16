@@ -18,8 +18,8 @@ let errors = require('../errors')
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
-module.exports = function proxyPublic(config={}) {
-  return async function proxy(req) {
+module.exports = function proxyPublic (config={}) {
+  return async function proxy (req) {
 
     let { ARC_STATIC_BUCKET, ARC_STATIC_FOLDER, ARC_STATIC_SPA, NODE_ENV } = process.env
 

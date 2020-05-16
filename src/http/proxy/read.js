@@ -10,24 +10,10 @@ let aws = require('aws-sdk')
 let transform = require('./transform')
 let sandbox = require('./sandbox')
 
-// Try to hit disk to load the static manifest as little as possible
-let assets
-let staticManifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
-if (assets === false) {
-  null /*noop*/
-}
-else if (fs.existsSync(staticManifest) && !assets) {
-  let file = fs.readFileSync(staticManifest).toString()
-  assets = JSON.parse(file)
-}
-else {
-  assets = false
-}
-
 /**
  * arc.proxy.read
  *
- * Reads a file from s3 resolving an HTTP Lambda friendly payload
+ * Reads a file from S3, resolving an HTTP Lambda friendly payload
  *
  * @param {Object} params
  * @param {String} params.Key
@@ -36,18 +22,21 @@ else {
  * @param {Object} params.config
  * @returns {Object} {statusCode, headers, body}
  */
-module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}) {
+async function read (params) {
 
-  // early exit if we're running in the sandbox
-  let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
-  if (local)
-    return await sandbox({Key, isProxy, config, assets})
-
+  let { Bucket, Key, IfNoneMatch, isProxy, config } = params
+  let { ARC_LOCAL, ARC_STATIC_FOLDER, NODE_ENV } = process.env
   let headers = {}
   let response = {}
 
+  // Early exit if we're running in the sandbox
+  let local = NODE_ENV === 'testing' || ARC_LOCAL
+  if (local) {
+    return await sandbox({Key, isProxy, config, assets})
+  }
+
   try {
-    // If client sends if-none-match, use it in S3 getObject params
+    // If client sends If-None-Match, use it in S3 getObject params
     let matchedETag = false
     let s3 = new aws.S3
 
@@ -55,16 +44,17 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
     let contentType = mime.contentType(path.extname(Key))
     let capture = [
       'text/html',
-      'application/json',
-      // markdown?
+      'application/json'
     ]
     let isCaptured = capture.some(type => contentType.includes(type))
-    if (assets && assets[Key] && isCaptured)
+    if (assets && assets[Key] && isCaptured) {
       Key = assets[Key]
+    }
 
-    let options = {Bucket, Key}
-    if (IfNoneMatch)
+    let options = { Bucket, Key }
+    if (IfNoneMatch) {
       options.IfNoneMatch = IfNoneMatch
+    }
 
     let result = await s3.getObject(options).promise().catch(e => {
       // ETag matches (getObject error code of NotModified), so don't transit the whole file
@@ -77,7 +67,7 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
         }
       }
       else {
-        // important! rethrow the error do not swallow it
+        // Important: do not swallow this error otherwise!
         throw e
       }
     })
@@ -120,15 +110,17 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
       if (contentEncoding) response.headers['Content-Encoding'] = contentEncoding
     }
 
-    if (!response.statusCode)
+    if (!response.statusCode) {
       response.statusCode = 200
+    }
+
     return response
   }
   catch(e) {
     let notFound = e.name === 'NoSuchKey'
     if (notFound) {
       try {
-        let folder = process.env.ARC_STATIC_FOLDER || config.bucket && config.bucket.folder? config.bucket.folder : false
+        let folder = ARC_STATIC_FOLDER || config.bucket && config.bucket.folder? config.bucket.folder : false
         let notFound = folder? `${folder}/404.html` : '404.html'
         let s3 = new aws.S3
         let result = await s3.getObject({ Bucket, Key: notFound }).promise()
@@ -155,3 +147,21 @@ module.exports = async function read({Bucket, Key, IfNoneMatch, isProxy, config}
     }
   }
 }
+
+/**
+ * Fingerprinting manifest
+ *   Load the manifest, try to hit the disk as infrequently as possible across invocations
+ */
+let assets
+let staticManifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
+if (assets === false) {
+  null /*noop*/
+}
+else if (fs.existsSync(staticManifest) && !assets) {
+  assets = JSON.parse(fs.readFileSync(staticManifest))
+}
+else {
+  assets = false
+}
+
+module.exports = read
