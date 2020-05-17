@@ -49,6 +49,14 @@ let imgName = 'images/this-is-fine.gif'
 let imgContents = Buffer.from('Just imagine some image contents here\n')
 let imgContentType = 'image/gif'
 let imgETag = hash(imgContents)
+let binary = [
+  137, 80, 78, 71,  13,  10,  26,  10,   0,  0, 0, 13,
+   73, 72, 68, 82,   0,   0,   0,   1,   0,  0, 0,  1,
+    8,  4,  0,  0,   0, 181,  28,  12,   2,  0, 0,  0,
+   11, 73, 68, 65,  84, 120, 218,  99, 100, 96, 0,  0,
+    0,  6,  0,  2,  48, 129, 208,  47,   0,  0, 0,  0,
+   73, 69, 78, 68, 174,  66,  96, 130
+]
 
 let mdName = 'some-file.md'
 let mdContents = 'This is a file in public/\nCalling to an ![image](${STATIC(\'images/this-is-fine.gif\')})\n'
@@ -65,7 +73,7 @@ test('Set up env', t => {
   t.ok(readLocal, 'Loaded readLocal')
 })
 
-test('Local proxy reader returns formatted response (200)', async t => {
+test('Local proxy reader returns formatted response from text payload (200)', async t => {
   setup()
   t.plan(6)
   // TODO test without path_to_static (legacy mode?)
@@ -80,6 +88,20 @@ test('Local proxy reader returns formatted response (200)', async t => {
   t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
   t.equal(result.body, b64(imgContents), 'Returns correct body')
   t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
+
+  reset()
+})
+
+test('Local proxy reader returns formatted response from binary payload (200)', async t => {
+  setup()
+  t.plan(2)
+
+  mockfs({
+    [join(publicPath, imgName)]: Buffer.from(binary)
+  })
+  let result = await readLocal(read())
+  t.equal(result.headers['ETag'], hash(Buffer.from(binary)), 'Returns correct ETag')
+  t.equal(result.body, b64(binary), 'Returns correct body')
 
   reset()
 })
