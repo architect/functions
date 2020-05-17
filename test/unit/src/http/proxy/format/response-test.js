@@ -1,5 +1,5 @@
 let test = require('tape')
-let normalize = require('../../../../../src/http/proxy/response')
+let normalize = require('../../../../../../src/http/proxy/format/response')
 
 let ContentType = 'image/gif'
 let ETag = 'etagvalue'
@@ -65,7 +65,7 @@ test('Cache-Control setting', t => {
   t.plan(5)
   let _basicResponse = JSON.parse(JSON.stringify(basicResponse))
   let result = normalize(_basicResponse)
-  t.equal(result.headers['Cache-Control'], 'max-age=86400', 'No anti-cache or cache setting set, defaults to 1 day')
+  t.equal(result.headers['Cache-Control'], 'public, max-age=0, must-revalidate', 'No anti-cache or cache setting set, defaults to 1 day')
 
   // Test anti-cache
   // JSON

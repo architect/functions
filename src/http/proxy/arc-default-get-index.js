@@ -1,4 +1,3 @@
-const GetIndexDefaultHandler = require('./public')
-
 // Bundler index + defaults
-exports.handler = GetIndexDefaultHandler({spa: true})
+const GetIndexDefaultHandler = require('./index.js')
+exports.handler = GetIndexDefaultHandler({ spa: true })

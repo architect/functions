@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "3.9.3",
+  "version": "3.10.0-RC.0",
   "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
   "homepage": "https://github.com/architect/functions",
   "repository": {
@@ -47,11 +47,11 @@
   "devDependencies": {
     "@architect/sandbox": "^1.9.5",
     "aws-sdk": "^2.617.0",
-    "aws-sdk-mock": "^5.1.0",
     "codecov": "^3.6.5",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "mkdirp": "^1.0.4",
+    "mock-fs": "^4.12.0",
     "nyc": "^15.0.1",
     "path-exists": "^4.0.0",
     "proxyquire": "^2.1.3",

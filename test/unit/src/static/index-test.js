@@ -1,5 +1,6 @@
 let test = require('tape')
 let proxyquire = require('proxyquire')
+let env = process.env.NODE_ENV
 
 let manifestExists = true
 let fs = {
@@ -81,5 +82,6 @@ test('Passing stagePath option adds API Gateway /staging or /production to path'
 
 test('Reset', t => {
   reset()
+  process.env.NODE_ENV = env
   t.end()
 })

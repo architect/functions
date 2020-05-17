@@ -24,14 +24,14 @@ http.helpers = {
   static: _static,
   url
 }
-http.session = {read, write}
+http.session = { read, write }
 http.async = _async
 http.express = express
-http.middleware = _async
-http.proxy = proxy.public
+http.proxy = proxy.proxy
 
 // Legacy methods
-http.proxy.public = proxy.public
+http.proxy.public = proxy.proxy
 http.proxy.read = proxy.read
+http.middleware = _async
 
 module.exports = http

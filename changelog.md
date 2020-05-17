@@ -4,12 +4,48 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.10.0] 2020-05-17
 
-## [3.9.0 - 3.9.1] 2020-04-27 - 2020-05-06
+### Added
+
+- Improved default caching behavior for static assets; fixes #273
+  - Any assets that don't have `cache-control` explicitly set will now default to using `ETag` in order to improve the reliability of cache invalidation
+  - HTML & JSON responses still default to anti-caching headers
+- Added path peeking (aka pretty URLs); fixes #269
+  - URLs delivered via `proxy` no longer require a trailing slash!
+  - Example: to load `/foo/index.html`, you used to have to request `/foo/`
+  - Now, if `/foo` is requested, `proxy` will automatically try peeking into `/foo` to see if it contains `/foo/index.html` – if not, it'll 404 as expected
+- Added ETag support to Sandbox static asset serving
+- Added support for arbitrary static asset config mapping
+  - Pass proxy `config.assets` a `static.json`-like static asset object
+
+
+### Changed
+
+- Internal refactoring: cleaned up old `proxy` code paths
+
+
+### Fixed
+
+- We now ensure CDNs cannot cache `404` responses
+
+---
+
+
+## [3.9.1 - 3.9.3] 2020-05-06 - 2020-05-07
 
 ### Fixed
 
 - `arc.http.express` POST request could fail if `req.body` was null
+
+---
+
+## [3.9.0] 2020-04-27
+
+### Fixed
+
+- `arc.http.express` POST request could fail if `req.body` was null
+
 
 ### Added
 
