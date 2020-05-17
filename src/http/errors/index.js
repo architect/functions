@@ -25,7 +25,10 @@ function httpError ({statusCode=502, title='Unknown error', message=''}) {
     : `${statusCode} error: ${title}`
   return {
     statusCode,
-    headers: {'Content-Type': 'text/html; charset=utf8;'},
+    headers: {
+      'Content-Type': 'text/html; charset=utf8;',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+    },
     body: `
 <!DOCTYPE html>
 <html lang="en">
