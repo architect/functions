@@ -1,5 +1,5 @@
 let test = require('tape')
-let sandbox = require('../../../../../../src/http/proxy/read/_local')
+let readLocal = require('../../../../../../src/http/proxy/read/_local')
 let fs = require('fs')
 let join = require('path').join
 
@@ -17,7 +17,7 @@ let path = join(process.cwd(), 'test', 'mock', 'project', 'public')
 
 test('Set up env', t => {
   t.plan(1)
-  t.ok(sandbox, 'Loaded sandbox')
+  t.ok(readLocal, 'Loaded readLocal')
 })
 
 test('Basic file reads', async t => {
@@ -27,7 +27,7 @@ test('Basic file reads', async t => {
 
   // File not found
   let _basicRead = JSON.parse(JSON.stringify(basicRead))
-  let result = await sandbox(_basicRead)
+  let result = await readLocal(_basicRead)
   t.ok(result.body.includes('NoSuchKey'), 'Nonexistent file produces missing file error')
   t.equal(result.statusCode, 404, 'File not found returns 404')
 
@@ -36,7 +36,7 @@ test('Basic file reads', async t => {
   let filename = 'publicfile.md'
   _basicRead.Key = filename
   let publicfile = fs.readFileSync(join(path, filename)).toString()
-  result = await sandbox(_basicRead)
+  result = await readLocal(_basicRead)
   t.equal(dec(result.body), publicfile, 'File contents match disk')
 })
 
@@ -49,7 +49,7 @@ test('File read with ARC_STATIC_FOLDER set', async t => {
   let filename = 'publicfile.md'
   _basicRead.Key = filename
   let publicfile = fs.readFileSync(join(path, filename)).toString()
-  let result = await sandbox(_basicRead)
+  let result = await readLocal(_basicRead)
   t.equal(dec(result.body), publicfile, 'File contents match disk')
   delete process.env.ARC_STATIC_FOLDER
 
@@ -64,7 +64,7 @@ test('File parsed with local paths when fingerprinting is enabled', async t => {
   _basicRead.Key = filename
   _basicRead.assets = staticStub
   let publicfile = fs.readFileSync(join(path, filename)).toString()
-  let result = await sandbox(_basicRead)
+  let result = await readLocal(_basicRead)
   t.notEqual(dec(result.body), publicfile, `Contents containing template calls mutated: ${dec(result.body)}`)
   t.ok(dec(result.body).includes(img), `Used non-fingerprinted filename in sandbox mode: ${img}`)
   t.notOk(dec(result.body).includes(staticStub[img]), `Did not use fingerprinted filename in sandbox mode: ${staticStub[img]}`)

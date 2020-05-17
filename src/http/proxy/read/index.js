@@ -1,5 +1,5 @@
-let readLocal = require('./local')
-let readS3 = require('./s3')
+let readLocal = require('./_local')
+let readS3 = require('./_s3')
 
 function read () {
   let { ARC_LOCAL, NODE_ENV } = process.env

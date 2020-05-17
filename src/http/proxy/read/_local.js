@@ -1,38 +1,62 @@
+let { existsSync, readFileSync } = require('fs')
+let { extname, join, sep } = require('path')
+let mime = require('mime-types')
+
 let binaryTypes = require('../../helpers/binary-types')
 let { httpError } = require('../../errors')
+let transform = require('../format/transform') // Soon to be deprecated
 let templatizeResponse = require('../format/templatize')
 let normalizeResponse = require('../format/response')
-let mime = require('mime-types')
-let path = require('path')
-let fs = require('fs')
-let util = require('util')
-let readFile = util.promisify(fs.readFile)
-let transform = require('../format/transform')
+let pretty = require('./_pretty')
 
-module.exports = async function readLocal ({Key, isProxy, config, assets}) {
-  // additive change... after 6.x we can rely on this env var in sandbox
-  let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || path.join(process.cwd(), '..', '..', '..', 'public')
+/**
+ * arc.http.proxy.read
+ *
+ * Reads a file from the local filesystem, resolving an HTTP Lambda friendly payload
+ *
+ * @param {Object} params
+ * @param {String} params.Key
+ * @param {String} params.IfNoneMatch
+ * @param {String} params.isFolder
+ * @param {String} params.isProxy
+ * @param {Object} params.config
+ * @returns {Object} {statusCode, headers, body}
+ */
+module.exports = async function readLocal (params) {
+
+  let { ARC_SANDBOX_PATH_TO_STATIC, ARC_STATIC_FOLDER } = process.env
+  let { Key, isProxy, isFolder, config, assets } = params
+
+  // After 6.x we can rely on this env var in sandbox
+  let basePath = ARC_SANDBOX_PATH_TO_STATIC || join(process.cwd(), '..', '..', '..', 'public')
 
   // Double check for assets in case we're running as proxy at root in sandbox
-  let staticManifest = path.join(basePath, 'static.json')
-  if (!assets && fs.existsSync(staticManifest)) {
-    let file = fs.readFileSync(staticManifest).toString()
+  let staticManifest = join(basePath, 'static.json')
+  if (!assets && existsSync(staticManifest)) {
+    let file = readFileSync(staticManifest).toString()
     assets = JSON.parse(file)
   }
 
   // Look up the blob
   // assuming we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
-  let filePath = path.join(basePath, Key)
-  let staticFolder = process.env.ARC_STATIC_FOLDER
-  if (filePath.includes(staticFolder)) filePath = filePath.replace(`${staticFolder}${path.sep}`, '')
+  let filePath = join(basePath, Key)
+  let staticFolder = ARC_STATIC_FOLDER
+  if (filePath.includes(staticFolder)) {
+    filePath = filePath.replace(`${staticFolder}${sep}`, '')
+  }
 
   try {
-    if (!fs.existsSync(filePath))
-      throw ReferenceError(`NoSuchKey: ${filePath} not found`)
+    if (!existsSync(filePath)) {
+      let err = ReferenceError(`NoSuchKey: ${filePath} not found`)
+      err.name = 'NoSuchKey'
+      throw err
+    }
 
-    let body = await readFile(filePath)
-    let type = mime.contentType(path.extname(Key))
+    let body = readFileSync(filePath).toString()
+    let type = mime.contentType(extname(Key))
     let isBinary = binaryTypes.some(t => type.includes(t))
+
+    // TODO impl ETag / ifnonematch
 
     let response = transform({
       Key,
@@ -62,26 +86,18 @@ module.exports = async function readLocal ({Key, isProxy, config, assets}) {
 
     return response
   }
-  catch(e) {
-    // look for public/404.html
-    let headers = {
-      'Content-Type': 'text/html; charset=utf8;',
-      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+  catch (err) {
+    let notFound = err.name === 'NoSuchKey'
+    if (notFound) {
+      return await pretty({ Key: filePath, config, isFolder })
     }
-    let http404 = path.join(basePath, '404.html')
-    let exists = fs.existsSync(http404)
-    if (exists) {
-      let body = await readFile(http404, {encoding: 'utf8'})
-      return {headers, statusCode:404, body}
+    else {
+      let title = err.name
+      let message = `
+        ${err.message}<br>
+        <pre>${err.stack}</pre>
+      `
+      return httpError({ statusCode: 500, title, message })
     }
-    let notFound = e.message.startsWith('NoSuchKey')
-    let statusCode = notFound ? 404 : 500
-    let title = notFound ? 'Not found' : e.name
-    let message = `
-      ${e.message}<br>
-      <pre>${e.stack}</pre>
-    `
-    let body = httpError({statusCode, title, message}).body
-    return {headers, statusCode, body}
   }
 }

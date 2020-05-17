@@ -1,16 +1,18 @@
+let { existsSync, readFileSync } = require('fs')
+let { extname, join } = require('path')
+let mime = require('mime-types')
+
 let binaryTypes = require('../../helpers/binary-types')
 let { httpError } = require('../../errors')
-let fs = require('fs')
-let  {join } = require('path')
+let transform = require('../format/transform') // Soon to be deprecated
 let templatizeResponse = require('../format/templatize')
 let normalizeResponse = require('../format/response')
-let mime = require('mime-types')
-let path = require('path')
+let pretty = require('./_pretty')
+
 let aws = require('aws-sdk')
-let transform = require('../format/transform')
 
 /**
- * arc.proxy.read
+ * arc.http.proxy.read
  *
  * Reads a file from S3, resolving an HTTP Lambda friendly payload
  *
@@ -18,13 +20,14 @@ let transform = require('../format/transform')
  * @param {String} params.Key
  * @param {String} params.Bucket
  * @param {String} params.IfNoneMatch
+ * @param {String} params.isFolder
+ * @param {String} params.isProxy
  * @param {Object} params.config
  * @returns {Object} {statusCode, headers, body}
  */
-async function readS3 (params) {
+module.exports = async function readS3 (params) {
 
-  let { Bucket, Key, IfNoneMatch, isProxy, config } = params
-  let { ARC_STATIC_FOLDER } = process.env
+  let { Bucket, Key, IfNoneMatch, isFolder, isProxy, config } = params
   let headers = {}
   let response = {}
 
@@ -34,7 +37,7 @@ async function readS3 (params) {
     let s3 = new aws.S3
 
     // If the static asset manifest has the key, use that, otherwise fall back to the original Key
-    let contentType = mime.contentType(path.extname(Key))
+    let contentType = mime.contentType(extname(Key))
     let capture = [
       'text/html',
       'application/json'
@@ -109,34 +112,18 @@ async function readS3 (params) {
 
     return response
   }
-  catch(e) {
-    let notFound = e.name === 'NoSuchKey'
+  catch (err) {
+    let notFound = err.name === 'NoSuchKey'
     if (notFound) {
-      try {
-        let folder = ARC_STATIC_FOLDER || config.bucket && config.bucket.folder? config.bucket.folder : false
-        let notFound = folder? `${folder}/404.html` : '404.html'
-        let s3 = new aws.S3
-        let result = await s3.getObject({ Bucket, Key: notFound }).promise()
-        let body = result.Body.toString()
-        return {headers, statusCode: 404, body}
-      }
-      catch(err) {
-        let statusCode = err.name === 'NoSuchKey'? 404 : 500
-        let title = err.name
-        let message = `
-          ${err.message } <pre><b>${ Key }</b></pre><br>
-          <pre>${err.stack}</pre>
-        `
-        return httpError({statusCode, title, message})
-      }
+      return await pretty({ Bucket, Key, config, headers, isFolder })
     }
     else {
-      let title = e.name
+      let title = err.name
       let message = `
-        ${e.message}<br>
-        <pre>${e.stack}</pre>
+        ${err.message}<br>
+        <pre>${err.stack}</pre>
       `
-      return httpError({statusCode: 500, title, message})
+      return httpError({ statusCode: 500, title, message })
     }
   }
 }
@@ -150,11 +137,9 @@ let staticManifest = join(process.cwd(), 'node_modules', '@architect', 'shared',
 if (assets === false) {
   null /*noop*/
 }
-else if (fs.existsSync(staticManifest) && !assets) {
-  assets = JSON.parse(fs.readFileSync(staticManifest))
+else if (existsSync(staticManifest) && !assets) {
+  assets = JSON.parse(readFileSync(staticManifest))
 }
 else {
   assets = false
 }
-
-module.exports = readS3

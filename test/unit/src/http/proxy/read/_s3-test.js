@@ -49,6 +49,11 @@ let S3Stub = {
   },
   '@noCallThru': true
 }
+
+async function prettyStub () {
+  return 'pretty'
+}
+
 let staticStub = {
   'images/this-is-fine.gif': 'images/this-is-fine-a1c3e5.gif',
   'images/hold-onto-your-butts.gif': 'images/hold-onto-your-butts-b2d4f6.gif',
@@ -56,12 +61,13 @@ let staticStub = {
   'index.html': 'index-b2d4f6.html',
   '@noCallThru': true
 }
-let read = proxyquire('../../../../../../src/http/proxy/s3', {
+let readS3 = proxyquire('../../../../../../src/http/proxy/read/_s3', {
   'fs': {existsSync: () => false},
   'aws-sdk': S3Stub,
+  './_pretty': prettyStub
 })
 // Could maybe do this all in a single proxyquire, but having static.json appear in separate call adds extra insurance against any inadvertent static asset manifest requiring and default key fallback
-let readStatic = proxyquire('../../../../../../src/http/proxy/s3', {
+let readStatic = proxyquire('../../../../../../src/http/proxy/read/_s3', {
   'fs': {
     existsSync: () => true,
     readFileSync: () => JSON.stringify(staticStub)
@@ -84,7 +90,7 @@ let reset = () => {
 
 test('Set up env', t => {
   t.plan(2)
-  t.ok(read, 'Loaded read')
+  t.ok(readS3, 'Loaded read')
   reset()
   t.ok(response, 'Response ready')
 })
@@ -92,33 +98,32 @@ test('Set up env', t => {
 test('S3 returns NotModified (i.e. respond with 304)', async t => {
   t.plan(2)
   enable304 = true
-  let result = await read(basicRead)
+  let result = await readS3(basicRead)
   t.equal(result.statusCode, 304, 'Returns statusCode of 304 if ETag matches')
   t.equal(result.headers['ETag'], basicRead.IfNoneMatch, 'Etag matches request')
   enable304 = false
 })
 
-test('Throw 500 error on S3 error', async t => {
+test('Return 500 error on S3 error', async t => {
   t.plan(2)
   errorState = 'this is a random error state'
-  let result = await read(basicRead)
+  let result = await readS3(basicRead)
   t.equal(result.statusCode, 500, 'Returns statusCode of 500 if S3 errors')
   t.ok(result.body.includes(errorState), 'Error message included in response')
   errorState = false
 })
 
-test('Throw 404 error on missing key (aka file not found)', async t => {
-  t.plan(2)
+test('Handed off to pretty URLifier on 404', async t => {
+  t.plan(1)
   errorState = 'NoSuchKey'
-  let result = await read(basicRead)
-  t.equal(result.statusCode, 404, 'Returns statusCode of 404 if S3 file is not found')
-  t.ok(result.body.includes('NoSuchKey'), 'Error message included in response')
+  let result = await readS3(basicRead)
+  t.equal(result, 'pretty', 'Returning from pretty')
   errorState = false
 })
 
 test('S3 returns file; response is normalized & (maybe) transformed', async t => {
   t.plan(5)
-  let result = await read(basicRead)
+  let result = await readS3(basicRead)
   t.equal(result.headers['Content-Type'], ContentType, 'Returns correct content type')
   t.equal(result.headers['ETag'], ETag, 'Returns correct ETag value')
   t.notOk(result.headers['Cache-Control'].includes('no-cache'), 'Non HTML/JSON file is not anti-cached')
@@ -131,7 +136,7 @@ test('S3 files with ContentEncoding property pass through to response headers', 
   reset()
   let ContentEncoding = 'gzip'
   createResponse(null, null, { ContentEncoding })
-  let result = await read(basicRead)
+  let result = await readS3(basicRead)
   t.equal(result.headers['Content-Type'], ContentType, 'Returns correct content type')
   t.equal(result.headers['Content-Encoding'], ContentEncoding, 'Returns correct content encoding')
   t.equal(result.headers['ETag'], ETag, 'Returns correct ETag value')
