@@ -50,14 +50,13 @@ let staticStub = {
 
 // Generates proxy read requests
 function read (params={}) {
-  let { Bucket, Key, IfNoneMatch, isProxy, config, assets } = params
+  let { Bucket, Key, IfNoneMatch, isProxy, config } = params
   return {
     Bucket: Bucket || defaultBucket,
     Key: Key || imgName,
     IfNoneMatch: IfNoneMatch || imgETag,
     isProxy: isProxy || true,
-    config: config || { spa: true },
-    assets
+    config: config || { spa: true }
   }
 }
 
@@ -172,7 +171,7 @@ test('Fingerprint: filename is interpolated for captured requests (html, json, e
   createResponse('text/html')
   let Bucket = 'a-fingerprinted-bucket'
   let Key = 'index.html'
-  let result = await readS3(read({ Bucket, Key, assets: staticStub }))
+  let result = await readS3(read({ Bucket, Key, config: { assets: staticStub } }))
   t.equal(options.Bucket, Bucket, `Used alternate bucket: ${options.Bucket}`)
   t.equal(options.Key, staticStub[Key], `Read fingerprinted filename: ${options.Key}`)
   t.equal(result.body, b64(imgContents), `Original contents not mutated: ${result.body}`)
@@ -187,7 +186,7 @@ test('Fingerprint: template calls are replaced inline on non-captured requests',
   let Bucket = 'a-fingerprinted-bucket'
   let Key = 'app-a1c3e5.js'
 
-  let result = await readS3(read({ Bucket, Key, assets: staticStub }))
+  let result = await readS3(read({ Bucket, Key, config: { assets: staticStub } }))
   t.equal(options.Bucket, Bucket, `Used alternate bucket: ${options.Bucket}`)
   t.equal(options.Key, Key, `Read fingerprinted filename: ${options.Key}`)
   t.notEqual(fileContents, dec(result.body), `Contents containing template calls mutated: ${dec(result.body)}`)
@@ -204,7 +203,7 @@ test('Fingerprint: template calls are replaced inline on captured requests', asy
   let Bucket = 'a-fingerprinted-bucket'
   let Key = 'index.html'
 
-  let result = await readS3(read({ Bucket, Key, assets: staticStub }))
+  let result = await readS3(read({ Bucket, Key, config: { assets: staticStub } }))
   t.equal(options.Bucket, Bucket, `Used alternate bucket: ${options.Bucket}`)
   t.equal(options.Key, staticStub[Key], `Read fingerprinted filename: ${options.Key}`)
   t.notEqual(fileContents, result.body, `Contents containing template calls mutated: ${result.body}`)

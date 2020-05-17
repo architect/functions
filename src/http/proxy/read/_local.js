@@ -26,7 +26,7 @@ let pretty = require('./_pretty')
 module.exports = async function readLocal (params) {
 
   let { ARC_SANDBOX_PATH_TO_STATIC, ARC_STATIC_FOLDER } = process.env
-  let { Key, IfNoneMatch, isFolder, isProxy, config, assets } = params
+  let { Key, IfNoneMatch, isFolder, isProxy, config } = params
   let headers = {}
   let response = {}
 
@@ -38,7 +38,7 @@ module.exports = async function readLocal (params) {
   if (existsSync(staticManifest)) {
     staticAssets = JSON.parse(readFileSync(staticManifest))
   }
-  assets = assets || staticAssets
+  let assets = config.assets || staticAssets
 
   // Look up the blob
   // Assume we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox

@@ -7,7 +7,8 @@ let errors = require('../errors')
  * Primary interface for reading static assets out of S3
  *
  * @param config - object, for configuration
- * @param config.alias - object, map of root rel urls to map to fully qualified root rel urls
+ * @param config.alias - object, map of root rel URLs to map to fully qualified root rel URLs
+ * @param config.assets - object, map of local, unfingerprinted filenames to fingerprinted filenames
  * @param config.bucket - object, {staging, production} override the s3 bucket names
  * @param config.bucket.staging - object, {staging, production} override the s3 bucket names
  * @param config.bucket.production - object, {staging, production} override the s3 bucket names

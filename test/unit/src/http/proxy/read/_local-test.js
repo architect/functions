@@ -20,13 +20,12 @@ let prettyStub = async () => 'pretty'
 
 // Generates proxy read requests
 function read (params={}) {
-  let { Key, IfNoneMatch, isProxy, config, assets } = params
+  let { Key, IfNoneMatch, isProxy, config } = params
   return {
     Key: Key || 'images/this-is-fine.gif',
     IfNoneMatch: IfNoneMatch || 'abc123',
     isProxy: isProxy || true,
     config: config || { spa: true },
-    assets
   }
 }
 
@@ -133,7 +132,7 @@ test('Local proxy reader templatizes with local paths when fingerprinting is ena
     [join(publicPath, mdName)]: mdContents,
     [join(publicPath, imgName)]: imgContents
   })
-  let params = read({ Key: mdName, assets: staticStub })
+  let params = read({ Key: mdName, config: { assets: staticStub } })
   let result = await readLocal(params)
   t.notEqual(result.body, b64(mdContents), `Contents containing template calls mutated: ${dec(result.body)}`)
   t.ok(dec(result.body).includes(imgName), `Used non-fingerprinted filename in sandbox mode: ${imgName}`)

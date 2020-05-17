@@ -26,8 +26,8 @@ let pretty = require('./_pretty')
  */
 module.exports = async function readS3 (params) {
 
-  let { Bucket, Key, IfNoneMatch, isFolder, isProxy, config, assets } = params
-  assets = assets || staticAssets
+  let { Bucket, Key, IfNoneMatch, isFolder, isProxy, config } = params
+  let assets = config.assets || staticAssets
   let headers = {}
   let response = {}
 
