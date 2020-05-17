@@ -62,10 +62,9 @@ module.exports = async function readLocal (params) {
       throw err
     }
 
-    let raw = readFileSync(filePath).toString()
-    let ETag = crypto.createHash('sha256').update(raw).digest('hex')
+    let body = readFileSync(filePath)
+    let ETag = crypto.createHash('sha256').update(body).digest('hex')
     let result = {
-      Body: raw,
       ContentType: contentType,
       ETag
     }
@@ -89,7 +88,7 @@ module.exports = async function readLocal (params) {
         isBinary,
         defaults: {
           headers,
-          body: result.Body
+          body
         }
       })
 
