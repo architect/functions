@@ -25,7 +25,7 @@ let pretty = require('./_pretty')
  */
 module.exports = async function readLocal (params) {
 
-  let { ARC_STATIC_FOLDER } = process.env
+  let { ARC_SANDBOX_PATH_TO_STATIC, ARC_STATIC_FOLDER } = process.env
   let { Key, IfNoneMatch, isFolder, isProxy, config, assets } = params
   let headers = {}
   let response = {}
@@ -33,7 +33,7 @@ module.exports = async function readLocal (params) {
   // Unlike S3, handle basePath and assets inside the function as Sandbox is long-lived
   let staticAssets
   // After 6.x we can rely on this env var in sandbox
-  let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || join(process.cwd(), '..', '..', '..', 'public')
+  let basePath = ARC_SANDBOX_PATH_TO_STATIC || join(process.cwd(), '..', '..', '..', 'public')
   let staticManifest = join(basePath, 'static.json')
   if (existsSync(staticManifest)) {
     staticAssets = JSON.parse(readFileSync(staticManifest))
@@ -43,6 +43,7 @@ module.exports = async function readLocal (params) {
   // Look up the blob
   // Assume we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
   let filePath = join(basePath, Key)
+  // Denormalize static folder for local paths (not something we'd do in S3)
   let staticFolder = ARC_STATIC_FOLDER
   if (filePath.includes(staticFolder)) {
     filePath = filePath.replace(`${staticFolder}${sep}`, '')

@@ -63,9 +63,7 @@ let config = {}
 test('Set up env', t => {
   t.plan(1)
   mockfs({
-    'ok/hi': {
-      'index.html': buf(`peeked ok from local!`)
-    }
+    'ok/hi/index.html': buf(`peeked ok from local!`)
   })
   t.ok(pretty, 'Loaded pretty')
 })
