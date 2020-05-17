@@ -36,7 +36,7 @@ module.exports = async function readS3 (params) {
     let matchedETag = false
     let s3 = new aws.S3
 
-    // If the static asset manifest has the key, use that, otherwise fall back to the original Key
+    // Try to interpolate HTML/JSON requests to fingerprinted filenames
     let contentType = mime.contentType(extname(Key))
     let capture = [
       'text/html',
@@ -44,6 +44,8 @@ module.exports = async function readS3 (params) {
     ]
     let isCaptured = capture.some(type => contentType.includes(type))
     if (assets && assets[Key] && isCaptured) {
+      // Not necessary to flag response formatter for anti-caching
+      // Those headers are already set in S3 file metadata
       Key = assets[Key]
     }
 

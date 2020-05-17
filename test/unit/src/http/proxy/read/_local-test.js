@@ -7,7 +7,9 @@ let env = process.env.NODE_ENV
 
 /**
  * We'll test for basic response formatting, templatization, and headers
- * Deeper testing for content-type, cache-control, etc. are found in other tests
+ *
+ * Note: at first glance, it seems like there should be more to test in this method
+ * However, deeper testing for content-type, cache-control, etc. are found in other tests, so this should cover pretty much every critical path
  */
 
 // Stubs
