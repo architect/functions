@@ -74,7 +74,7 @@ module.exports = async function readLocal (params) {
       headers.ETag = IfNoneMatch
       response = {
         statusCode: 304,
-        headers,
+        headers
       }
     }
 

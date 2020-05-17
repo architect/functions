@@ -1,6 +1,7 @@
 let { existsSync, readFileSync } = require('fs')
 let { extname, join } = require('path')
 let mime = require('mime-types')
+let aws = require('aws-sdk')
 
 let binaryTypes = require('../../helpers/binary-types')
 let { httpError } = require('../../errors')
@@ -8,8 +9,6 @@ let transform = require('../format/transform') // Soon to be deprecated
 let templatizeResponse = require('../format/templatize')
 let normalizeResponse = require('../format/response')
 let pretty = require('./_pretty')
-
-let aws = require('aws-sdk')
 
 /**
  * arc.http.proxy.read
@@ -27,7 +26,8 @@ let aws = require('aws-sdk')
  */
 module.exports = async function readS3 (params) {
 
-  let { Bucket, Key, IfNoneMatch, isFolder, isProxy, config } = params
+  let { Bucket, Key, IfNoneMatch, isFolder, isProxy, config, assets } = params
+  assets = assets || staticAssets
   let headers = {}
   let response = {}
 
@@ -59,7 +59,7 @@ module.exports = async function readS3 (params) {
         headers.ETag = IfNoneMatch
         response = {
           statusCode: 304,
-          headers,
+          headers
         }
       }
       else {
@@ -132,14 +132,14 @@ module.exports = async function readS3 (params) {
  * Fingerprinting manifest
  *   Load the manifest, try to hit the disk as infrequently as possible across invocations
  */
-let assets
+let staticAssets
 let staticManifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
-if (assets === false) {
+if (staticAssets === false) {
   null /*noop*/
 }
-else if (existsSync(staticManifest) && !assets) {
-  assets = JSON.parse(readFileSync(staticManifest))
+else if (existsSync(staticManifest) && !staticAssets) {
+  staticAssets = JSON.parse(readFileSync(staticManifest))
 }
 else {
-  assets = false
+  staticAssets = false
 }
