@@ -4,7 +4,9 @@ let path = require('path')
 /**
  * Normalizes response shape
  */
-module.exports = function normalizeResponse ({response, result, Key, isProxy, config}) {
+module.exports = function normalizeResponse (params) {
+  let { response, result, Key, isProxy, config } = params
+
   let noCache = [
     'text/html',
     'application/json',
@@ -24,18 +26,23 @@ module.exports = function normalizeResponse ({response, result, Key, isProxy, co
 
   // Set caching headers
   let neverCache = noCache.some(n => contentType.includes(n))
-  if (config.cacheControl)
+  if (config.cacheControl) {
     response.headers['Cache-Control'] = config.cacheControl
-  else if (neverCache)
+  }
+  else if (neverCache) {
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
-  else if (result && result.CacheControl)
+  }
+  else if (result && result.CacheControl) {
     response.headers['Cache-Control'] = result.CacheControl
-  else
-    response.headers['Cache-Control'] = 'max-age=86400'
+  }
+  else {
+    response.headers['Cache-Control'] = 'public, max-age=0, must-revalidate'
+  }
 
   // Populate optional userland headers
-  if (config.headers)
+  if (config.headers) {
     Object.keys(config.headers).forEach(h => response.headers[h] = config.headers[h])
+  }
 
   // Normalize important common header casings to prevent dupes
   if (response.headers['content-type']) {

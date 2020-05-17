@@ -1,6 +1,7 @@
 let { existsSync, readFileSync } = require('fs')
 let { extname, join, sep } = require('path')
 let mime = require('mime-types')
+let crypto = require('crypto')
 
 let binaryTypes = require('../../helpers/binary-types')
 let { httpError } = require('../../errors')
@@ -24,21 +25,23 @@ let pretty = require('./_pretty')
  */
 module.exports = async function readLocal (params) {
 
-  let { ARC_SANDBOX_PATH_TO_STATIC, ARC_STATIC_FOLDER } = process.env
-  let { Key, isProxy, isFolder, config, assets } = params
+  let { ARC_STATIC_FOLDER } = process.env
+  let { Key, IfNoneMatch, isFolder, isProxy, config, assets } = params
+  let headers = {}
+  let response = {}
 
+  // Unlike S3, handle basePath and assets inside the function as Sandbox is long-lived
+  let staticAssets
   // After 6.x we can rely on this env var in sandbox
-  let basePath = ARC_SANDBOX_PATH_TO_STATIC || join(process.cwd(), '..', '..', '..', 'public')
-
-  // Double check for assets in case we're running as proxy at root in sandbox
+  let basePath = process.env.ARC_SANDBOX_PATH_TO_STATIC || join(process.cwd(), '..', '..', '..', 'public')
   let staticManifest = join(basePath, 'static.json')
-  if (!assets && existsSync(staticManifest)) {
-    let file = readFileSync(staticManifest).toString()
-    assets = JSON.parse(file)
+  if (existsSync(staticManifest)) {
+    staticAssets = JSON.parse(readFileSync(staticManifest))
   }
+  assets = assets || staticAssets
 
   // Look up the blob
-  // assuming we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
+  // Assume we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
   let filePath = join(basePath, Key)
   let staticFolder = ARC_STATIC_FOLDER
   if (filePath.includes(staticFolder)) {
@@ -46,43 +49,73 @@ module.exports = async function readLocal (params) {
   }
 
   try {
+    // If client sends If-None-Match, use it in S3 getObject params
+    let matchedETag = false
+
+    // If the static asset manifest has the key, use that, otherwise fall back to the original Key
+    let contentType = mime.contentType(extname(Key))
+
     if (!existsSync(filePath)) {
       let err = ReferenceError(`NoSuchKey: ${filePath} not found`)
       err.name = 'NoSuchKey'
       throw err
     }
 
-    let body = readFileSync(filePath).toString()
-    let type = mime.contentType(extname(Key))
-    let isBinary = binaryTypes.some(t => type.includes(t))
-
-    // TODO impl ETag / ifnonematch
-
-    let response = transform({
-      Key,
-      config,
-      isBinary,
-      defaults: {
-        headers: {'content-type': type},
-        body
+    let raw = readFileSync(filePath).toString()
+    let ETag = crypto.createHash('sha256').update(raw).digest('hex')
+    let result = {
+      Body: raw,
+      ContentType: contentType,
+      ETag
+    }
+    if (IfNoneMatch === ETag) {
+      matchedETag = true
+      headers.ETag = IfNoneMatch
+      response = {
+        statusCode: 304,
+        headers,
       }
-    })
+    }
 
-    // Handle templating
-    response = templatizeResponse({
-      isBinary,
-      assets,
-      response,
-      isSandbox: true
-    })
+    // No ETag found, return the blob
+    if (!matchedETag) {
+      let isBinary = binaryTypes.some(type => result.ContentType.includes(type) || contentType.includes(type))
 
-    // Normalize response
-    response = normalizeResponse({
-      response,
-      Key,
-      isProxy,
-      config
-    })
+      // Transform first to allow for any proxy plugin mutations
+      response = transform({
+        Key,
+        config,
+        isBinary,
+        defaults: {
+          headers,
+          body: result.Body
+        }
+      })
+
+      // Handle templating
+      response = templatizeResponse({
+        isBinary,
+        assets,
+        response,
+        isLocal: true
+      })
+
+      // Normalize response
+      response = normalizeResponse({
+        response,
+        result,
+        Key,
+        isProxy,
+        config
+      })
+
+      // Add ETag
+      response.headers.ETag = result.ETag
+    }
+
+    if (!response.statusCode) {
+      response.statusCode = 200
+    }
 
     return response
   }

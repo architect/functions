@@ -52,9 +52,9 @@ module.exports = async function readS3 (params) {
       options.IfNoneMatch = IfNoneMatch
     }
 
-    let result = await s3.getObject(options).promise().catch(e => {
+    let result = await s3.getObject(options).promise().catch(err => {
       // ETag matches (getObject error code of NotModified), so don't transit the whole file
-      if (e.code === 'NotModified') {
+      if (err.code === 'NotModified') {
         matchedETag = true
         headers.ETag = IfNoneMatch
         response = {
@@ -64,7 +64,7 @@ module.exports = async function readS3 (params) {
       }
       else {
         // Important: do not swallow this error otherwise!
-        throw e
+        throw err
       }
     })
 

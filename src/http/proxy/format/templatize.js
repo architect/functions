@@ -1,4 +1,6 @@
-module.exports = function templatizeResponse ({isBinary, assets, response, isSandbox=false}) {
+module.exports = function templatizeResponse (params) {
+  let { isBinary, assets, response, isLocal=false } = params
+
   // Bail early
   if (isBinary || !assets) {
     return response
@@ -12,8 +14,9 @@ module.exports = function templatizeResponse ({isBinary, assets, response, isSan
     response.body = body.replace(static, function fingerprint(match) {
       let start = match.startsWith(`\${STATIC(`) ? 10 : 14
       let Key = match.slice(start, match.length-3)
-      if (assets[Key] && !isSandbox)
+      if (assets[Key] && !isLocal) {
         Key = assets[Key]
+      }
       return Key
     })
     response.body = Buffer.from(response.body) // Re-enbufferize
