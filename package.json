@@ -17,6 +17,9 @@
     "test": "npm run lint && npm run test:integration && npm run coverage",
     "rc": "npm version prerelease --preid RC"
   },
+  "engines": {
+    "node" : ">=10"
+  },
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",
   "keywords": [
@@ -49,7 +52,7 @@
     "aws-sdk": "^2.617.0",
     "codecov": "^3.6.5",
     "cross-env": "^7.0.2",
-    "eslint": "^6.8.0",
+    "eslint": "^7.0.0",
     "mkdirp": "^1.0.4",
     "mock-fs": "^4.12.0",
     "nyc": "^15.0.1",
