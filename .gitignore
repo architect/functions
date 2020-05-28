@@ -6,3 +6,4 @@ coverage/
 node_modules/
 test/mock/*/src/*/*/vendor/
 test/mock/project/src/
+yarn.lock
