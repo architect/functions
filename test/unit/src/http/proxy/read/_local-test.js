@@ -106,7 +106,32 @@ test('Local proxy reader returns formatted response from binary payload (200)', 
   reset()
 })
 
-test('Local proxy reader unsets ARC_STATIC_FOLDER and returns formatted response (200)', async t => {
+test('Local proxy reader unsets ARC_STATIC_PREFIX and returns formatted response (200)', async t => {
+  setup()
+  t.plan(7)
+
+  // Local reads should unset ARC_STATIC_PREFIX, which is intended for remote/S3 use only
+  process.env.ARC_STATIC_PREFIX = 'foobar'
+  t.ok(process.env.ARC_STATIC_PREFIX, 'ARC_STATIC_PREFIX set')
+
+  mockfs({
+    [join(publicPath, imgName)]: imgContents
+  })
+  let params = read({ Key: `${process.env.ARC_STATIC_PREFIX}/${imgName}` })
+  let result = await readLocal(params)
+  t.equal(result.statusCode, 200, 'Returns statusCode: 200')
+  t.equal(result.headers['Cache-Control'], defaultCacheControl, 'Returns correct cache-control')
+  t.equal(result.headers['Content-Type'], imgContentType, 'Returns correct content-type')
+  t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
+  t.equal(result.body, b64(imgContents), 'Returns correct body')
+  t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
+
+  delete process.env.ARC_STATIC_PREFIX
+
+  reset()
+})
+
+test('Local proxy reader unsets ARC_STATIC_FOLDER (deprecated) and returns formatted response (200)', async t => {
   setup()
   t.plan(7)
 

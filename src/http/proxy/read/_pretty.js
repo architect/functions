@@ -2,7 +2,7 @@ let aws = require('aws-sdk')
 let { existsSync, readFileSync } = require('fs')
 // let { join } = require('path')
 let { httpError } = require('../../errors')
-let { ARC_STATIC_FOLDER } = process.env
+let { ARC_STATIC_PREFIX, ARC_STATIC_FOLDER } = process.env
 
 /**
  * Peek into a dir without a trailing slash to see if it's got an index.html file
@@ -65,8 +65,8 @@ module.exports = async function prettyS3 (params) {
    *   Check to see if user defined a custom 404 page
    */
   let configBucketFolder = config.bucket && config.bucket.folder ? config.bucket.folder : false
-  let folder = ARC_STATIC_FOLDER || configBucketFolder
-  let notFound = folder ? `${folder}/404.html` : '404.html'
+  let prefix = ARC_STATIC_PREFIX || ARC_STATIC_FOLDER || configBucketFolder
+  let notFound = prefix ? `${prefix}/404.html` : '404.html'
   let result = await get(notFound)
   if (result.Body) {
     let body = result.Body.toString()

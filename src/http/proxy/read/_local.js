@@ -25,7 +25,7 @@ let pretty = require('./_pretty')
  */
 module.exports = async function readLocal (params) {
 
-  let { ARC_SANDBOX_PATH_TO_STATIC, ARC_STATIC_FOLDER } = process.env
+  let { ARC_SANDBOX_PATH_TO_STATIC, ARC_STATIC_PREFIX, ARC_STATIC_FOLDER } = process.env
   let { Key, IfNoneMatch, isFolder, isProxy, config } = params
   let headers = {}
   let response = {}
@@ -44,9 +44,9 @@ module.exports = async function readLocal (params) {
   // Assume we're running from a lambda in src/**/* OR from vendored node_modules/@architect/sandbox
   let filePath = join(basePath, Key)
   // Denormalize static folder for local paths (not something we'd do in S3)
-  let staticFolder = ARC_STATIC_FOLDER
-  if (filePath.includes(staticFolder)) {
-    filePath = filePath.replace(`${staticFolder}${sep}`, '')
+  let staticPrefix = ARC_STATIC_PREFIX || ARC_STATIC_FOLDER
+  if (filePath.includes(staticPrefix)) {
+    filePath = filePath.replace(`${staticPrefix}${sep}`, '')
   }
 
   try {

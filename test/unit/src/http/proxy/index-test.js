@@ -115,16 +115,37 @@ test('Config: alias', t => {
 */
 
 test('Config: folder', async t => {
-  t.plan(3)
+  t.plan(5)
 
-  // Test ARC_STATIC_FOLDER
-  process.env.ARC_STATIC_FOLDER = folder
+  // Test ARC_STATIC_PREFIX
+  process.env.ARC_STATIC_PREFIX = folder
   let proxy = await httpProxy({
     bucket:{
       staging: stagingBucket
     }
   })
   let result = await proxy(req)
+  t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_PREFIX sets folder')
+
+  // Test ARC_STATIC_PREFIX vs config
+  proxy = await httpProxy({
+    bucket:{
+      staging: stagingBucket,
+      folder: 'rando'
+    }
+  })
+  result = await proxy(req)
+  t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_PREFIX overrides folder')
+  delete process.env.ARC_STATIC_PREFIX
+
+  // Test ARC_STATIC_FOLDER (deprecated)
+  process.env.ARC_STATIC_FOLDER = folder
+  proxy = await httpProxy({
+    bucket:{
+      staging: stagingBucket
+    }
+  })
+  result = await proxy(req)
   t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_FOLDER sets folder')
 
   // Test ARC_STATIC_FOLDER vs config

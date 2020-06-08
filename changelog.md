@@ -4,7 +4,16 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.10.0] 2020-05-17
+## [3.10.2] 2020-06-07
+
+### Added
+
+- Adds support for `ARC_STATIC_PREFIX` env var to provide symmetry with the new `@static prefix` setting
+  - The `ARC_STATIC_FOLDER` env var is now considered deprecated, and will be removed in a future (breaking) release
+
+---
+
+## [3.10.0 - 3.10.1] 2020-05-17
 
 ### Added
 

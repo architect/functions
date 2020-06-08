@@ -22,7 +22,13 @@ let errors = require('../errors')
 function proxy (config={}) {
   return async function httpProxy (req) {
 
-    let { ARC_STATIC_BUCKET, ARC_STATIC_FOLDER, ARC_STATIC_SPA, NODE_ENV } = process.env
+    let {
+      ARC_STATIC_BUCKET,
+      ARC_STATIC_PREFIX,
+      ARC_STATIC_FOLDER,
+      ARC_STATIC_SPA,
+      NODE_ENV
+    } = process.env
 
     let isProduction = NODE_ENV === 'production'
     let path = req.path || req.rawPath
@@ -80,9 +86,9 @@ function proxy (config={}) {
      * Folder prefix
      *   Enables a bucket folder at root to be specified
      */
-    let folder = ARC_STATIC_FOLDER || configBucket && configBucket.folder
-    if (folder) {
-      Key = `${folder}/${Key}`
+    let prefix = ARC_STATIC_PREFIX || ARC_STATIC_FOLDER || configBucket && configBucket.folder
+    if (prefix) {
+      Key = `${prefix}/${Key}`
     }
 
     /**
