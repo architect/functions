@@ -10,7 +10,6 @@ let proxyReq = reqs.arc6.getProxyPlus
 
 let stagingBucket = 'my-staging-bucket'
 let productionBucket = 'my-production-bucket'
-let folder = 'file-folder'
 let basicBucketConfig = {
   bucket:{
     staging: stagingBucket,
@@ -114,62 +113,6 @@ test('Config: alias', t => {
 })
 */
 
-test('Config: folder', async t => {
-  t.plan(5)
-
-  // Test ARC_STATIC_PREFIX
-  process.env.ARC_STATIC_PREFIX = folder
-  let proxy = await httpProxy({
-    bucket:{
-      staging: stagingBucket
-    }
-  })
-  let result = await proxy(req)
-  t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_PREFIX sets folder')
-
-  // Test ARC_STATIC_PREFIX vs config
-  proxy = await httpProxy({
-    bucket:{
-      staging: stagingBucket,
-      folder: 'rando'
-    }
-  })
-  result = await proxy(req)
-  t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_PREFIX overrides folder')
-  delete process.env.ARC_STATIC_PREFIX
-
-  // Test ARC_STATIC_FOLDER (deprecated)
-  process.env.ARC_STATIC_FOLDER = folder
-  proxy = await httpProxy({
-    bucket:{
-      staging: stagingBucket
-    }
-  })
-  result = await proxy(req)
-  t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_FOLDER sets folder')
-
-  // Test ARC_STATIC_FOLDER vs config
-  proxy = await httpProxy({
-    bucket:{
-      staging: stagingBucket,
-      folder: 'rando'
-    }
-  })
-  result = await proxy(req)
-  t.equal(result.Key, `${folder}/index.html`, 'ARC_STATIC_FOLDER overrides folder')
-  delete process.env.ARC_STATIC_FOLDER
-
-  // Test folder
-  proxy = await httpProxy({
-    bucket:{
-      staging: stagingBucket,
-      folder
-    }
-  })
-  result = await proxy(req)
-  t.equal(result.Key, `${folder}/index.html`, 'config.bucket.folder sets folder')
-})
-
 test('Strip API Gateway warts', async t => {
   t.plan(2)
   let apigReq = JSON.parse(JSON.stringify(req))
@@ -177,12 +120,12 @@ test('Strip API Gateway warts', async t => {
   let proxy = await httpProxy(basicBucketConfig)
 
   let result = await proxy(apigReq)
-  t.equal(result.Key, 'foo/index.html', 'Leading staging/ is stripped from keys')
+  t.equal(result.Key, 'foo/index.html', `Leading staging/ is stripped from keys: ${result.Key}`)
   console.log(result)
 
   apigReq.path = '/production/foo'
   result = await proxy(apigReq)
-  t.equal(result.Key, 'foo/index.html', 'Leading production/ is stripped from keys')
+  t.equal(result.Key, 'foo/index.html', `Leading production/ is stripped from keys: ${result.Key}`)
   console.log(result)
 })
 
