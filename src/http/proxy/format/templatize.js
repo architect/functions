@@ -8,10 +8,10 @@ module.exports = function templatizeResponse (params) {
   else {
     // Find: ${STATIC('path/filename.ext')}
     //   or: ${arc.static('path/filename.ext')}
-    let static = /\${(STATIC|arc\.static)\(.*\)}/g
+    let staticRegex = /\${(STATIC|arc\.static)\(.*\)}/g
     // Maybe stringify jic previous steps passed a buffer; perhaps we can remove this step if/when proxy plugins is retired
     let body = response.body instanceof Buffer ? Buffer.from(response.body).toString() : response.body
-    response.body = body.replace(static, function fingerprint(match) {
+    response.body = body.replace(staticRegex, function fingerprint(match) {
       let start = match.startsWith(`\${STATIC(`) ? 10 : 14
       let Key = match.slice(start, match.length-3)
       if (assets[Key] && !isLocal) {
