@@ -3,6 +3,7 @@ _mock
 .nyc_output/
 arc-proxy-*
 coverage/
+dist.js
 node_modules/
 test/mock/*/src/*/*/vendor/
 test/mock/project/src/

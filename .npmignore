@@ -9,4 +9,5 @@
 changelog.md
 contributing.md
 coverage/
+dist.js
 test/
