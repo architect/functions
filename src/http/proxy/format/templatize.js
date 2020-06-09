@@ -2,7 +2,7 @@ module.exports = function templatizeResponse (params) {
   let { isBinary, assets, response, isLocal=false } = params
 
   // Bail early
-  if (isBinary || !assets) {
+  if (isBinary) {
     return response
   }
   else {
@@ -14,7 +14,7 @@ module.exports = function templatizeResponse (params) {
     response.body = body.replace(staticRegex, function fingerprint(match) {
       let start = match.startsWith(`\${STATIC(`) ? 10 : 14
       let Key = match.slice(start, match.length-3)
-      if (assets[Key] && !isLocal) {
+      if (assets && assets[Key] && !isLocal) {
         Key = assets[Key]
       }
       return Key

@@ -8,8 +8,14 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ### Added
 
+- Adds fingerprinting support for pretty URLs and custom 404s in proxy
 - Adds support for `ARC_STATIC_PREFIX` env var to provide symmetry with the new `@static prefix` setting
   - The `ARC_STATIC_FOLDER` env var is now considered deprecated, and will be removed in a future (breaking) release
+
+
+### Fixed
+
+- Ensures the build-free templating engine always runs, not just when fingerprint is enabled
 
 ---
 
