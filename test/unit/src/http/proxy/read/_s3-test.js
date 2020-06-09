@@ -115,6 +115,41 @@ test('S3 proxy reader returns formatted response (200)', async t => {
   t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
 })
 
+test('S3 proxy reader respects prefix (folder) lookups', async t => {
+  t.plan(5)
+  let prefix = 'file-folder'
+  let config = { bucket: { folder: 'rando' } }
+
+  // Test ARC_STATIC_PREFIX
+  process.env.ARC_STATIC_PREFIX = prefix
+  setup()
+  await readS3(read())
+  t.equal(options.Key, `${prefix}/${imgName}`, `ARC_STATIC_PREFIX sets folder: ${options.Key}`)
+
+  // Test ARC_STATIC_PREFIX vs config
+  setup()
+  await readS3(read({ config }))
+  t.equal(options.Key, `${prefix}/${imgName}`, `ARC_STATIC_PREFIX overrides folder config: ${options.Key}`)
+  delete process.env.ARC_STATIC_PREFIX
+
+  // Test ARC_STATIC_FOLDER
+  process.env.ARC_STATIC_FOLDER = prefix
+  setup()
+  await readS3(read())
+  t.equal(options.Key, `${prefix}/${imgName}`, `ARC_STATIC_FOLDER sets folder: ${options.Key}`)
+
+  // Test ARC_STATIC_FOLDER vs config
+  setup()
+  await readS3(read({ config }))
+  t.equal(options.Key, `${prefix}/${imgName}`, `ARC_STATIC_FOLDER overrides folder config: ${options.Key}`)
+  delete process.env.ARC_STATIC_FOLDER
+
+  // Test folder config
+  setup()
+  await readS3(read({ config }))
+  t.equal(options.Key, `${config.bucket.folder}/${imgName}`, `config.bucket.folder sets folder: ${options.Key}`)
+})
+
 test('S3 proxy reader returns 304 (aka S3 NotModified)', async t => {
   setup()
   t.plan(2)

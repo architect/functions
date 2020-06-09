@@ -2,52 +2,38 @@ let test = require('tape')
 let mockfs = require('mock-fs')
 let proxyquire = require('proxyquire')
 let env = process.env.NODE_ENV
-// Tried to use 'aws-sdk-mock', wasn't able to get it working with aws.whatever().promise()
 
 let errorState
 let buf = msg => Buffer.from(msg)
-let S3Stub = {
-  S3: function ctor() {
-    return {
-      getObject: function () {
-        if (isFolder && Key === 'ok/hi') {
-          return {
-            promise: async function () {
-              return { Body: buf(`peeked ok from S3!`) }
-            }
-          }
-        }
-        if (isFolder && Key === 'notOk') {
-          return {
-            promise: async function () {
-              let err = new Error(errorState)
-              err.name = errorState
-              throw err
-            }
-          }
-        }
-        if (Key === 'getCustom404') {
-          return {
-            promise: async function () {
-              return { Body: buf('custom 404 from S3!') }
-            }
-          }
-        }
-        return {
-          promise: async function () {
-            let err = new Error(errorState)
-            err.name = errorState
-            throw err
-          }
-        }
+// Tried to use 'aws-sdk-mock', wasn't able to get it working with aws.whatever().promise()
+let S3Stub = { S3: function ctor() {
+  return {
+    getObject: function ({ Key }) {
+      // Good responses (only checking body here)
+      let got = { promise: async function () {
+        return { Body: buf(`got ${Key}`) }
+      }}
+
+      // Failed requests (aws-sdk completely blows up)
+      let thrower = { promise: async function () {
+        let err = new Error(errorState)
+        err.name = errorState
+        throw err
+      }}
+
+      if (isFolder) {
+        if (Key.includes('ok/hi')) return got
+        if (Key.includes('notOk')) return thrower
       }
+      if (Key.includes('404') && !errorState) return got
+      return thrower
     }
-  },
-  '@noCallThru': true
-}
+  }
+}}
 
 let reset = () => {
   Key = isFolder = errorState = undefined
+  mockfs.restore()
 }
 
 let pretty = proxyquire('../../../../../../src/http/proxy/read/_pretty', {
@@ -58,18 +44,14 @@ let Key
 let isFolder
 let Bucket = 'a-bucket'
 let headers = {}
-let config = {}
 
 test('Set up env', t => {
   t.plan(1)
-  mockfs({
-    'ok/hi/index.html': buf(`peeked ok from local!`)
-  })
   t.ok(pretty, 'Loaded pretty')
 })
 
 test('Peek and find nested index.html', async t => {
-  t.plan(2)
+  t.plan(4)
   // AWS
   process.env.NODE_ENV = 'staging'
   Key = 'ok/hi'
@@ -78,22 +60,49 @@ test('Peek and find nested index.html', async t => {
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
-  t.equal(result.body, 'peeked ok from S3!', 'Successfully peeked into an S3 folder without a trailing slash')
+  t.equal(result.body, 'got ok/hi/index.html', 'Successfully peeked into an S3 folder without a trailing slash')
+
+  // Fingerprinting enabled
+  let assets = {
+    'ok/hi/index.html': 'ok/hi/index-abc12.html'
+  }
+  result = await pretty({
+    Bucket,
+    Key,
+    assets,
+    headers,
+    isFolder
+  })
+  t.equal(result.body, 'got ok/hi/index-abc12.html', 'Successfully peeked into an S3 folder with fingerprinting enabled')
+
+  // Fingerprinting enabled with prefix
+  let prefix = 'a-prefix'
+  result = await pretty({
+    Bucket,
+    Key: `${prefix}/${Key}`,
+    assets,
+    headers,
+    isFolder,
+    prefix
+  })
+  t.equal(result.body, 'got a-prefix/ok/hi/index-abc12.html', 'Successfully peeked into an S3 folder with fingerprinting and prefix enabled')
 
   // Local
   process.env.NODE_ENV = 'testing'
+  let msg = 'got ok/hi/index.html from local!'
+  mockfs({
+    'ok/hi/index.html': buf(msg)
+  })
   result = await pretty({
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
+  t.equal(result.body, msg, 'Successfully peeked into a local folder without a trailing slash')
   reset()
-  t.equal(result.body, 'peeked ok from local!', 'Successfully peeked into a local folder without a trailing slash')
 })
 
 test('Peek and do not find nested index.html', async t => {
@@ -107,8 +116,7 @@ test('Peek and do not find nested index.html', async t => {
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if S3 file is not found')
   t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from S3')
@@ -119,16 +127,15 @@ test('Peek and do not find nested index.html', async t => {
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
-  reset()
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if local file is not found')
   t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from local')
+  reset()
 })
 
 test('Return a custom 404', async t => {
-  t.plan(4)
+  t.plan(8)
   // AWS
   process.env.NODE_ENV = 'staging'
   Key = 'getCustom404'
@@ -136,26 +143,52 @@ test('Return a custom 404', async t => {
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 with custom 404 error from S3')
-  t.ok(result.body.includes('custom 404 from S3!'), 'Output is custom 404 page from S3')
+  t.equal(result.body, 'got 404.html', 'Output is custom 404 page from S3 at: 404.html')
+
+  // Fingerprinting enabled
+  let assets = {
+    '404.html': '404-abc12.html'
+  }
+  result = await pretty({
+    Bucket,
+    Key,
+    assets,
+    headers,
+    isFolder
+  })
+  t.equal(result.statusCode, 404, 'Returns statusCode of 404 with custom 404 error from S3')
+  t.equal(result.body, 'got 404-abc12.html', 'Output is custom 404 page from S3 at: 404-abc12.html')
+
+  // Fingerprinting enabled with prefix
+  let prefix = 'a-prefix'
+  result = await pretty({
+    Bucket,
+    Key: `${prefix}/${Key}`,
+    assets,
+    headers,
+    isFolder,
+    prefix
+  })
+  t.equal(result.statusCode, 404, 'Returns statusCode of 404 with custom 404 error from S3')
+  t.equal(result.body, 'got a-prefix/404-abc12.html', 'Output is custom 404 page from S3 at: a-prefix/404-abc12.html')
 
   // Local
   process.env.NODE_ENV = 'testing'
   // Update mockfs to find a 404
-  mockfs({ '404.html': buf(`custom 404 from local!`) })
+  let msg = 'got 404 from local!'
+  mockfs({ '404.html': buf(msg) })
   result = await pretty({
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
-  reset()
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 with custom 404 error from local')
-  t.ok(result.body.includes('custom 404 from local!'), 'Output is custom 404 page from local')
+  t.equal(result.body, msg, 'Output is custom 404 page from local')
+  reset()
 })
 
 test('Return the default 404', async t => {
@@ -168,8 +201,7 @@ test('Return the default 404', async t => {
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if S3 file is not found')
   t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from S3')
@@ -184,17 +216,15 @@ test('Return the default 404', async t => {
     Bucket,
     Key,
     headers,
-    isFolder,
-    config
+    isFolder
   })
-  reset()
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if local file is not found')
   t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from local')
+  reset()
 })
 
 test('Teardown', t => {
   process.env.NODE_ENV = env
-  mockfs.restore()
   t.pass('Ok')
   t.end()
 })

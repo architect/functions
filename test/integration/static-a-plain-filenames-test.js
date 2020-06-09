@@ -16,6 +16,7 @@ let origCwd = process.cwd()
 let resetEnv = () => {
   delete process.env.AWS_REGION
   delete process.env.NODE_ENV
+  delete process.env.ARC_STATIC_PREFIX
   delete process.env.ARC_STATIC_FOLDER
   delete process.env.ARC_STATIC_BUCKET
 }
@@ -33,7 +34,7 @@ test('Set up mocked files', t=> {
 })
 
 test('Local URL tests', t=> {
-  t.plan(6)
+  t.plan(7)
   t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path')
   t.equal(arc.static('/index.html'), '/_static/index.html', 'Basic local static path with leading slash')
   t.equal(arc.http.helpers.static('index.html'), '/_static/index.html', 'Basic local static path (legacy)')
@@ -45,6 +46,10 @@ test('Local URL tests', t=> {
   t.equal(arc.static('index.html'), '/_static/index.html', 'Always use /_static')
 
   delete process.env.NODE_ENV // Run it "locally"
+  process.env.ARC_STATIC_PREFIX = 'foo'
+  t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path unaffected by ARC_STATIC_PREFIX env var')
+  delete process.env.ARC_STATIC_PREFIX
+
   process.env.ARC_STATIC_FOLDER = 'foo'
   t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path unaffected by ARC_STATIC_FOLDER env var')
   resetEnv()

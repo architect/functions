@@ -46,6 +46,7 @@ test('Set up mocked static manifest', t=> {
 test('Clean up env', t=> {
   t.plan(1)
   delete process.env.ARC_STATIC_BUCKET
+  delete process.env.ARC_STATIC_PREFIX
   delete process.env.ARC_STATIC_FOLDER
   process.env.AWS_REGION = origRegion
   process.env.NODE_ENV = 'testing'

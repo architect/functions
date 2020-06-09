@@ -2,18 +2,26 @@ let aws = require('aws-sdk')
 let { existsSync, readFileSync } = require('fs')
 // let { join } = require('path')
 let { httpError } = require('../../errors')
-let { ARC_STATIC_FOLDER } = process.env
 
 /**
  * Peek into a dir without a trailing slash to see if it's got an index.html file
  *   If not, look for a custom 404.html
  *   Finally, return the default 404
  */
-module.exports = async function prettyS3 (params) {
-  let { Bucket, Key, config, headers, isFolder } = params
+module.exports = async function pretty (params) {
+  let { Bucket, Key, assets, headers, isFolder, prefix } = params
   let { ARC_LOCAL, NODE_ENV } = process.env
   let local = NODE_ENV === 'testing' || ARC_LOCAL
   let s3 = new aws.S3
+
+  function getKey (Key) {
+    let lookup = Key.replace(prefix + '/', '')
+    if (assets && assets[lookup]) {
+      Key = assets[lookup]
+      Key = prefix ? `${prefix}/${Key}` : Key
+    }
+    return Key
+  }
 
   async function getLocal (file) {
     if (!existsSync(file)) {
@@ -26,8 +34,8 @@ module.exports = async function prettyS3 (params) {
     }
   }
 
-  async function getS3 (file) {
-    return await s3.getObject({ Bucket, Key: file }).promise()
+  async function getS3 (Key) {
+    return await s3.getObject({ Bucket, Key }).promise()
   }
 
   async function get (file) {
@@ -52,7 +60,7 @@ module.exports = async function prettyS3 (params) {
    *   Peek into a dir without trailing slash to see if it contains index.html
    */
   if (isFolder && !Key.endsWith('/')) {
-    let peek = `${Key}/index.html`
+    let peek = getKey(`${Key}/index.html`)
     let result = await get(peek)
     if (result.Body) {
       let body = result.Body.toString()
@@ -64,9 +72,7 @@ module.exports = async function prettyS3 (params) {
    * Enable custom 404s
    *   Check to see if user defined a custom 404 page
    */
-  let configBucketFolder = config.bucket && config.bucket.folder ? config.bucket.folder : false
-  let folder = ARC_STATIC_FOLDER || configBucketFolder
-  let notFound = folder ? `${folder}/404.html` : '404.html'
+  let notFound = getKey(`404.html`)
   let result = await get(notFound)
   if (result.Body) {
     let body = result.Body.toString()

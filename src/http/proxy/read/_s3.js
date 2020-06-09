@@ -27,6 +27,8 @@ let pretty = require('./_pretty')
 module.exports = async function readS3 (params) {
 
   let { Bucket, Key, IfNoneMatch, isFolder, isProxy, config } = params
+  let { ARC_STATIC_PREFIX, ARC_STATIC_FOLDER } = process.env
+  let prefix = ARC_STATIC_PREFIX || ARC_STATIC_FOLDER || config.bucket && config.bucket.folder
   let assets = config.assets || staticAssets
   let headers = {}
   let response = {}
@@ -38,15 +40,20 @@ module.exports = async function readS3 (params) {
 
     // Try to interpolate HTML/JSON requests to fingerprinted filenames
     let contentType = mime.contentType(extname(Key))
-    let capture = [
-      'text/html',
-      'application/json'
-    ]
+    let capture = [ 'text/html', 'application/json' ]
     let isCaptured = capture.some(type => contentType.includes(type))
     if (assets && assets[Key] && isCaptured) {
       // Not necessary to flag response formatter for anti-caching
       // Those headers are already set in S3 file metadata
       Key = assets[Key]
+    }
+
+    /**
+     * Folder prefix
+     *   Enables a bucket folder at root to be specified
+     */
+    if (prefix) {
+      Key = `${prefix}/${Key}`
     }
 
     let options = { Bucket, Key }
@@ -83,7 +90,7 @@ module.exports = async function readS3 (params) {
         defaults: {
           headers,
           body: result.Body
-        },
+        }
       })
 
       // Handle templating
@@ -117,7 +124,7 @@ module.exports = async function readS3 (params) {
   catch (err) {
     let notFound = err.name === 'NoSuchKey'
     if (notFound) {
-      return await pretty({ Bucket, Key, config, headers, isFolder })
+      return await pretty({ Bucket, Key, assets, headers, isFolder, prefix })
     }
     else {
       let title = err.name
