@@ -124,7 +124,7 @@ module.exports = async function readS3 (params) {
   catch (err) {
     let notFound = err.name === 'NoSuchKey'
     if (notFound) {
-      return await pretty({ Bucket, Key, config, headers, isFolder })
+      return await pretty({ Bucket, Key, assets, headers, isFolder, prefix })
     }
     else {
       let title = err.name
