@@ -14,8 +14,12 @@ module.exports = function templatizeResponse (params) {
     response.body = body.replace(staticRegex, function fingerprint(match) {
       let start = match.startsWith(`\${STATIC(`) ? 10 : 14
       let Key = match.slice(start, match.length-3)
-      if (assets && assets[Key] && !isLocal) {
-        Key = assets[Key]
+      // Normalize around no leading slash for static manifest lookups
+      let startsWithSlash = Key.startsWith('/')
+      let lookup = startsWithSlash ? Key.substr(1) : Key
+      if (assets && assets[lookup] && !isLocal) {
+        Key = assets[lookup]
+        Key = startsWithSlash ? `/${Key}` : Key
       }
       return Key
     })

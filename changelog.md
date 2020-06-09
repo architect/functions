@@ -4,13 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.10.2] 2020-06-07
+## [3.11.0] 2020-06-07
 
 ### Added
 
 - Adds fingerprinting support for pretty URLs and custom 404s in proxy
 - Adds support for `ARC_STATIC_PREFIX` env var to provide symmetry with the new `@static prefix` setting
   - The `ARC_STATIC_FOLDER` env var is now considered deprecated, and will be removed in a future (breaking) release
+- Added support for leading slashes in build-free templating (e.g. `${arc.static('/this-is-fine.gif')}`)
 
 
 ### Fixed

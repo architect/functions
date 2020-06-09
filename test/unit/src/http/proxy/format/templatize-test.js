@@ -23,7 +23,7 @@ test('Templatizer ignores binary responses', t => {
 })
 
 test('Templatizer passes through non-fingerprinted assets', t => {
-  t.plan(4)
+  t.plan(6)
   let response = { body: buf('here is an asset: ${STATIC(\'this-is-fine.gif\')}') }
   let result = sut({ response }).body.toString()
   t.notOk(result.includes('${STATIC(\'this-is-fine.gif\')}'), 'Templatizer stripped out STATIC')
@@ -33,10 +33,15 @@ test('Templatizer passes through non-fingerprinted assets', t => {
   result = sut({ response }).body.toString()
   t.notOk(result.includes('${arc.static(\'this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
   t.ok(result.includes('this-is-fine.gif'), 'Templatizer left in asset reference')
+
+  response = { body: buf('here is an asset: ${arc.static(\'/this-is-fine.gif\')}') }
+  result = sut({ response }).body.toString()
+  t.notOk(result.includes('${arc.static(\'/this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
+  t.ok(result.includes('/this-is-fine.gif'), 'Templatizer left in asset reference (including leading slash)')
 })
 
 test('Templatizer replaces fingerprinted assets', t => {
-  t.plan(4)
+  t.plan(6)
   let fingerprinted = 'this-is-fine-abc123.gif'
   let assets = {
     'this-is-fine.gif': fingerprinted
@@ -50,10 +55,17 @@ test('Templatizer replaces fingerprinted assets', t => {
   result = sut({ response, assets }).body.toString()
   t.notOk(result.includes('${arc.static(\'this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
   t.ok(result.includes(fingerprinted), 'Templatizer replaced asset reference with fingerprint')
+
+  // Leading slash
+  fingerprinted = '/this-is-fine-abc123.gif'
+  response = { body: buf('here is an asset: ${arc.static(\'/this-is-fine.gif\')}') }
+  result = sut({ response, assets }).body.toString()
+  t.notOk(result.includes('${arc.static(\'/this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
+  t.ok(result.includes(fingerprinted), 'Templatizer replaced asset reference with fingerprint (including leading slash)')
 })
 
 test('Templatizer does not replace fingerprinted assets locally', t => {
-  t.plan(4)
+  t.plan(6)
   let assets = {
     'this-is-fine.gif': 'this-is-fine-abc123.gif'
   }
@@ -67,4 +79,9 @@ test('Templatizer does not replace fingerprinted assets locally', t => {
   result = sut({ response, assets, isLocal }).body.toString()
   t.notOk(result.includes('${arc.static(\'this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
   t.ok(result.includes('this-is-fine.gif'), 'Templatizer replaced asset reference with fingerprint')
+
+  response = { body: buf('here is an asset: ${arc.static(\'/this-is-fine.gif\')}') }
+  result = sut({ response, assets, isLocal }).body.toString()
+  t.notOk(result.includes('${arc.static(\'/this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
+  t.ok(result.includes('/this-is-fine.gif'), 'Templatizer replaced asset reference with fingerprint (including leading slash)')
 })

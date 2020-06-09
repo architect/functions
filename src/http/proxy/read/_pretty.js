@@ -8,7 +8,7 @@ let { httpError } = require('../../errors')
  *   If not, look for a custom 404.html
  *   Finally, return the default 404
  */
-module.exports = async function prettyS3 (params) {
+module.exports = async function pretty (params) {
   let { Bucket, Key, assets, headers, isFolder, prefix } = params
   let { ARC_LOCAL, NODE_ENV } = process.env
   let local = NODE_ENV === 'testing' || ARC_LOCAL
