@@ -1,29 +1,28 @@
+let tmpl = require('./lodash.template-4.5.0.js')
+
 module.exports = function templatizeResponse (params) {
+
   let { isBinary, assets, response, isLocal=false } = params
 
-  // Bail early
-  if (isBinary) {
+  if (isBinary)
     return response
-  }
-  else {
-    // Find: ${STATIC('path/filename.ext')}
-    //   or: ${arc.static('path/filename.ext')}
-    let staticRegex = /\${(STATIC|arc\.static)\(.*\)}/g
-    // Maybe stringify jic previous steps passed a buffer; perhaps we can remove this step if/when proxy plugins is retired
-    let body = response.body instanceof Buffer ? Buffer.from(response.body).toString() : response.body
-    response.body = body.replace(staticRegex, function fingerprint(match) {
-      let start = match.startsWith(`\${STATIC(`) ? 10 : 14
-      let Key = match.slice(start, match.length-3)
-      // Normalize around no leading slash for static manifest lookups
-      let startsWithSlash = Key.startsWith('/')
-      let lookup = startsWithSlash ? Key.substr(1) : Key
+
+  // server scoped helper functions...
+  let arc = {
+    static(path) {
+      let startsWithSlash = path.startsWith('/')
+      let lookup = startsWithSlash ? path.substr(1) : path
       if (assets && assets[lookup] && !isLocal) {
-        Key = assets[lookup]
-        Key = startsWithSlash ? `/${Key}` : Key
+        path = assets[lookup]
+        path = startsWithSlash ? `/${path}` : path
       }
-      return Key
-    })
-    response.body = Buffer.from(response.body) // Re-enbufferize
-    return response
+      return path
+    }
   }
+
+  let body = response.body instanceof Buffer ? Buffer.from(response.body).toString() : response.body
+  let replacer = tmpl(body) // TODO cache compiled function in a ledger keyed on ...somethin
+  response.body = replacer({ arc, STATIC: arc.static })
+  response.body = Buffer.from(response.body)
+  return response
 }
