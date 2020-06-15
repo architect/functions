@@ -21,11 +21,11 @@ let errors = require('../errors')
  */
 function proxy (config={}) {
   return async function httpProxy (req) {
-
     let { ARC_STATIC_BUCKET, ARC_STATIC_SPA, NODE_ENV } = process.env
+    let deprecated = req.version === undefined
 
     let isProduction = NODE_ENV === 'production'
-    let path = req.path || req.rawPath
+    let path = deprecated ? req.path : req.rawPath
     let isFolder = path.split('/').pop().indexOf('.') === -1
     let Key // Assigned below
 
@@ -77,12 +77,21 @@ function proxy (config={}) {
     }
 
     /**
-     * Strip `staging/` and `production/` from HTTP API req urls
+     * REST API [very deprecated]: strip `staging/`, `production/` path parts
+     * - Post Architect 5.5 (2019-02-03) which added /{proxy+} this would be an edge case
+     * - e.g. you'd see this if someone put up a proxy in not-`get /`
      */
-    if (Key.startsWith('staging/') ||
-        Key.startsWith('production/') ||
-        Key.startsWith('_static/')) {
-      Key = Key.replace('staging/', '').replace('production/', '').replace('_static/', '')
+    if (Key.startsWith('staging/'))     Key = Key.replace('staging/', '')
+    if (Key.startsWith('production/'))  Key = Key.replace('production/', '')
+
+    /**
+     * REST API [deprecated]: flag `staging/`, `production/` requests
+     */
+    let rootPath
+    let reqPath = req.requestContext && req.requestContext.path
+    if (deprecated && reqPath) {
+      if (reqPath && reqPath.startsWith('/staging/')) rootPath = 'staging'
+      if (reqPath && reqPath.startsWith('/production/')) rootPath = 'production'
     }
 
     // Normalize if-none-match header to lower case; it differs between environments
@@ -92,7 +101,7 @@ function proxy (config={}) {
     // Ensure response shape is correct for proxy SPA responses
     let isProxy = req.resource === '/{proxy+}' || !!req.rawPath
 
-    return await read({ Key, Bucket, IfNoneMatch, isFolder, isProxy, config })
+    return await read({ Key, Bucket, IfNoneMatch, isFolder, isProxy, config, rootPath })
   }
 }
 

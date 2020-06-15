@@ -4,6 +4,15 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.12.0] 2020-06-15
+
+### Added
+
+- Adds automatic fingerprint upgrading from non-fingerprinted requests; example:
+  - If `@static fingerprint true` is enabled, `<img src=this-is-fine.gif>` will now automatically load `/_static/this-is-fine-abc123.gif`
+
+---
+
 ## [3.11.0] 2020-06-07
 
 ### Added
