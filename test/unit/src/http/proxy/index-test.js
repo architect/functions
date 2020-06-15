@@ -146,6 +146,27 @@ test('isProxy param', async t => {
   t.ok(result.isProxy, 'isProxy param correctly set')
 })
 
+// rootPath
+test('rootPath param', async t => {
+  t.plan(3)
+  let proxy = await httpProxy(basicBucketConfig)
+
+  // Control
+  let result = await proxy(proxyReq)
+  t.notOk(result.rootPath, 'rootPath param not set')
+
+  let params = proxyReq
+  params.requestContext = {
+    path: '/staging/nature/hiking'
+  }
+  result = await proxy(proxyReq)
+  t.equal(result.rootPath, 'staging', 'rootPath param correctly set: staging')
+
+  params.requestContext.path = '/production/nature/hiking'
+  result = await proxy(proxyReq)
+  t.equal(result.rootPath, 'production', 'rootPath param correctly set: production')
+})
+
 test('Read shape', async t => {
   t.plan(5)
   let proxy = await httpProxy(basicBucketConfig)

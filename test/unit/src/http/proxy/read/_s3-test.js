@@ -52,13 +52,14 @@ let staticStub = {
 
 // Generates proxy read requests
 function read (params={}) {
-  let { Bucket, Key, IfNoneMatch, isProxy, config } = params
+  let { Bucket, Key, IfNoneMatch, isProxy, config, rootPath } = params
   return {
     Bucket: Bucket || defaultBucket,
     Key: Key || imgName,
     IfNoneMatch: IfNoneMatch || imgETag,
     isProxy: isProxy || true,
-    config: config || { spa: true }
+    config: config || { spa: true },
+    rootPath: rootPath || undefined
   }
 }
 
@@ -212,6 +213,32 @@ test('Fingerprint: filename is interpolated for captured requests (html, json, e
   t.equal(options.Bucket, Bucket, `Used alternate bucket: ${options.Bucket}`)
   t.equal(options.Key, staticStub[Key], `Read fingerprinted filename: ${options.Key}`)
   t.equal(result.body, b64(imgContents), `Original contents not mutated: ${result.body}`)
+})
+
+test('Fingerprint: valid non-captured request is upgraded to fingerprinted filename', async t => {
+  setup()
+  t.plan(9)
+  let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+
+  createResponse('text/html')
+  let Bucket = 'a-fingerprinted-bucket'
+  let Key = 'images/this-is-fine.gif'
+  let result = await readS3(read({ Bucket, Key, config: { assets: staticStub } }))
+  t.equal(result.statusCode, 302, 'Request forwarded (302)')
+  t.equal(result.headers.location, `/_static/${staticStub[Key]}`, `Forwarded to fingerprinted file: /_static/${staticStub[Key]}`)
+  t.equal(result.headers['Cache-Control'], antiCache, 'Default anti-caching headers set')
+
+  let rootPath = 'staging'
+  result = await readS3(read({ Bucket, Key, config: { assets: staticStub }, rootPath }))
+  t.equal(result.statusCode, 302, 'Request forwarded (302)')
+  t.equal(result.headers.location, `/${rootPath}/_static/${staticStub[Key]}`, `Forwarded to fingerprinted file with root path: /${rootPath}/_static/${staticStub[Key]}`)
+  t.equal(result.headers['Cache-Control'], antiCache, 'Default anti-caching headers set')
+
+  rootPath = 'production'
+  result = await readS3(read({ Bucket, Key, config: { assets: staticStub }, rootPath }))
+  t.equal(result.statusCode, 302, 'Request forwarded (302)')
+  t.equal(result.headers.location, `/${rootPath}/_static/${staticStub[Key]}`, `Forwarded to fingerprinted file with root path: /${rootPath}/_static/${staticStub[Key]}`)
+  t.equal(result.headers['Cache-Control'], antiCache, 'Default anti-caching headers set')
 })
 
 test('Fingerprint: template calls are replaced inline on non-captured requests', async t => {
