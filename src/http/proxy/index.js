@@ -22,7 +22,7 @@ let errors = require('../errors')
 function proxy (config={}) {
   return async function httpProxy (req) {
     let { ARC_STATIC_BUCKET, ARC_STATIC_SPA, NODE_ENV } = process.env
-    let deprecated = !(req.version === '2.0' && req.routeKey === '$default')
+    let deprecated = req.version === undefined
 
     let isProduction = NODE_ENV === 'production'
     let path = deprecated ? req.path : req.rawPath
