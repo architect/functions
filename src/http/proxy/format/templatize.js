@@ -2,7 +2,7 @@ let tmpl = require('./lodash.template-4.5.0.js')
 
 module.exports = function templatizeResponse (params) {
 
-  let { isBinary, assets, response, isLocal=false } = params
+  let { isBinary, assets, request, response, isLocal=false } = params
 
   if (isBinary)
     return response
@@ -17,12 +17,13 @@ module.exports = function templatizeResponse (params) {
         path = startsWithSlash ? `/${path}` : path
       }
       return path
-    }
+    },
+    request
   }
 
   let body = response.body instanceof Buffer ? Buffer.from(response.body).toString() : response.body
   let replacer = tmpl(body) // TODO cache compiled function in a ledger keyed on ...somethin
-  response.body = replacer({ arc, STATIC: arc.static })
+  response.body = replacer({ arc, STATIC: arc.static }) // TODO Deprecate STATIC
   response.body = Buffer.from(response.body)
   return response
 }
