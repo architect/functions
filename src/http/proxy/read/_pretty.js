@@ -29,7 +29,7 @@ module.exports = async function pretty (params) {
       file = join(basepath, file)
     }
     if (!existsSync(file)) {
-      let err = ReferenceError(`NoSuchKey: ${file} not found`)
+      let err = ReferenceError(`NoSuchKey: ${Key} not found`)
       err.name = 'NoSuchKey'
       throw err
     }

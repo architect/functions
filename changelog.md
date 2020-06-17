@@ -9,6 +9,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 ### Fixed
 
 - Fixed proxy lookup to custom 404 page working locally
+- Fixed incorrect filename in proxy 404 error message
 
 ---
 
