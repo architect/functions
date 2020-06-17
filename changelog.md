@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.12.1] 2020-06-16
+
+### Fixed
+
+- Fixed proxy lookup to custom 404 page working locally
+
+---
+
 ## [3.12.0] 2020-06-15
 
 ### Added

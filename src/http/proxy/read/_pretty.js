@@ -1,6 +1,6 @@
 let aws = require('aws-sdk')
 let { existsSync, readFileSync } = require('fs')
-// let { join } = require('path')
+let { join } = require('path')
 let { httpError } = require('../../errors')
 
 /**
@@ -10,7 +10,7 @@ let { httpError } = require('../../errors')
  */
 module.exports = async function pretty (params) {
   let { Bucket, Key, assets, headers, isFolder, prefix } = params
-  let { ARC_LOCAL, NODE_ENV } = process.env
+  let { ARC_LOCAL, ARC_SANDBOX_PATH_TO_STATIC, NODE_ENV } = process.env
   let local = NODE_ENV === 'testing' || ARC_LOCAL
   let s3 = new aws.S3
 
@@ -24,6 +24,10 @@ module.exports = async function pretty (params) {
   }
 
   async function getLocal (file) {
+    let basepath = ARC_SANDBOX_PATH_TO_STATIC
+    if (!file.startsWith(basepath)) {
+      file = join(basepath, file)
+    }
     if (!existsSync(file)) {
       let err = ReferenceError(`NoSuchKey: ${file} not found`)
       err.name = 'NoSuchKey'

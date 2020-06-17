@@ -2,6 +2,7 @@ let test = require('tape')
 let mockfs = require('mock-fs')
 let proxyquire = require('proxyquire')
 let env = process.env.NODE_ENV
+let pathToStatic = process.env.ARC_SANDBOX_PATH_TO_STATIC
 
 let errorState
 let buf = msg => Buffer.from(msg)
@@ -91,6 +92,7 @@ test('Peek and find nested index.html', async t => {
 
   // Local
   process.env.NODE_ENV = 'testing'
+  process.env.ARC_SANDBOX_PATH_TO_STATIC = ''
   let msg = 'got ok/hi/index.html from local!'
   mockfs({
     'ok/hi/index.html': buf(msg)
@@ -225,6 +227,10 @@ test('Return the default 404', async t => {
 
 test('Teardown', t => {
   process.env.NODE_ENV = env
+  if (pathToStatic === 'undefined') {
+    delete process.env.ARC_SANDBOX_PATH_TO_STATIC
+  }
+  else process.env.ARC_SANDBOX_PATH_TO_STATIC = pathToStatic
   t.pass('Ok')
   t.end()
 })
