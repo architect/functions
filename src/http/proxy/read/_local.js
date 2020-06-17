@@ -57,9 +57,7 @@ module.exports = async function readLocal (params) {
     let contentType = mime.contentType(extname(Key))
 
     if (!existsSync(filePath)) {
-      let err = ReferenceError(`NoSuchKey: ${filePath} not found`)
-      err.name = 'NoSuchKey'
-      throw err
+      return await pretty({ Key: filePath, config, isFolder })
     }
 
     let body = readFileSync(filePath)
