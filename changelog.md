@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.12.2] 2020-07-20
+
+### Added
+
+- Adds support for loading compressed files out of proxy
+
+---
+
 ## [3.12.1] 2020-06-16
 
 ### Fixed

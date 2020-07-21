@@ -1,29 +1,32 @@
 let test = require('tape')
 let normalize = require('../../../../../../src/http/proxy/format/response')
+let { gunzipSync } = require('zlib')
 
 let ContentType = 'image/gif'
 let ETag = 'etagvalue'
 let fileContents = 'this is just some file contents\n'
 let body = Buffer.from(fileContents)
-let basicResponse = {
-  // Generated response object
-  response: {
-    headers: {
-      'Content-Type': ContentType,
-      'Cache-Control': 'max-age=86400',
-      ETag
+function basicResponse () {
+  return {
+    // Generated response object
+    response: {
+      headers: {
+        'Content-Type': ContentType,
+        'Cache-Control': 'max-age=86400',
+        ETag
+      },
+      body
     },
-    body
-  },
-  // S3 result object
-  result: {
-    ContentType,
-    ETag,
-    Body: body
-  },
-  Key: 'this-is-fine.gif',
-  isProxy: false,
-  config: {spa: true}
+    // S3 result object
+    result: {
+      ContentType,
+      ETag,
+      Body: body
+    },
+    Key: 'this-is-fine.gif',
+    isProxy: false,
+    config: { spa: true }
+  }
 }
 
 test('Set up env', t => {
@@ -33,7 +36,7 @@ test('Set up env', t => {
 
 test('Content-Type setting', t => {
   t.plan(11)
-  let _basicResponse = JSON.parse(JSON.stringify(basicResponse))
+  let _basicResponse = basicResponse()
   let result = normalize(_basicResponse)
   t.equal(result.headers['Content-Type'], ContentType, `Retained Content-Type from Content-Type header: ${ContentType}`)
 
@@ -63,7 +66,7 @@ test('Content-Type setting', t => {
 
 test('Cache-Control setting', t => {
   t.plan(5)
-  let _basicResponse = JSON.parse(JSON.stringify(basicResponse))
+  let _basicResponse = basicResponse()
   let result = normalize(_basicResponse)
   t.equal(result.headers['Cache-Control'], 'public, max-age=0, must-revalidate', 'No anti-cache or cache setting set, defaults to 1 day')
 
@@ -91,13 +94,21 @@ test('Cache-Control setting', t => {
 })
 
 test('Response encoding', t => {
-  t.plan(24)
-  function usually () {
-    let _basicResponse = JSON.parse(JSON.stringify(basicResponse))
+  t.plan(29)
+  function usually (extras) {
+    let _basicResponse = basicResponse()
+    if (extras) _basicResponse = Object.assign(_basicResponse, extras)
     let result = normalize(_basicResponse)
+    let resultBody
+    if (result.headers['Content-Encoding'] === 'gzip') {
+      resultBody = gunzipSync(Buffer.from(result.body, 'base64')).toString()
+    }
+    else {
+      resultBody = Buffer.from(result.body, 'base64').toString()
+    }
     t.ok(result.headers['Content-Type'], 'Got Content-Type header')
     t.ok(result.headers['Cache-Control'], 'Got Cache-Control header')
-    t.equal(new Buffer.from(result.body, 'base64').toString(), fileContents, 'Body matches provided file contents')
+    t.equal(resultBody, fileContents, 'Body matches provided file contents')
     t.ok(result.isBase64Encoded, 'Got isBase64Encoded param')
     t.equal(Object.getOwnPropertyNames(result).length, 3, 'Received correctly formatted response')
   }
@@ -106,6 +117,9 @@ test('Response encoding', t => {
   process.env.ARC_CLOUDFORMATION = true
   t.ok(process.env.ARC_CLOUDFORMATION, 'In Arc 6 mode')
   usually()
+
+  // Arc 6 + compression
+  usually({ contentEncoding: 'gzip' })
   delete process.env.ARC_CLOUDFORMATION
   t.notOk(process.env.ARC_CLOUDFORMATION, 'No longer in Arc 6 mode')
 
@@ -118,7 +132,7 @@ test('Response encoding', t => {
 
   // Arc 5 HTML
   t.ok(!process.env.ARC_CLOUDFORMATION && !process.env.ARC_HTTP, 'In Arc 5 mode (not a proxy request)')
-  let _basicResponse = JSON.parse(JSON.stringify(basicResponse))
+  let _basicResponse = basicResponse()
   let html = 'text/html'
   _basicResponse.response.headers['Content-Type'] = html
   let result = normalize(_basicResponse)

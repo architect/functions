@@ -9,6 +9,7 @@ let transform = require('../format/transform') // Soon to be deprecated
 let templatizeResponse = require('../format/templatize')
 let normalizeResponse = require('../format/response')
 let pretty = require('./_pretty')
+let { decompress } = require('../format/compress')
 
 /**
  * arc.http.proxy.read
@@ -96,6 +97,10 @@ module.exports = async function readS3 (params) {
     // No ETag found, return the blob
     if (!matchedETag) {
       let contentEncoding = result.ContentEncoding
+      if (contentEncoding) {
+        result.Body = decompress(contentEncoding, result.Body)
+      }
+
       let isBinary = binaryTypes.some(type => result.ContentType.includes(type) || contentType.includes(type))
 
       // Transform first to allow for any proxy plugin mutations
@@ -122,13 +127,9 @@ module.exports = async function readS3 (params) {
         result,
         Key,
         isProxy,
+        contentEncoding,
         config
       })
-
-      // Add ETag
-      response.headers.ETag = result.ETag
-      // If encoded, add that too
-      if (contentEncoding) response.headers['Content-Encoding'] = contentEncoding
     }
 
     if (!response.statusCode) {
