@@ -16,7 +16,7 @@ function compressor (direction, type, data) {
   }
   if (!exec[type]) throw ReferenceError('Invalid compression type specified, must be gzip, br, or deflate')
 
-  return compress ? exec[type](data) : exec[type](data).toString()
+  return exec[type](data)
 }
 
 module.exports = {
