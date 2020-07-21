@@ -1,11 +1,12 @@
 let mime = require('mime-types')
 let path = require('path')
+let { compress } = require('./compress')
 
 /**
  * Normalizes response shape
  */
 module.exports = function normalizeResponse (params) {
-  let { response, result, Key, isProxy, config } = params
+  let { response, result, Key, isProxy, contentEncoding, config } = params
 
   let noCache = [
     'text/html',
@@ -66,9 +67,17 @@ module.exports = function normalizeResponse (params) {
     response.type = response.headers['Content-Type'] // Re-set type or it will fall back to JSON
   }
   else {
+    if (contentEncoding) {
+      response.body = compress(contentEncoding, response.body)
+      response.headers['Content-Encoding'] = contentEncoding
+    }
     // Base64 everything else on the way out to enable text + binary support
     response.body = Buffer.from(response.body).toString('base64')
     response.isBase64Encoded = true
   }
+
+  // Add ETag
+  response.headers.ETag = result.ETag
+
   return response
 }

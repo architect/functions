@@ -1,5 +1,6 @@
 let test = require('tape')
 let proxyquire = require('proxyquire')
+let { gzipSync } = require('zlib')
 
 /**
  * We'll test for basic response formatting, templatization, and headers
@@ -168,14 +169,18 @@ test('S3 proxy reader passes through ContentEncoding to response headers', async
   t.plan(7)
 
   let ContentEncoding = 'gzip'
-  createResponse(null, null, { ContentEncoding })
+  let Body = gzipSync(Buffer.from(imgContents))
+  createResponse(null, null, {
+    ContentEncoding,
+    Body
+  })
   let result = await readS3(read())
   t.equal(result.statusCode, 200, 'Returns statusCode: 200')
   t.equal(result.headers['Cache-Control'], defaultCacheControl, 'Returns correct cache-control')
   t.equal(result.headers['Content-Type'], imgContentType, 'Returns correct content-type')
   t.equal(result.headers['Content-Encoding'], ContentEncoding, 'Returns correct content-encoding')
   t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
-  t.equal(result.body, b64(imgContents), 'Returns correct body')
+  t.equal(result.body, b64(Body), 'Returns correct body')
   t.ok(result.isBase64Encoded, 'Result is base64 encoded')
 })
 
