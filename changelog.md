@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.3] 2020-07-29
+
+### Added
+
+- Enable proxy to use HTTP APIs running in Lambda v1.0 payload format mode
+
+---
+
 ## [3.12.2] 2020-07-20
 
 ### Added
