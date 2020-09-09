@@ -15,7 +15,7 @@ module.exports = {
    * @param {Function} callback - a node style errback (optional)
    * @returns {Promise} - returned if no callback is supplied
    */
-  publish(params, callback) {
+  publish (params, callback) {
     if (process.env.ARC_CLOUDFORMATION) {
       return publish(params, callback)
     }

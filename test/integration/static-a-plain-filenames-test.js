@@ -21,7 +21,7 @@ let resetEnv = () => {
   delete process.env.ARC_STATIC_BUCKET
 }
 
-test('Set up mocked files', t=> {
+test('Set up mocked files', t => {
   t.plan(2)
   mkdir(shared)
   fs.copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
@@ -33,7 +33,7 @@ test('Set up mocked files', t=> {
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
-test('Local URL tests', t=> {
+test('Local URL tests', t => {
   t.plan(7)
   t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path')
   t.equal(arc.static('/index.html'), '/_static/index.html', 'Basic local static path with leading slash')
@@ -55,7 +55,7 @@ test('Local URL tests', t=> {
   resetEnv()
 })
 
-test('Clean up env', t=> {
+test('Clean up env', t => {
   t.plan(1)
   process.env.AWS_REGION = origRegion
   process.env.NODE_ENV = 'testing'

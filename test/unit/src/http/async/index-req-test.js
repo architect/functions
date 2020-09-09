@@ -1,3 +1,4 @@
+/* eslint require-await: 0 */
 let arc = require('../../../../../src/')
 let bodyParser = require('../../../../../src/http/helpers/body-parser')
 let interpolate = require('../../../../../src/http/helpers/params')
@@ -9,7 +10,7 @@ let isObject = t => typeof t === 'object' && !!(t)
 let unNulled = (before, after) => before === null && isObject(after)
 let b64dec = i => new Buffer.from(i, 'base64').toString()
 let match = (copy, item) => `${copy} matches: ${item}`
-let basicResponse = {statusCode: 200}
+let basicResponse = { statusCode: 200 }
 
 test('Set up env', t => {
   t.plan(3)
@@ -35,21 +36,21 @@ test('Architect v6: get /', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    // Compare mutation of nulls into objects
-    if (unNulled(request.body, req.body))
-      t.pass(match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    // Compare interpolation to nicer, backwards compat req params
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  // Compare mutation of nulls into objects
+  if (unNulled(request.body, req.body))
+    t.pass(match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  // Compare interpolation to nicer, backwards compat req params
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
     // Compare mutation of nulls into objects, and
     // also compare interpolation to nicer, backwards compat req params
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: get /?whats=up', async t => {
@@ -62,17 +63,17 @@ test('Architect v6: get /?whats=up', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    if (unNulled(request.body, req.body))
-      t.pass(match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (request.queryStringParameters === req.query)
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  if (unNulled(request.body, req.body))
+    t.pass(match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (request.queryStringParameters === req.query)
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: get /nature/hiking', async t => {
@@ -85,19 +86,19 @@ test('Architect v6: get /nature/hiking', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    if (unNulled(request.body, req.body))
-      t.pass(match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    // Test resource, which is interpolated differently than 'path' in requests with URL params
-    t.equal(request.resource, req.resource, match('req.resource', req.resource))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (str(request.pathParameters) === str(req.pathParameters))
-      t.equal(str(req.params), str(req.pathParameters), match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  if (unNulled(request.body, req.body))
+    t.pass(match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  // Test resource, which is interpolated differently than 'path' in requests with URL params
+  t.equal(request.resource, req.resource, match('req.resource', req.resource))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (str(request.pathParameters) === str(req.pathParameters))
+    t.equal(str(req.params), str(req.pathParameters), match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: post /form (JSON)', async t => {
@@ -110,17 +111,17 @@ test('Architect v6: post /form (JSON)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
-    t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+  t.equal(req.body.hi, 'there', `received expected body data`)
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: post /form (form URL encoded)', async t => {
@@ -133,17 +134,17 @@ test('Architect v6: post /form (form URL encoded)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(bodyParser(request)), str(req.body), match('req.body', str(req.body))) // For some reason this body needs to be stringified to not error on print
-    t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(bodyParser(request)), str(req.body), match('req.body', str(req.body))) // For some reason this body needs to be stringified to not error on print
+  t.equal(req.body.hi, 'there', `received expected body data`)
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: post /form (multipart form data)', async t => {
@@ -156,17 +157,17 @@ test('Architect v6: post /form (multipart form data)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
-    t.equal(b64dec(req.body.base64), 'hi there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+  t.equal(b64dec(req.body.base64), 'hi there', `received expected body data`)
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: post /form (octet stream)', async t => {
@@ -179,17 +180,17 @@ test('Architect v6: post /form (octet stream)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
-    t.equal(b64dec(req.body.base64), 'hi there\n', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+  t.equal(b64dec(req.body.base64), 'hi there\n', `received expected body data`)
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: put /form (JSON)', async t => {
@@ -202,17 +203,17 @@ test('Architect v6: put /form (JSON)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
-    t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+  t.equal(req.body.hi, 'there', `received expected body data`)
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: patch /form (JSON)', async t => {
@@ -225,17 +226,17 @@ test('Architect v6: patch /form (JSON)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
-    t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+  t.equal(req.body.hi, 'there', `received expected body data`)
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v6: delete /form (JSON)', async t => {
@@ -248,17 +249,17 @@ test('Architect v6: delete /form (JSON)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
-    t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    if (unNulled(request.pathParameters, req.params))
-      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
-    if (unNulled(request.queryStringParameters, req.query))
-      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
+  t.equal(req.body.hi, 'there', `received expected body data`)
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (unNulled(request.queryStringParameters, req.query))
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 /**
@@ -277,15 +278,15 @@ test('Architect v5: get /', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v5: get /?whats=up', async t => {
@@ -298,15 +299,15 @@ test('Architect v5: get /?whats=up', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v5: get /nature/hiking', async t => {
@@ -320,15 +321,15 @@ test('Architect v5: get /nature/hiking', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, `req.path interpolated, matches: "${req.path}"`)
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, `req.path interpolated, matches: "${req.path}"`)
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v5: post /form (JSON / form URL-encoded)', async t => {
@@ -341,15 +342,15 @@ test('Architect v5: post /form (JSON / form URL-encoded)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v5: post /form (multipart form data-encoded)', async t => {
@@ -362,15 +363,15 @@ test('Architect v5: post /form (multipart form data-encoded)', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v5: put /form', async t => {
@@ -383,15 +384,15 @@ test('Architect v5: put /form', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v5: patch /form', async t => {
@@ -404,15 +405,15 @@ test('Architect v5: patch /form', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('Architect v5: delete /form', async t => {
@@ -425,27 +426,27 @@ test('Architect v5: delete /form', async t => {
   }
   let handler = arc.http.async(fn)
   await handler(request)
-    t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
-    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
-    if (request.httpMethod === req.method)
-      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
-    t.equal(str(request.params), str(req.params), match('req.params', req.params))
-    if (str(request.query) === str(req.query))
-      t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
-    t.ok(req.session, 'req.session is present')
+  t.equal(str(request.body), str(req.body), match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  t.equal(str(request.params), str(req.params), match('req.params', req.params))
+  if (str(request.query) === str(req.query))
+    t.equal(str(req.queryStringParameters), str(req.query), match('req.query/queryStringParameters', req.query))
+  t.ok(req.session, 'req.session is present')
 })
 
 test('arc.middleware should allow the mutation of request object between middleware functions', t => {
   t.plan(1)
   let request = reqs.arc5.getIndex
   let req = JSON.parse(str(request))
-  let one = function (req) {
+  function one (req) {
     req.body = req.body || {}
     req.body.munge = true
     return req
   }
-  let two = function (req) {
+  function two (req) {
     t.ok(req.body.munge, 'request object was mutated in middleware')
     return { statusCode: 200, body: req.body }
   }
@@ -457,19 +458,19 @@ test('arc.middleware should pass along original request if function does not ret
   t.plan(1)
   let request = reqs.arc5.getIndex
   let gotOne
-  let one = async req => {
+  async function one (req) {
     gotOne = req
     return
   }
   let gotTwo
-  let two = async req => {
+  async function two (req) {
     gotTwo = req
-    return {statusCode: 200}
+    return { statusCode: 200 }
   }
   let req = JSON.parse(str(request))
   let handler = arc.http.async(one, two)
   await handler(req)
-  t.equal(str(gotOne), str(gotTwo), match('second function request', `${str(gotTwo).substr(0,50)}...`))
+  t.equal(str(gotOne), str(gotTwo), match('second function request', `${str(gotTwo).substr(0, 50)}...`))
   // Unset env var for future testing (ostensibly)
   delete process.env.SESSION_TABLE_NAME
 })

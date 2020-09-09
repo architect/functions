@@ -1,8 +1,8 @@
 let http = require('http')
 
-module.exports = function send({id, payload}, callback) {
+module.exports = function send ({ id, payload }, callback) {
   let port = process.env.PORT || 3333
-  let body = JSON.stringify({id, payload})
+  let body = JSON.stringify({ id, payload })
   let req = http.request({
     method: 'POST',
     port,
@@ -13,7 +13,7 @@ module.exports = function send({id, payload}, callback) {
     }
   })
   req.on('error', callback)
-  req.on('close', ()=> callback())
+  req.on('close', () => callback())
   req.write(body)
   req.end()
 }

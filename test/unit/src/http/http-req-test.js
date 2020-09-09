@@ -9,7 +9,7 @@ let isObject = t => typeof t === 'object' && !!(t)
 let unNulled = (before, after) => before === null && isObject(after)
 let b64dec = i => new Buffer.from(i, 'base64').toString()
 let match = (copy, item) => `${copy} matches: ${str(item)}`
-let basicResponse = {statusCode: 200}
+let basicResponse = { statusCode: 200 }
 
 test('Set up env', t => {
   t.plan(2)
@@ -28,11 +28,11 @@ test('Architect v6: get /', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.getIndex
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     // Compare mutation of nulls into objects
     if (unNulled(request.body, req.body))
       t.pass(match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     // Compare interpolation to nicer, backwards compat req params
     if (request.httpMethod === req.method)
@@ -53,10 +53,10 @@ test('Architect v6: get /?whats=up', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.getWithQueryString
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     if (unNulled(request.body, req.body))
       t.pass(match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -74,10 +74,10 @@ test('Architect v6: get /nature/hiking', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.getWithParam
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     if (unNulled(request.body, req.body))
       t.pass(match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     // Test resource, which is interpolated differently than 'path' in requests with URL params
     t.equal(request.resource, req.resource, match('req.resource', req.resource))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
@@ -97,10 +97,10 @@ test('Architect v6: get /{proxy+}', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.getProxyPlus
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     if (unNulled(request.body, req.body))
       t.pass(match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(request.resource, req.resource, match('req.resource', req.resource))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
@@ -119,10 +119,10 @@ test('Architect v6: post /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.postJson
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -140,10 +140,10 @@ test('Architect v6: post /form (form URL encoded)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.postFormURL
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -161,10 +161,10 @@ test('Architect v6: post /form (multipart form data)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.postMultiPartFormData
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(b64dec(req.body.base64), 'hi there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -182,10 +182,10 @@ test('Architect v6: post /form (octet stream)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.postOctetStream
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(b64dec(req.body.base64), 'hi there\n', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -203,10 +203,10 @@ test('Architect v6: put /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.putJson
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -224,10 +224,10 @@ test('Architect v6: patch /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.patchJson
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -245,10 +245,10 @@ test('Architect v6: delete /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc6.deleteJson
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -272,9 +272,9 @@ test('Architect v5: get /', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.getIndex
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -291,9 +291,9 @@ test('Architect v5: get /?whats=up', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.getWithQueryString
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -311,7 +311,7 @@ test('Architect v5: get /nature/hiking', t => {
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.getWithParam
   interpolate(request)
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
     t.equal(request.path, req.path, `req.path interpolated, matches: "${req.path}"`)
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
@@ -330,9 +330,9 @@ test('Architect v5: post /form (JSON / form URL-encoded)', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.post
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -349,9 +349,9 @@ test('Architect v5: post /form (multipart form data-encoded)', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.postBinary
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -362,15 +362,15 @@ test('Architect v5: post /form (multipart form data-encoded)', t => {
     res(basicResponse)
   })
   handler(request, {}, end)
-  })
+})
 
 test('Architect v5: put /form', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.put
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -387,9 +387,9 @@ test('Architect v5: patch /form', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.patch
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
@@ -406,9 +406,9 @@ test('Architect v5: delete /form', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
   let request = reqs.arc5.delete
-  let handler = http((req,res) => {
+  let handler = http((req, res) => {
     t.equal(str(request.body), str(req.body), match('req.body', req.body))
-    t.equal(request.path, req.path, match('req.path',req.path))
+    t.equal(request.path, req.path, match('req.path', req.path))
     t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
     if (request.httpMethod === req.method)
       t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))

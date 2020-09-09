@@ -161,7 +161,7 @@ module.exports = async function readS3 (params) {
 let staticAssets
 let staticManifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
 if (staticAssets === false) {
-  null /*noop*/
+  null /* noop*/
 }
 else if (existsSync(staticManifest) && !staticAssets) {
   staticAssets = JSON.parse(readFileSync(staticManifest))

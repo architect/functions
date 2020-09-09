@@ -11,7 +11,7 @@ let b64enc = i => Buffer.from(i).toString('base64')
 let css = '.hi:before {content: "there";}'
 let html = '<span>hi there</span>'
 let js = `console.log('hi there')`
-let json = {hi: 'there'}
+let json = { hi: 'there' }
 let text = 'hi there'
 let xml = '<hi>there</hi>'
 
@@ -33,7 +33,7 @@ let arc6 = {
   // Base64 encoded with valid binary content type
   encodedWithBinaryType: {
     body: b64enc('hi there\n'),
-    headers: {'Content-Type': 'application/pdf'}
+    headers: { 'Content-Type': 'application/pdf' }
   }
 }
 
@@ -50,31 +50,31 @@ let arc5 = {
   cacheControl: {
     body: 'hi there',
     cacheControl: 'max-age=1',
-    headers: {'cache-control': 'max-age=60'} // cacheControl should win
+    headers: { 'cache-control': 'max-age=60' } // cacheControl should win
   },
 
   // Test default anti-caching on HTML
   noCacheControlHTML: {
     body: html,
-    headers: {'Content-Type': 'text/html; charset=uft8'}
+    headers: { 'Content-Type': 'text/html; charset=uft8' }
   },
 
   // Test default anti-caching on JSON
   noCacheControlJSON: {
     body: json,
-    headers: {'Content-Type': 'application/json; charset=uft8'}
+    headers: { 'Content-Type': 'application/json; charset=uft8' }
   },
 
   // Test default anti-caching on JSON API
   noCacheControlJSONapi: {
     body: json,
-    headers: {'Content-Type': 'application/vnd.api+json; charset=uft8'}
+    headers: { 'Content-Type': 'application/vnd.api+json; charset=uft8' }
   },
 
   // No default anti-caching on other content types
   noCacheControlOther: {
     body: text,
-    headers: {'Content-Type': 'text/plain; charset=uft8'}
+    headers: { 'Content-Type': 'text/plain; charset=uft8' }
   },
 
   // Not specifying a content type should default to JSON
@@ -94,7 +94,7 @@ let arc5 = {
   // Set cookie
   cookie: {
     body: html,
-    cookie: {hi: 'there'}
+    cookie: { hi: 'there' }
   },
 
   // Set cors
@@ -114,12 +114,12 @@ let arc4 = {
   /**
    * Deprecated statically-bound content type style responses
    */
-  css: {css},
-  html: {html},
-  js: {js},
-  json: {json},
-  text: {text},
-  xml: {xml}
+  css: { css },
+  html: { html },
+  js: { js },
+  json: { json },
+  text: { text },
+  xml: { xml }
 }
 
 let arc = {
@@ -148,7 +148,7 @@ let arc = {
 
   // Set session
   session: {
-    session: {hi: 'there'}
+    session: { hi: 'there' }
   }
 }
 

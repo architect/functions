@@ -7,7 +7,7 @@
  * - /staging if NODE_ENV === staging
  * - /production if NODE_ENV === production
  */
-module.exports = function url(url) {
+module.exports = function url (url) {
   let staging = process.env.NODE_ENV === 'staging'
   let production = process.env.NODE_ENV === 'production'
   if (!process.env.ARC_LOCAL && (staging || production))

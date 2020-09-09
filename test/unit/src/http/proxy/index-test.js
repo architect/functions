@@ -11,7 +11,7 @@ let proxyReq = reqs.arc6.getProxyPlus
 let stagingBucket = 'my-staging-bucket'
 let productionBucket = 'my-production-bucket'
 let basicBucketConfig = {
-  bucket:{
+  bucket: {
     staging: stagingBucket,
   }
 }
@@ -37,7 +37,7 @@ test('Config: bucket', async t => {
 
   // Test ARC_STATIC_BUCKET vs config
   proxy = await httpProxy({
-    bucket:{
+    bucket: {
       production: stagingBucket
     }
   })
@@ -47,7 +47,7 @@ test('Config: bucket', async t => {
 
   // Test config.bucket
   proxy = await httpProxy({
-    bucket:{
+    bucket: {
       staging: stagingBucket
     }
   })
@@ -60,7 +60,7 @@ test('Config: SPA', async t => {
 
   // Test spa:true to get /
   let proxy = await httpProxy({
-    bucket:{
+    bucket: {
       staging: stagingBucket
     },
     spa: true
@@ -70,7 +70,7 @@ test('Config: SPA', async t => {
 
   // Test spa: true to get /{proxy+}
   proxy = await httpProxy({
-    bucket:{
+    bucket: {
       staging: stagingBucket
     },
     spa: true
@@ -81,7 +81,7 @@ test('Config: SPA', async t => {
   // Test spa:false
   process.env.ARC_STATIC_SPA = 'false'
   proxy = await httpProxy({
-    bucket:{
+    bucket: {
       staging: stagingBucket
     },
     spa: true
@@ -171,6 +171,8 @@ test('Read shape', async t => {
   t.plan(5)
   let proxy = await httpProxy(basicBucketConfig)
   let result = await proxy(req)
+  // Need hasOwnProperty to check for existence of existing undefined properties
+  // eslint-disable-next-line
   let checkParam = param => result.hasOwnProperty(param)
   t.ok(checkParam('Key'), 'Read params include Key')
   t.ok(checkParam('Bucket'), 'Read params include Bucket')

@@ -48,7 +48,7 @@ test('Architect v6 dependency-free responses', t => {
   run(responses.arc6.buffer, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Received string (and not buffer) back')
-    t.equal(b64dec(res.body), 'hi there\n','Body properly auto-encoded')
+    t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
@@ -75,7 +75,7 @@ test('Architect v5 dependency-free responses', t => {
   })
   run(responses.arc5.cookie, (err, res) => {
     t.notOk(err, 'No error')
-    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0,75)}...`)
+    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc5.cors, (err, res) => {
@@ -297,7 +297,7 @@ test('Architect <6 + Functions response params', t => {
   })
   run(responses.arc.session, (err, res) => {
     t.notOk(err, 'No error')
-    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0,75)}...`)
+    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
   })
 })
 

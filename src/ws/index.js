@@ -12,13 +12,13 @@ let run = require('./send')
  * @param {Function} callback - a node style errback (optional)
  * @returns {Promise} - returned if no callback is supplied
  */
-module.exports = function send({id, payload}, callback) {
+module.exports = function send ({ id, payload }, callback) {
 
   // create a promise if no callback is defined
   let promise
   if (!callback) {
-    promise = new Promise(function(res, rej) {
-      callback = function(err, result) {
+    promise = new Promise(function (res, rej) {
+      callback = function (err, result) {
         err ? rej(err) : res(result)
       }
     })

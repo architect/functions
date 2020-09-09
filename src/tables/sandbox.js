@@ -5,23 +5,23 @@ let parallel = require('run-parallel')
 /**
  * returns a data client
  */
-module.exports = function sandbox(callback) {
+module.exports = function sandbox (callback) {
   parallel([
     dynamo.db,
     dynamo.doc
   ],
-  function _done(err, results) {
+  function _done (err, results) {
     if (err) callback(err)
     else {
       let db = results[0]
       let doc = results[1]
-      db.listTables({}, function listed(err, result) {
+      db.listTables({}, function listed (err, result) {
         if (err) callback(err)
         else {
-          let reduce = (a, b)=> Object.assign({}, a, b)
-          let dontcare = tbl=> tbl != 'arc-sessions' && tbl.includes('production') === false
+          let reduce = (a, b) => Object.assign({}, a, b)
+          let dontcare = tbl => tbl != 'arc-sessions' && tbl.includes('production') === false
           let tables = result.TableNames.filter(dontcare)
-          let data = tables.map(function fmt(tbl) {
+          let data = tables.map(function fmt (tbl) {
             let parts = tbl.split('-staging-')
             let app = parts.shift()
             let name = parts.join('')
@@ -38,8 +38,10 @@ module.exports = function sandbox(callback) {
             value: doc
           })
 
-          data.reflect = async function reflect() {
-            return tables.reduce(function visit(result, tbl) {
+          // async jic for later
+          // eslint-disable-next-line
+          data.reflect = async function reflect () {
+            return tables.reduce(function visit (result, tbl) {
               let parts = tbl.split('-staging-')
               let app = parts.shift()
               let name = parts.join('')
@@ -48,7 +50,7 @@ module.exports = function sandbox(callback) {
             }, {})
           }
 
-          data._name = function _name(name) {
+          data._name = function _name (name) {
             return tables.filter(t => RegExp(`^.*${name}$`).test(t))
           }
 
@@ -56,44 +58,44 @@ module.exports = function sandbox(callback) {
         }
       })
 
-      function client(appname) {
-        return function(tablename) {
-          let name = nom=> `${appname}-staging-${nom}`
+      function client (appname) {
+        return function (tablename) {
+          let name = nom => `${appname}-staging-${nom}`
           let TableName = name(tablename)
           let client = {
-            delete(key, callback) {
+            delete (key, callback) {
               let params = {}
               params.TableName = TableName
               params.Key = key
               doc.delete(params, callback)
             },
-            get(key, callback) {
+            get (key, callback) {
               let params = {}
               params.TableName = TableName
               params.Key = key
-              doc.get(params, function _get(err, result) {
+              doc.get(params, function _get (err, result) {
                 if (err) callback(err)
                 else callback(null, result.Item)
               })
             },
-            put(item, callback) {
+            put (item, callback) {
               let params = {}
               params.TableName = TableName
               params.Item = item
-              doc.put(params, function _put(err) {
+              doc.put(params, function _put (err) {
                 if (err) callback(err)
                 else callback(null, item)
               })
             },
-            query(params, callback) {
+            query (params, callback) {
               params.TableName = TableName
               doc.query(params, callback)
             },
-            scan(params, callback) {
+            scan (params, callback) {
               params.TableName = TableName
               doc.scan(params, callback)
             },
-            update(params, callback) {
+            update (params, callback) {
               params.TableName = TableName
               doc.update(params, callback)
             }

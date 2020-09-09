@@ -1,7 +1,7 @@
-let {httpError} = require('./errors')
+let { httpError } = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
 
-module.exports = function responseFormatter(req, params) {
+module.exports = function responseFormatter (req, params) {
   let isError = params instanceof Error // Doesn't really pertain to async
   let buffer
   let bodyIsBuffer = params.body instanceof Buffer
@@ -64,7 +64,7 @@ module.exports = function responseFormatter(req, params) {
   let statusCode = providedStatus || 200
 
   let res = {
-    headers: Object.assign({}, {'Content-Type': type}, params.headers || {}),
+    headers: Object.assign({}, { 'Content-Type': type }, params.headers || {}),
     statusCode,
     body
   }
@@ -77,7 +77,7 @@ module.exports = function responseFormatter(req, params) {
       ${params.message}<br>
       <pre>${params.stack}<pre>
     `
-    res = httpError({statusCode, title, message})
+    res = httpError({ statusCode, title, message })
   }
 
   /**

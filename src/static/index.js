@@ -1,5 +1,5 @@
-const {readFileSync, existsSync} = require('fs')
-const {join} = require('path')
+const { readFileSync, existsSync } = require('fs')
+const { join } = require('path')
 
 /**
  * Architect static asset helper
@@ -11,7 +11,7 @@ const {join} = require('path')
  * @param {string} path - the path to the asset (eg. /index.js)
  * @returns {string} path - the resolved asset path (eg. /_static/index-xxx.js)
  */
-module.exports = function _static(asset, options={}) {
+module.exports = function _static (asset, options = {}) {
   let key = asset[0] === '/' ? asset.substring(1) : asset
   let isIndex = asset === '/'
   let manifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
@@ -20,7 +20,7 @@ module.exports = function _static(asset, options={}) {
   let stagePath = options.stagePath && !local ? '/' + process.env.NODE_ENV : ''
   let path = `${stagePath}/_static`
   if (!local && exists && !isIndex) {
-    let read = p=> readFileSync(p).toString()
+    let read = p => readFileSync(p).toString()
     let pkg = JSON.parse(read(manifest))
     let asset = pkg[key]
     if (!asset)

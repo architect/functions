@@ -2,10 +2,10 @@ let aws = require('aws-sdk')
 let lookup = require('../discovery')
 let ledger = {}
 
-module.exports = function live({name, payload}, callback) {
+module.exports = function live ({ name, payload }, callback) {
 
-  function publish(arn, payload, callback) {
-    console.log('sns.publish', JSON.stringify({arn, payload}))
+  function publish (arn, payload, callback) {
+    console.log('sns.publish', JSON.stringify({ arn, payload }))
     let sns = new aws.SNS
     sns.publish({
       TopicArn: arn,
@@ -13,14 +13,14 @@ module.exports = function live({name, payload}, callback) {
     }, callback)
   }
 
-  let arn = ledger.hasOwnProperty(name)
+  let arn = ledger[name]
   if (arn) {
     publish(ledger[name], payload, callback)
   }
   else {
-    lookup.events(function done(err, found) {
+    lookup.events(function done (err, found) {
       if (err) callback(err)
-      else if (!found.hasOwnProperty(name)) {
+      else if (!found[name]) {
         callback(ReferenceError(`${name} not found`))
       }
       else {

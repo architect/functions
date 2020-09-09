@@ -7,13 +7,13 @@ let ledger = {}
 // priv publish
 // blindly publishes to sns topic json stringified record
 // throws if fails so lambda errors are noticible
-function __publish(arn, payload, callback) {
-  console.log('Publishing SNS', JSON.stringify({arn, payload}))
+function __publish (arn, payload, callback) {
+  console.log('Publishing SNS', JSON.stringify({ arn, payload }))
   sns.publish({
     TopicArn: arn,
     Message: JSON.stringify(payload)
   },
-  function _published(err, result) {
+  function _published (err, result) {
     if (err) throw err
     callback(null, result)
   })
@@ -41,7 +41,7 @@ function __publish(arn, payload, callback) {
  *     payload: {hello: 'world2'},
  *   }, console.log)
  */
-module.exports = function _publish(params, callback) {
+module.exports = function _publish (params, callback) {
   if (!params.name)
     throw ReferenceError('missing params.name')
 
@@ -63,15 +63,15 @@ module.exports = function _publish(params, callback) {
   return promise
 }
 
-function _live(params, callback) {
-  let {name, payload} = params
-  let arn = ledger.hasOwnProperty(name)
+function _live (params, callback) {
+  let { name, payload } = params
+  let arn = ledger[name]
 
   if (arn) {
     __publish(ledger[name], payload, callback)
   }
   else {
-    let override = params.hasOwnProperty('app')
+    let override = params.app
     let eventName = `${override ? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
     _scan({ eventName }, function _scan (err, found) {
       if (err) throw err
@@ -83,25 +83,25 @@ function _live(params, callback) {
   }
 }
 
-function _local(params, callback) {
+function _local (params, callback) {
   let port = process.env.ARC_EVENTS_PORT || 3334
   let req = http.request({
     method: 'POST',
     port,
     path: '/events',
   },
-  function done(res) {
+  function done (res) {
     res.resume()
-    res.on('end', ()=> callback())
+    res.on('end', () => callback())
   })
   req.write(JSON.stringify(params))
   req.end('\n')
 }
 
-function _scan({eventName}, callback) {
+function _scan ({ eventName }, callback) {
   let sns = new aws.SNS()
   ;(function __scanner (params = {}, callback) {
-    sns.listTopics(params, function _listTopics(err, results) {
+    sns.listTopics(params, function _listTopics (err, results) {
       if (err) throw err
       let found = results.Topics.find(t => {
         let bits = t.TopicArn.split(':')
@@ -110,9 +110,11 @@ function _scan({eventName}, callback) {
       })
       if (found) {
         callback(null, found.TopicArn)
-      } else if (results.NextToken) {
+      }
+      else if (results.NextToken) {
         __scanner({ NextToken: results.NextToken }, callback)
-      } else {
+      }
+      else {
         callback(Error(`topic ${eventName} not found`))
       }
     })

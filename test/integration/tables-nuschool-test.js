@@ -16,7 +16,7 @@ let shared = join(tmp, 'node_modules', '@architect', 'shared')
 
 let origCwd = process.cwd()
 
-test('Set up mocked files', t=> {
+test('Set up mocked files', t => {
   t.plan(3)
   mkdir(shared)
   fs.copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
@@ -30,9 +30,9 @@ test('Set up mocked files', t=> {
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
-test('starts the db server', t=> {
+test('starts the db server', t => {
   t.plan(1)
-  server = sandbox.db.start(function _start() {
+  server = sandbox.db.start(function _start () {
     t.ok(true, 'started db server')
   })
 })
@@ -44,7 +44,7 @@ test('tables() returns table object', async t => {
   t.ok(data.messages, 'messages table object exists')
 })
 
-test('tables put()', async t=>{
+test('tables put()', async t => {
   t.plan(1)
   let item = await data.accounts.put({
     accountID: 'fake',
@@ -57,7 +57,7 @@ test('tables put()', async t=>{
   t.ok(item, 'returned item')
 })
 
-test('tables get()', async t=> {
+test('tables get()', async t => {
   t.plan(2)
   let result = await data.accounts.get({
     accountID: 'fake'
@@ -66,7 +66,7 @@ test('tables get()', async t=> {
   t.ok(result.baz.doe, 'result.baz.doe deserialized')
 })
 
-test('tables delete()', async t=> {
+test('tables delete()', async t => {
   t.plan(2)
   await data.accounts.delete({
     accountID: 'fake'
@@ -78,12 +78,12 @@ test('tables delete()', async t=> {
   t.equals(result, undefined, 'got undefined result')
 })
 
-test('tables query()', async t=> {
+test('tables query()', async t => {
   t.plan(3)
   let items = await Promise.all([
-    data.accounts.put({accountID: 'one'}),
-    data.accounts.put({accountID: 'two'}),
-    data.accounts.put({accountID: 'three'}),
+    data.accounts.put({ accountID: 'one' }),
+    data.accounts.put({ accountID: 'two' }),
+    data.accounts.put({ accountID: 'three' }),
   ])
 
   t.ok(items, 'got items')
@@ -99,18 +99,18 @@ test('tables query()', async t=> {
   t.equals(result.Count, 1, 'got count of one')
 })
 
-test('tables scan()', async t=> {
+test('tables scan()', async t => {
   t.plan(1)
   let result = await data.accounts.scan({
-    FilterExpression : 'accountID = :id',
-    ExpressionAttributeValues : {
-      ':id' : 'two'
+    FilterExpression: 'accountID = :id',
+    ExpressionAttributeValues: {
+      ':id': 'two'
     }
   })
   t.ok(result, 'got a result')
 })
 
-test('tables update()', async t=> {
+test('tables update()', async t => {
   t.plan(3)
   await data.accounts.update({
     Key: {
@@ -118,10 +118,10 @@ test('tables update()', async t=> {
     },
     UpdateExpression: 'set #hits = :hits',
     ExpressionAttributeNames: {
-      '#hits' : 'hits'
+      '#hits': 'hits'
     },
     ExpressionAttributeValues: {
-      ':hits' : 20,
+      ':hits': 20,
     }
   })
 
@@ -135,13 +135,13 @@ test('tables update()', async t=> {
   t.equals(result.hits, 20, 'property updated')
 })
 
-test('server closes', t=> {
+test('server closes', t => {
   t.plan(1)
   server.close()
   t.ok(true, 'closed')
 })
 
-test('Clean up env', t=> {
+test('Clean up env', t => {
   t.plan(1)
   process.env.NODE_ENV = 'testing'
   process.chdir(origCwd)

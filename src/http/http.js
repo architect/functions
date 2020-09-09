@@ -10,13 +10,13 @@ let responseFormatter = require('./_res-fmt')
 module.exports = function http (...fns) {
 
   // Ensure we've been passed only functions
-  fns.forEach(f=> {
+  fns.forEach(f => {
     if (typeof f != 'function')
       throw TypeError(f + ' not a function')
   })
 
   // Return an AWS Lambda continuation passing function signature
-  return function lambda(request, context, callback) {
+  return function lambda (request, context, callback) {
 
     // Verify the request is configured by arc
     if (!request.headers)
@@ -26,19 +26,19 @@ module.exports = function http (...fns) {
     let cache = fns.slice()
 
     // read the session
-    read(request, function _read(err, session) {
+    read(request, function _read (err, session) {
       // Fail loudly if the session isn't set up correctly
       if (err)
         throw err
 
       // construct a response function
-      let req = interpolate(Object.assign({}, request, {session}))
+      let req = interpolate(Object.assign({}, request, { session }))
       req.body = bodyParser(req)
       let res = response.bind({}, req, callback)
 
       // loop thru middleware
-      ;(function iterator(fun) {
-        function fail() {throw Error('next() called from last function')}
+      ;(function iterator (fun) {
+        function fail () {throw Error('next() called from last function')}
         let next = iterator.bind({}, cache.shift() || fail)
         fun.call({}, req, res, next)
       })(cache.shift())
@@ -50,7 +50,7 @@ module.exports = function http (...fns) {
  * req is bound so we have a ref to req.session
  * callback is raw lambda callback
  */
-function response(req, callback, params) {
+function response (req, callback, params) {
   // Format the response
   let res = responseFormatter(req, params)
 
@@ -59,7 +59,7 @@ function response(req, callback, params) {
     let session = params.session || params.cookie
     session = Object.assign({}, req.session, session)
     // Save the session
-    write(session, function _write(err, cookie) {
+    write(session, function _write (err, cookie) {
       if (err) callback(err)
       else {
         res.headers['Set-Cookie'] = cookie

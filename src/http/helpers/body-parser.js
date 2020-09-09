@@ -30,7 +30,7 @@ module.exports = function parseBody (req) {
         let data = new Buffer.from(request.body, 'base64').toString()
         request.body = JSON.parse(data) || {}
       }
-      catch(e) {
+      catch (e) {
         throw Error('Invalid request body encoding or invalid JSON')
       }
     }
@@ -43,7 +43,7 @@ module.exports = function parseBody (req) {
     if (isMultiPartFormData || isOctetStream) {
       request.body = request.body.base64
         ? request.body
-        : {base64: request.body}
+        : { base64: request.body }
     }
 
     return request.body

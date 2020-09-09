@@ -1,5 +1,5 @@
 let cookie = require('cookie')
-let jwt = require('node-webtokens');
+let jwt = require('node-webtokens')
 let alg = 'dir'
 let enc = 'A128GCM'
 
@@ -11,10 +11,10 @@ let key = process.env.ARC_APP_SECRET || fallback
 
 // wrapper for jwe.create/jwe.parse
 let jwe = {
-  create(payload) {
+  create (payload) {
     return jwt.generate(alg, enc, payload, key)
   },
-  parse(token) {
+  parse (token) {
     const WEEK = 604800
     return jwt.parse(token).setTokenLifetime(WEEK).verify(key)
   }
@@ -23,11 +23,11 @@ let jwe = {
 /**
  * reads req cookie and returns token payload or an empty object
  */
-function read(req, callback) {
+function read (req, callback) {
   let promise
   if (!callback) {
-    promise = new Promise(function argh(res, rej) {
-      callback = function errback(err, result) {
+    promise = new Promise(function argh (res, rej) {
+      callback = function errback (err, result) {
         err ? rej(err) : res(result)
       }
     })
@@ -41,18 +41,18 @@ function read(req, callback) {
   }
   let jar = cookie.parse(rawCookie || '')
   let token = jwe.parse(jar._idx)
-  callback(null, token.valid? token.payload : {})
+  callback(null, token.valid ? token.payload : {})
   return promise
 }
 
 /**
  * creates a Set-Cookie header with token payload encrypted
  */
-function write(payload, callback) {
+function write (payload, callback) {
   let promise
   if (!callback) {
-    promise = new Promise(function ugh(res, rej) {
-      callback = function errback(err, result) {
+    promise = new Promise(function ugh (res, rej) {
+      callback = function errback (err, result) {
         err ? rej(err) : res(result)
       }
     })
@@ -77,4 +77,4 @@ function write(payload, callback) {
   return promise
 }
 
-module.exports = {read, write}
+module.exports = { read, write }

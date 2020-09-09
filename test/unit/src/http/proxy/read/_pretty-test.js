@@ -7,20 +7,22 @@ let pathToStatic = process.env.ARC_SANDBOX_PATH_TO_STATIC
 let errorState
 let buf = msg => Buffer.from(msg)
 // Tried to use 'aws-sdk-mock', wasn't able to get it working with aws.whatever().promise()
-let S3Stub = { S3: function ctor() {
+let S3Stub = { S3: function ctor () {
   return {
     getObject: function ({ Key }) {
       // Good responses (only checking body here)
+      // eslint-disable-next-line
       let got = { promise: async function () {
         return { Body: buf(`got ${Key}`) }
-      }}
+      } }
 
       // Failed requests (aws-sdk completely blows up)
+      // eslint-disable-next-line
       let thrower = { promise: async function () {
         let err = new Error(errorState)
         err.name = errorState
         throw err
-      }}
+      } }
 
       if (isFolder) {
         if (Key.includes('ok/hi')) return got
@@ -30,7 +32,7 @@ let S3Stub = { S3: function ctor() {
       return thrower
     }
   }
-}}
+} }
 
 let reset = () => {
   Key = isFolder = errorState = undefined

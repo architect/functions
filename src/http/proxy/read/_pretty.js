@@ -23,6 +23,7 @@ module.exports = async function pretty (params) {
     return Key
   }
 
+  // eslint-disable-next-line
   async function getLocal (file) {
     let basepath = ARC_SANDBOX_PATH_TO_STATIC
     if (!file.startsWith(basepath)) {
@@ -94,7 +95,7 @@ module.exports = async function pretty (params) {
     let { statusCode } = err
     let title = err.name
     let message = `
-      ${err.message } <pre><b>${ Key }</b></pre><br>
+      ${err.message} <pre><b>${Key}</b></pre><br>
       <pre>${err.stack}</pre>
     `
     return httpError({ statusCode, title, message })

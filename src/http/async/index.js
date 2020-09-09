@@ -15,13 +15,13 @@ let responseFormatter = require('../_res-fmt')
 module.exports = function httpAsync (...fns) {
 
   // Ensure we've been passed only functions
-  fns.forEach(f=> {
+  fns.forEach(f => {
     if (typeof f != 'function')
       throw TypeError(f + ' not a function')
   })
 
   // Return an AWS Lambda async function signature
-  let combined = async function (request, context) {
+  async function combined (request, context) {
     let params
     let first = true
     for (let fn of fns) {
@@ -29,17 +29,18 @@ module.exports = function httpAsync (...fns) {
       if (first) {
         first = false
         let session = await read(request)
-        let req = interpolate(Object.assign({}, request, {session}))
+        let req = interpolate(Object.assign({}, request, { session }))
         req.body = bodyParser(req)
         request = req
       }
       // Run the function
       let result = await fn(request, context)
-      let isRequest = result && result.hasOwnProperty('httpMethod')
+      let isRequest = result && result.httpMethod
       if (isRequest) {
         // Function returned a modified request, continuing...
         request = result
-      } else {
+      }
+      else {
         if (result) {
           params = result
           // Got a response, finishing...
@@ -57,14 +58,14 @@ module.exports = function httpAsync (...fns) {
   return combined
 }
 
-async function response(req, params) {
+async function response (req, params) {
   // Format the response
   let res = responseFormatter(req, params)
 
   // Tag the new session
   if (params.session || params.cookie) {
     let session = params.session || params.cookie
-    session = Object.keys(session).length === 0? {} : Object.assign({}, req.session, session)
+    session = Object.keys(session).length === 0 ? {} : Object.assign({}, req.session, session)
     // Save the session
     let cookie = await write(session)
     res.headers['Set-Cookie'] = cookie
