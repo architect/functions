@@ -20,16 +20,18 @@ module.exports = function responseFormatter (req, params) {
   let cacheControl = params.cacheControl ||
                      params.headers && params.headers['Cache-Control'] ||
                      params.headers && params.headers['cache-control'] || ''
-  if (params.headers && params.headers['cache-control'])
+  if (params.headers && params.headers['cache-control']) {
     delete params.headers['cache-control'] // Clean up improper casing
+  }
 
   // Headers: Content-Type
   let type = params.type ||
              params.headers && params.headers['Content-Type'] ||
              params.headers && params.headers['content-type'] ||
              'application/json; charset=utf8'
-  if (params.headers && params.headers['content-type'])
+  if (params.headers && params.headers['content-type']) {
     delete params.headers['content-type'] // Clean up improper casing
+  }
 
   // Cross-origin ritual sacrifice
   let cors = params.cors
@@ -67,6 +69,10 @@ module.exports = function responseFormatter (req, params) {
     headers: Object.assign({}, { 'Content-Type': type }, params.headers || {}),
     statusCode,
     body
+  }
+
+  if (params.multiValueHeaders) {
+    res.multiValueHeaders = params.multiValueHeaders
   }
 
   // Error override

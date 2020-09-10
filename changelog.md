@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.14.0] 2020-09-10
+
+### Added
+
+- Added support for passing along `multiValueHeaders` in responses
+
+---
+
 ## [3.13.3] 2020-07-29
 
 ### Added

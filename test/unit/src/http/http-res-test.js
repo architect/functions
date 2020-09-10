@@ -13,14 +13,15 @@ let arc6EnvVars = {
   setup: function (t) {
     process.env.ARC_CLOUDFORMATION = true
     process.env.ARC_HTTP = 'aws_proxy'
-    t.ok(process.env.ARC_CLOUDFORMATION)
-    t.ok(process.env.ARC_HTTP)
+    if (process.env.ARC_CLOUDFORMATION !== 'true' ||
+        process.env.ARC_HTTP !== 'aws_proxy')
+      t.fail('Did not populate ARC_CLOUDFORMATION or ARC_HTTP')
   },
   teardown: function (t) {
     delete process.env.ARC_CLOUDFORMATION
     delete process.env.ARC_HTTP
-    t.notOk(process.env.ARC_CLOUDFORMATION)
-    t.notOk(process.env.ARC_HTTP)
+    if (process.env.ARC_CLOUDFORMATION || process.env.ARC_HTTP)
+      t.fail('Did not clean ARC_CLOUDFORMATION or ARC_HTTP')
   }
 }
 
@@ -32,13 +33,19 @@ test('Set up env', t => {
   process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
-test('Architect v6 dependency-free responses', t => {
-  t.plan(18)
+test('Architect v6 (REST): dependency-free responses', t => {
+  t.plan(44)
   arc6EnvVars.setup(t)
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
   }
+  run(responses.arc6.rest.body, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc6.rest.body.body, res.body, match('res.body', res.body))
+    t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
   run(responses.arc6.rest.isBase64Encoded, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.rest.isBase64Encoded.body, res.body, match('res.body', res.body))
@@ -52,18 +59,56 @@ test('Architect v6 dependency-free responses', t => {
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.rest.encodedWithBinaryTypeGood, (err, res) => {
+  run(responses.arc6.rest.encodedWithBinaryTypeBad, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
     t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
+  run(responses.arc6.rest.encodedWithBinaryTypeGood, (err, res) => {
+    t.notOk(err, 'No error')
+    t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
+    t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc6.rest.secureCookieHeader, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc6.rest.secureCookieHeader.body, res.body, match('res.body', res.body))
+    t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
+    t.equal(responses.arc6.rest.secureCookieHeader.headers['set-cookie'], res.headers['set-cookie'], match(`res.headers['set-cookie']`, res.headers['set-cookie']))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc6.rest.secureCookieMultiValueHeader, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc6.rest.secureCookieMultiValueHeader.body, res.body, match('res.body', res.body))
+    t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
+    t.equal(str(responses.arc6.rest.secureCookieMultiValueHeader.multiValueHeaders), str(res.multiValueHeaders), match(`res.multiValueHeaders`, str(res.multiValueHeaders)))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc6.rest.multiValueHeaders, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(res.body, '', 'Empty body passed')
+    t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
+    // Headers object gets mutated, so let's just ensure a header we set is there
+    t.equal(str(responses.arc6.rest.multiValueHeaders.headers['Set-Cookie']), str(res.headers['Set-Cookie']), match(`res.headers['Set-Cookie']`, str(res.headers['Set-Cookie'])))
+    t.equal(str(responses.arc6.rest.multiValueHeaders.multiValueHeaders), str(res.multiValueHeaders), match(`res.multiValueHeaders`, str(res.multiValueHeaders)))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc6.rest.invalidMultiValueHeaders, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(res.body, '', 'Empty body passed')
+    t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
+    // Headers object gets mutated, so let's just ensure a header we set is there
+    t.equal(str(responses.arc6.rest.invalidMultiValueHeaders.invalidMultiValueHeaders), str(res.invalidMultiValueHeaders), match(`res.invalidMultiValueHeaders`, str(res.invalidMultiValueHeaders)))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
   arc6EnvVars.teardown(t)
 })
 
-test('Architect v5 dependency-free responses', t => {
-  t.plan(9)
+test('Architect v5 (REST): dependency-free responses', t => {
+  t.plan(29)
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
@@ -78,14 +123,44 @@ test('Architect v5 dependency-free responses', t => {
     t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
+  run(responses.arc5.secureCookie, (err, res) => {
+    t.notOk(err, 'No error')
+    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc5.secureCookieHeader, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc5.secureCookieHeader.headers['set-cookie'], res.headers['set-cookie'], match(`res.headers['set-cookie']`, res.headers['set-cookie']))
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
   run(responses.arc5.cors, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['Access-Control-Allow-Origin'], '*', `CORS boolean set res.headers['Access-Control-Allow-Origin'] === '*'`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
+  run(responses.arc5.isBase64Encoded, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc5.isBase64Encoded.body, res.body, match('res.body', res.body))
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc5.isBase64EncodedType, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc5.isBase64EncodedType.body, res.body, match('res.body', res.body))
+    t.equal(responses.arc5.isBase64EncodedType.type, res.headers['Content-Type'], `type matches res.headers['Content-Type']: ${res.headers['Content-Type']}`)
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc5.isBase64EncodedUnknownCT, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc5.isBase64EncodedUnknownCT.body, res.body, match('res.body', res.body))
+    t.equal(responses.arc5.isBase64EncodedUnknownCT.headers['content-type'], res.headers['Content-Type'], match(`res.headers['content-type']`, res.headers['Content-Type']))
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
 })
 
-test('Architect v5 + Functions', t => {
+test('Architect v5 (REST) + Functions', t => {
   t.plan(23)
   let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   let run = (response, callback) => {
@@ -137,16 +212,15 @@ test('Architect v5 + Functions', t => {
  * Proxy + ARC_HTTP + ARC_CLOUDFORMATION response logic
  * - broken into individual test blocks because tape gets aggro in setting/unsetting env vars
  */
-test('Architect v6 + Functions + /{proxy+}', t => {
-  t.plan(8)
+test('Architect v6 (REST) + Functions + /{proxy+}', t => {
+  t.plan(4)
   arc6EnvVars.setup(t)
   let request = requests.arc6.rest.getProxyPlus
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
   }
-  // Arc 5 body: just a basic body, nothing special
-  run(responses.arc5.body, (err, res) => {
+  run(responses.arc6.rest.body, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc5.body.body), str(res.body), match('res.body', res.body))
     t.equal(res.statusCode, 200, 'Responded with 200')
@@ -155,7 +229,7 @@ test('Architect v6 + Functions + /{proxy+}', t => {
   arc6EnvVars.teardown(t)
 })
 
-test('Architect v5 + Functions + ARC_HTTP = aws', t => {
+test('Architect v5 (REST) + Functions + ARC_HTTP = aws', t => {
   t.plan(5)
   process.env.ARC_HTTP = 'aws'
   let run = (response, callback) => {
@@ -173,7 +247,7 @@ test('Architect v5 + Functions + ARC_HTTP = aws', t => {
   })
 })
 
-test('Architect v5 + Functions + ARC_HTTP = aws_proxy', t => {
+test('Architect v5 (REST) + Functions + ARC_HTTP = aws_proxy', t => {
   t.plan(5)
   process.env.ARC_HTTP = 'aws_proxy'
   let run = (response, callback) => {
@@ -191,7 +265,7 @@ test('Architect v5 + Functions + ARC_HTTP = aws_proxy', t => {
   })
 })
 
-test('Architect v5 + Functions + ARC_HTTP = other', t => {
+test('Architect v5 (REST) + Functions + ARC_HTTP = other', t => {
   t.plan(5)
   process.env.ARC_HTTP = 'other' // tests !aws && !aws_proxy ARC_HTTP values (jic)
   let run = (response, callback) => {
@@ -209,7 +283,7 @@ test('Architect v5 + Functions + ARC_HTTP = other', t => {
   })
 })
 
-test('Architect v5 + Functions + !ARC_HTTP + !ARC_CLOUDFORMATION', t => {
+test('Architect v5 (REST) + Functions + !ARC_HTTP + !ARC_CLOUDFORMATION', t => {
   t.plan(6)
   delete process.env.ARC_HTTP
   let run = (response, callback) => {
@@ -228,7 +302,7 @@ test('Architect v5 + Functions + !ARC_HTTP + !ARC_CLOUDFORMATION', t => {
   })
 })
 
-test('Architect v5 + Functions + ARC_CLOUDFORMATION = true', t => {
+test('Architect v5 (REST) + Functions + ARC_CLOUDFORMATION = true', t => {
   t.plan(6)
   process.env.ARC_CLOUDFORMATION = true
   let run = (response, callback) => {
