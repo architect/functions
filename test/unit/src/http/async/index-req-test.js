@@ -17,6 +17,8 @@ test('Set up env', t => {
   t.ok(arc.http.async, 'Loaded HTTP async')
   t.ok(arc.http.middleware, 'Loaded HTTP middleware alias')
   t.ok(reqs, 'Loaded request fixtures')
+  // Set env var to keep from stalling on db reads in CI
+  process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
 /**
@@ -25,10 +27,8 @@ test('Set up env', t => {
  * - All bodies are base64 encoded
  */
 test('Architect v6: get /', async t => {
-  // Set env var to keep from stalling on db reads in CI
-  process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(7)
-  let request = reqs.arc6.getIndex
+  let request = reqs.arc6.rest.getIndex
   let req
   let fn = async request => {
     req = request
@@ -55,7 +55,7 @@ test('Architect v6: get /', async t => {
 
 test('Architect v6: get /?whats=up', async t => {
   t.plan(7)
-  let request = reqs.arc6.getWithQueryString
+  let request = reqs.arc6.rest.getWithQueryString
   let req
   let fn = async request => {
     req = request
@@ -76,9 +76,33 @@ test('Architect v6: get /?whats=up', async t => {
   t.ok(req.session, 'req.session is present')
 })
 
+test('Architect v6: get /?whats=up&whats=there', async t => {
+  t.plan(8)
+  let request = reqs.arc6.rest.getWithQueryStringDuplicateKey
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  if (unNulled(request.body, req.body))
+    t.pass(match('req.body', req.body))
+  t.equal(request.path, req.path, match('req.path', req.path))
+  t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+  if (request.httpMethod === req.method)
+    t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+  if (unNulled(request.pathParameters, req.params))
+    t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+  if (request.queryStringParameters === req.query)
+    t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+  t.equal(str(request.multiValueQueryStringParameters), str(req.multiValueQueryStringParameters), match('req.multiValueQueryStringParameters', req.multiValueQueryStringParameters))
+  t.ok(req.session, 'req.session is present')
+})
+
 test('Architect v6: get /nature/hiking', async t => {
   t.plan(8)
-  let request = reqs.arc6.getWithParam
+  let request = reqs.arc6.rest.getWithParam
   let req
   let fn = async request => {
     req = request
@@ -103,7 +127,7 @@ test('Architect v6: get /nature/hiking', async t => {
 
 test('Architect v6: post /form (JSON)', async t => {
   t.plan(8)
-  let request = reqs.arc6.postJson
+  let request = reqs.arc6.rest.postJson
   let req
   let fn = async request => {
     req = request
@@ -126,7 +150,7 @@ test('Architect v6: post /form (JSON)', async t => {
 
 test('Architect v6: post /form (form URL encoded)', async t => {
   t.plan(8)
-  let request = reqs.arc6.postFormURL
+  let request = reqs.arc6.rest.postFormURL
   let req
   let fn = async request => {
     req = request
@@ -149,7 +173,7 @@ test('Architect v6: post /form (form URL encoded)', async t => {
 
 test('Architect v6: post /form (multipart form data)', async t => {
   t.plan(8)
-  let request = reqs.arc6.postMultiPartFormData
+  let request = reqs.arc6.rest.postMultiPartFormData
   let req
   let fn = async request => {
     req = request
@@ -172,7 +196,7 @@ test('Architect v6: post /form (multipart form data)', async t => {
 
 test('Architect v6: post /form (octet stream)', async t => {
   t.plan(8)
-  let request = reqs.arc6.postOctetStream
+  let request = reqs.arc6.rest.postOctetStream
   let req
   let fn = async request => {
     req = request
@@ -195,7 +219,7 @@ test('Architect v6: post /form (octet stream)', async t => {
 
 test('Architect v6: put /form (JSON)', async t => {
   t.plan(8)
-  let request = reqs.arc6.putJson
+  let request = reqs.arc6.rest.putJson
   let req
   let fn = async request => {
     req = request
@@ -218,7 +242,7 @@ test('Architect v6: put /form (JSON)', async t => {
 
 test('Architect v6: patch /form (JSON)', async t => {
   t.plan(8)
-  let request = reqs.arc6.patchJson
+  let request = reqs.arc6.rest.patchJson
   let req
   let fn = async request => {
     req = request
@@ -241,7 +265,7 @@ test('Architect v6: patch /form (JSON)', async t => {
 
 test('Architect v6: delete /form (JSON)', async t => {
   t.plan(8)
-  let request = reqs.arc6.deleteJson
+  let request = reqs.arc6.rest.deleteJson
   let req
   let fn = async request => {
     req = request
@@ -471,6 +495,11 @@ test('arc.middleware should pass along original request if function does not ret
   let handler = arc.http.async(one, two)
   await handler(req)
   t.equal(str(gotOne), str(gotTwo), match('second function request', `${str(gotTwo).substr(0, 50)}...`))
+})
+
+test('Teardown', t => {
+  t.plan(1)
   // Unset env var for future testing (ostensibly)
   delete process.env.SESSION_TABLE_NAME
+  t.pass('Done')
 })

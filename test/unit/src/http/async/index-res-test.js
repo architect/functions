@@ -18,27 +18,27 @@ test('Set up env', t => {
   t.ok(arc.http.middleware, 'Loaded HTTP middleware alias')
   t.ok(requests, 'Loaded request fixtures')
   t.ok(responses, 'Loaded response fixtures')
+  // Init env var to keep from stalling on db reads in CI
+  process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
 test('Architect v6 dependency-free responses', async t => {
-  // Init env var to keep from stalling on db reads in CI
-  process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(11)
   let run = async response => {
     let fn = () => response
     let handler = arc.http.async(fn)
     return handler(request)
   }
-  let res = await run(responses.arc6.isBase64Encoded)
-  t.equal(responses.arc6.isBase64Encoded.body, res.body, match('res.body', res.body))
+  let res = await run(responses.arc6.rest.isBase64Encoded)
+  t.equal(responses.arc6.rest.isBase64Encoded.body, res.body, match('res.body', res.body))
   t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
   t.equal(res.statusCode, 200, 'Responded with 200')
-  res = await run(responses.arc6.buffer)
+  res = await run(responses.arc6.rest.buffer)
   t.ok(typeof res.body === 'string', 'Received string (and not buffer) back')
   t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
   t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
   t.equal(res.statusCode, 200, 'Responded with 200')
-  res = await run(responses.arc6.encodedWithBinaryType)
+  res = await run(responses.arc6.rest.encodedWithBinaryTypeGood)
   t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
   t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
   t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
@@ -108,14 +108,14 @@ test('Architect <6 response params', async t => {
     let handler = arc.http.async(fn)
     return handler(request)
   }
-  let res = await run(responses.arc.locationHi)
-  t.equal(responses.arc.locationHi.location, res.headers.Location, match('location', res.headers.Location))
-  res = await run(responses.arc.status201)
-  t.equal(responses.arc.status201.status, res.statusCode, match('status', res.statusCode))
-  res = await run(responses.arc.code201)
-  t.equal(responses.arc.code201.code, res.statusCode, match('status', res.statusCode))
-  res = await run(responses.arc.statusCode201)
-  t.equal(responses.arc.statusCode201.statusCode, res.statusCode, match('status', res.statusCode))
+  let res = await run(responses.arc.location)
+  t.equal(responses.arc.location.location, res.headers.Location, match('location', res.headers.Location))
+  res = await run(responses.arc.status)
+  t.equal(responses.arc.status.status, res.statusCode, match('status', res.statusCode))
+  res = await run(responses.arc.code)
+  t.equal(responses.arc.code.code, res.statusCode, match('status', res.statusCode))
+  res = await run(responses.arc.statusCode)
+  t.equal(responses.arc.statusCode.statusCode, res.statusCode, match('status', res.statusCode))
 })
 
 test('arc.middleware should prevent further middleware from running when a response is returned', t => {
@@ -139,4 +139,11 @@ test('arc.middleware should throw if no middleware returns a response', async t 
     t.ok(e, 'exception thrown')
     t.end()
   }
+})
+
+test('Teardown', t => {
+  t.plan(1)
+  // Unset env var for future testing (ostensibly)
+  delete process.env.SESSION_TABLE_NAME
+  t.pass('Done')
 })

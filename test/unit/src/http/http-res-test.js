@@ -39,20 +39,20 @@ test('Architect v6 dependency-free responses', t => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
   }
-  run(responses.arc6.isBase64Encoded, (err, res) => {
+  run(responses.arc6.rest.isBase64Encoded, (err, res) => {
     t.notOk(err, 'No error')
-    t.equal(responses.arc6.isBase64Encoded.body, res.body, match('res.body', res.body))
+    t.equal(responses.arc6.rest.isBase64Encoded.body, res.body, match('res.body', res.body))
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.buffer, (err, res) => {
+  run(responses.arc6.rest.buffer, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Received string (and not buffer) back')
     t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.encodedWithBinaryType, (err, res) => {
+  run(responses.arc6.rest.encodedWithBinaryTypeGood, (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
     t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
@@ -140,7 +140,7 @@ test('Architect v5 + Functions', t => {
 test('Architect v6 + Functions + /{proxy+}', t => {
   t.plan(8)
   arc6EnvVars.setup(t)
-  let request = requests.arc6.getProxyPlus
+  let request = requests.arc6.rest.getProxyPlus
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
@@ -278,22 +278,22 @@ test('Architect <6 + Functions response params', t => {
     let handler = http((req, res) => res(response))
     handler(request, {}, callback)
   }
-  run(responses.arc.locationHi, (err, res) => {
+  run(responses.arc.location, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
-    t.equal(responses.arc.locationHi.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
+    t.equal(responses.arc.location.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
   })
-  run(responses.arc.status201, (err, res) => {
+  run(responses.arc.status, (err, res) => {
     t.notOk(err, 'No error')
-    t.equal(responses.arc.status201.status, res.statusCode, match('code', res.statusCode))
+    t.equal(responses.arc.status.status, res.statusCode, match('code', res.statusCode))
   })
-  run(responses.arc.code201, (err, res) => {
+  run(responses.arc.code, (err, res) => {
     t.notOk(err, 'No error')
-    t.equal(responses.arc.code201.code, res.statusCode, match('status', res.statusCode))
+    t.equal(responses.arc.code.code, res.statusCode, match('status', res.statusCode))
   })
-  run(responses.arc.statusCode201, (err, res) => {
+  run(responses.arc.statusCode, (err, res) => {
     t.notOk(err, 'No error')
-    t.equal(responses.arc.statusCode201.statusCode, res.statusCode, match('statusCode', res.statusCode))
+    t.equal(responses.arc.statusCode.statusCode, res.statusCode, match('statusCode', res.statusCode))
   })
   run(responses.arc.session, (err, res) => {
     t.notOk(err, 'No error')
@@ -310,6 +310,11 @@ test('Test errors', t => {
     t.equal(res.statusCode, 500, 'Error response, 500 returned')
     t.ok(res.body.includes(error.message), `Error response included error message: ${error.message}`)
   })
+})
+
+test('Teardown', t => {
+  t.plan(1)
   // Unset env var for future testing (ostensibly)
   delete process.env.SESSION_TABLE_NAME
+  t.pass('Done')
 })

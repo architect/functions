@@ -15,6 +15,8 @@ test('Set up env', t => {
   t.plan(2)
   t.ok(http, 'Loaded HTTP')
   t.ok(reqs, 'Loaded request fixtures')
+  // Set env var to keep from stalling on db reads in CI
+  process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
 /**
@@ -23,11 +25,9 @@ test('Set up env', t => {
  * - All bodies are base64 encoded
  */
 test('Architect v6: get /', t => {
-  // Set env var to keep from stalling on db reads in CI
-  process.env.SESSION_TABLE_NAME = 'jwe'
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.getIndex
+  let request = reqs.arc6.rest.getIndex
   let handler = http((req, res) => {
     // Compare mutation of nulls into objects
     if (unNulled(request.body, req.body))
@@ -52,7 +52,7 @@ test('Architect v6: get /', t => {
 test('Architect v6: get /?whats=up', t => {
   t.plan(8)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.getWithQueryString
+  let request = reqs.arc6.rest.getWithQueryString
   let handler = http((req, res) => {
     if (unNulled(request.body, req.body))
       t.pass(match('req.body', req.body))
@@ -70,10 +70,32 @@ test('Architect v6: get /?whats=up', t => {
   handler(request, {}, end)
 })
 
+test('Architect v6: get /?whats=up&whats=there', t => {
+  t.plan(9)
+  let end = () => t.ok(true, 'Final callback called')
+  let request = reqs.arc6.rest.getWithQueryStringDuplicateKey
+  let handler = http((req, res) => {
+    if (unNulled(request.body, req.body))
+      t.pass(match('req.body', req.body))
+    t.equal(request.path, req.path, match('req.path', req.path))
+    t.equal(str(request.headers), str(req.headers), match('req.headers', req.headers))
+    if (request.httpMethod === req.method)
+      t.equal(req.httpMethod, req.method, match('req.method/httpMethod', req.method))
+    if (unNulled(request.pathParameters, req.params))
+      t.equal(req.pathParameters, req.params, match('req.params/pathParameters', req.params))
+    if (request.queryStringParameters === req.query)
+      t.equal(req.queryStringParameters, req.query, match('req.query/queryStringParameters', req.query))
+    t.equal(str(request.multiValueQueryStringParameters), str(req.multiValueQueryStringParameters), match('req.multiValueQueryStringParameters', req.multiValueQueryStringParameters))
+    t.ok(req.session, 'req.session is present')
+    res(basicResponse)
+  })
+  handler(request, {}, end)
+})
+
 test('Architect v6: get /nature/hiking', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.getWithParam
+  let request = reqs.arc6.rest.getWithParam
   let handler = http((req, res) => {
     if (unNulled(request.body, req.body))
       t.pass(match('req.body', req.body))
@@ -94,9 +116,9 @@ test('Architect v6: get /nature/hiking', t => {
 })
 
 test('Architect v6: get /{proxy+}', t => {
-  t.plan(8)
+  t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.getProxyPlus
+  let request = reqs.arc6.rest.getProxyPlus
   let handler = http((req, res) => {
     if (unNulled(request.body, req.body))
       t.pass(match('req.body', req.body))
@@ -118,7 +140,7 @@ test('Architect v6: get /{proxy+}', t => {
 test('Architect v6: post /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.postJson
+  let request = reqs.arc6.rest.postJson
   let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
@@ -139,7 +161,7 @@ test('Architect v6: post /form (JSON)', t => {
 test('Architect v6: post /form (form URL encoded)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.postFormURL
+  let request = reqs.arc6.rest.postFormURL
   let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
@@ -160,7 +182,7 @@ test('Architect v6: post /form (form URL encoded)', t => {
 test('Architect v6: post /form (multipart form data)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.postMultiPartFormData
+  let request = reqs.arc6.rest.postMultiPartFormData
   let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(b64dec(req.body.base64), 'hi there', `received expected body data`)
@@ -181,7 +203,7 @@ test('Architect v6: post /form (multipart form data)', t => {
 test('Architect v6: post /form (octet stream)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.postOctetStream
+  let request = reqs.arc6.rest.postOctetStream
   let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(b64dec(req.body.base64), 'hi there\n', `received expected body data`)
@@ -202,7 +224,7 @@ test('Architect v6: post /form (octet stream)', t => {
 test('Architect v6: put /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.putJson
+  let request = reqs.arc6.rest.putJson
   let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
@@ -223,7 +245,7 @@ test('Architect v6: put /form (JSON)', t => {
 test('Architect v6: patch /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.patchJson
+  let request = reqs.arc6.rest.patchJson
   let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
@@ -244,7 +266,7 @@ test('Architect v6: patch /form (JSON)', t => {
 test('Architect v6: delete /form (JSON)', t => {
   t.plan(9)
   let end = () => t.ok(true, 'Final callback called')
-  let request = reqs.arc6.deleteJson
+  let request = reqs.arc6.rest.deleteJson
   let handler = http((req, res) => {
     t.equal(str(bodyParser(request)), str(req.body), match('req.body', req.body))
     t.equal(req.body.hi, 'there', `received expected body data`)
@@ -419,6 +441,11 @@ test('Architect v5: delete /form', t => {
     res(basicResponse)
   })
   handler(request, {}, end)
+})
+
+test('Teardown', t => {
+  t.plan(1)
   // Unset env var for future testing (ostensibly)
   delete process.env.SESSION_TABLE_NAME
+  t.pass('Done')
 })
