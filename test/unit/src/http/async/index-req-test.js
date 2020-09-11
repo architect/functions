@@ -26,10 +26,12 @@ function check ({ req, request, t, deprecated = false }) {
     if (!req.hasOwnProperty(key)) t.fail(`Original request param missing from interpolated request: ${key}`)
   })
   Object.entries(req).forEach(([ key, val ]) => {
+    // Make sure we don't have any false positives matching undefined tests
+    if (req[key] === undefined) t.fail(`Parameter is undefined: ${key}`)
     // Compare mutation of nulls into objects
     if (isNulled(key) && request[key] === null) {
       if (unNulled(request[key], val))
-        t.pass(match(`req.${key}`, request[key]))
+        t.pass(match(`req.${key}`, req[key]))
       else
         t.fail(`Param not un-nulled: ${key}: ${val}`)
     }
@@ -51,6 +53,149 @@ test('Set up env', t => {
   t.ok(reqs, 'Loaded request fixtures')
   // Set env var to keep from stalling on db reads in CI
   process.env.SESSION_TABLE_NAME = 'jwe'
+})
+
+test('Architect v6 (HTTP): get /', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.getIndex
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): get /?whats=up', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.getWithQueryString
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): get /?whats=up&whats=there', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.getWithQueryStringDuplicateKey
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): get /nature/hiking', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.getWithParam
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): get /$default', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.get$default
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): post /form (JSON)', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.postJson
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): post /form (form URL encoded)', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.postFormURL
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): post /form (multipart form data)', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.postMultiPartFormData
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): post /form (octet stream)', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.postOctetStream
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): put /form (JSON)', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.putJson
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (HTTP): patch /form (JSON)', async t => {
+  t.plan(21)
+  let request = reqs.arc6.http.patchJson
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
 })
 
 /**

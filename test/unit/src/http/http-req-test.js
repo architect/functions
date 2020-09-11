@@ -25,10 +25,12 @@ function check ({ req, request, res, t, deprecated = false }) {
     if (!req.hasOwnProperty(key)) t.fail(`Original request param missing from interpolated request: ${key}`)
   })
   Object.entries(req).forEach(([ key, val ]) => {
+    // Make sure we don't have any false positives matching undefined tests
+    if (req[key] === undefined) t.fail(`Parameter is undefined: ${key}`)
     // Compare mutation of nulls into objects
     if (isNulled(key) && request[key] === null) {
       if (unNulled(request[key], val))
-        t.pass(match(`req.${key}`, request[key]))
+        t.pass(match(`req.${key}`, req[key]))
       else
         t.fail(`Param not un-nulled: ${key}: ${val}`)
     }
@@ -50,6 +52,116 @@ test('Set up env', t => {
   t.ok(reqs, 'Loaded request fixtures')
   // Set env var to keep from stalling on db reads in CI
   process.env.SESSION_TABLE_NAME = 'jwe'
+})
+
+test('Architect v6 (HTTP): get /', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.getIndex
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): get /?whats=up', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.getWithQueryString
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): get /?whats=up&whats=there', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.getWithQueryStringDuplicateKey
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): get /nature/hiking', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.getWithParam
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): get /$default', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.get$default
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): post /form (JSON)', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.postJson
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): post /form (form URL encoded)', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.postFormURL
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): post /form (octet stream)', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.postOctetStream
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): put /form (JSON)', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.putJson
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): patch /form (JSON)', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.patchJson
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
+})
+
+test('Architect v6 (HTTP): delete /form (JSON)', t => {
+  t.plan(22)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc6.http.deleteJson
+  let handler = http((req, res) => {
+    check({ req, request, res, t })
+  })
+  handler(request, {}, end)
 })
 
 /**

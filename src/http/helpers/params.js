@@ -1,4 +1,16 @@
 module.exports = function interpolateParams (req) {
+  if (req.version && req.version === '2.0') {
+    let { requestContext: context } = req
+    if (context && context.http && context.http.method) {
+      req.httpMethod = context.http.method
+    }
+    let unUndefined = [ 'body', 'pathParameters', 'queryStringParameters' ]
+    unUndefined.forEach(i => {
+      if (req[i] === undefined) req[i] = {}
+    })
+    req.resource = req.routeKey.split(' ')[1] || req.routeKey
+  }
+
   // Un-null APIG-proxy-Lambda params in 6+
   let unNulled = [ 'body', 'pathParameters', 'queryStringParameters', 'multiValueQueryStringParameters' ]
   unNulled.forEach(i => {
