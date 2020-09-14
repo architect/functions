@@ -28,8 +28,7 @@ module.exports = function http (...fns) {
     // read the session
     read(request, function _read (err, session) {
       // Fail loudly if the session isn't set up correctly
-      if (err)
-        throw err
+      if (err) throw err
 
       // construct a response function
       let req = interpolate(Object.assign({}, request, { session }))
@@ -55,7 +54,7 @@ function response (req, callback, params) {
   let res = responseFormatter(req, params)
 
   // Tag the new session
-  if (params.session || params.cookie) {
+  if (params && (params.session || params.cookie)) {
     let session = params.session || params.cookie
     session = Object.assign({}, req.session, session)
     // Save the session

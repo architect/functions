@@ -49,8 +49,9 @@ module.exports = function httpAsync (...fns) {
         // Did not get a result from, continuing...
       }
     }
+    let isHTTPv2 = request.version && request.version === '2.0'
     // Finished combined function!
-    if (!params) {
+    if (!params && !isHTTPv2) {
       throw new Error(`Finished all functions without returning a response.`)
     }
     return response(request, params)
@@ -63,7 +64,7 @@ async function response (req, params) {
   let res = responseFormatter(req, params)
 
   // Tag the new session
-  if (params.session || params.cookie) {
+  if (params && (params.session || params.cookie)) {
     let session = params.session || params.cookie
     session = Object.keys(session).length === 0 ? {} : Object.assign({}, req.session, session)
     // Save the session

@@ -2,9 +2,33 @@ let { httpError } = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
 
 module.exports = function responseFormatter (req, params) {
+  // Handle HTTP API v2.0 payload scenarios, which have some very strange edges
+  if (req.version && req.version === '2.0') {
+    let knownParams = [ 'statusCode', 'body', 'headers', 'isBase64Encoded', 'cookies' ]
+    let hasKnownParams = p => knownParams.some(k => k === p)
+    let is = t => typeof params === t
+    let str = s => JSON.stringify(s)
+    // Handle scenarios where we have a known parameter returned
+    if (is('object') &&
+        (params !== null) &&
+        Object.keys(params).some(hasKnownParams)) {
+      params // noop
+    }
+    // Handles scenarios where arbitrary stuff is returned to be JSONified
+    else if (is('number') ||
+             (is('object') && (params !== null)) ||
+             (is('string') && params) ||
+             Array.isArray(params) ||
+             params instanceof Buffer) {
+      params = { body: str(params) }
+    }
+    // Not returning is actually valid
+    else if (!params) params = {}
+  }
+
   let isError = params instanceof Error // Doesn't really pertain to async
   let buffer
-  let bodyIsBuffer = params.body instanceof Buffer
+  let bodyIsBuffer = params.body && params.body instanceof Buffer
   if (bodyIsBuffer) buffer = params.body // Back up buffer
   if (!isError) params = JSON.parse(JSON.stringify(params)) // Deep copy to aid testing mutation
   if (bodyIsBuffer) params.body = buffer // Restore non-JSON-encoded buffer
@@ -71,8 +95,13 @@ module.exports = function responseFormatter (req, params) {
     body
   }
 
+  // REST API stuff
   if (params.multiValueHeaders) {
     res.multiValueHeaders = params.multiValueHeaders
+  }
+  // HTTP API stuff
+  if (params.cookies) {
+    res.cookies = params.cookies
   }
 
   // Error override
