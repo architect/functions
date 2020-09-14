@@ -8,6 +8,8 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ### Added
 
+- Added full forwards compatibility for API Gateway HTTP APIs, including the new v2.0 payload
+  - HTTP APIs in v2.0 have undocumented support for some funky response formats, so when in v2.0 mode, non-standard responses are passed through with minimal or no mutation
 - Added support for passing along `multiValueHeaders` in responses
 
 ---

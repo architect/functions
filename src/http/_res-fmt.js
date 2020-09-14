@@ -7,22 +7,21 @@ module.exports = function responseFormatter (req, params) {
     let knownParams = [ 'statusCode', 'body', 'headers', 'isBase64Encoded', 'cookies' ]
     let hasKnownParams = p => knownParams.some(k => k === p)
     let is = t => typeof params === t
-    let str = s => JSON.stringify(s)
     // Handle scenarios where we have a known parameter returned
     if (is('object') &&
         (params !== null) &&
         Object.keys(params).some(hasKnownParams)) {
       params // noop
     }
-    // Handles scenarios where arbitrary stuff is returned to be JSONified
+    // Handle scenarios where arbitrary stuff is returned to be JSONified
     else if (is('number') ||
-             (is('object') && (params !== null)) ||
+             (is('object') && params !== null) ||
              (is('string') && params) ||
              Array.isArray(params) ||
              params instanceof Buffer) {
-      params = { body: str(params) }
+      params = { body: JSON.stringify(params) }
     }
-    // Not returning is actually valid
+    // Not returning is actually valid now lolnothingmatters
     else if (!params) params = {}
   }
 

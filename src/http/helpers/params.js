@@ -1,4 +1,5 @@
 module.exports = function interpolateParams (req) {
+  // Handle HTTP API v2.0 payload scenarios, which omit params instead of passing them as null
   if (req.version && req.version === '2.0') {
     let { requestContext: context } = req
     if (context && context.http && context.http.method) {
@@ -8,6 +9,7 @@ module.exports = function interpolateParams (req) {
     unUndefined.forEach(i => {
       if (req[i] === undefined) req[i] = {}
     })
+    // Expect 'GET /foo' or '$default'
     req.resource = req.routeKey.split(' ')[1] || req.routeKey
   }
 
