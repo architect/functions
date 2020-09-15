@@ -34,7 +34,7 @@ function getDynamo (type, callback) {
       rejectUnauthorized: true,
     })
     aws.config.update({
-      httpOptions: {agent}
+      httpOptions: { agent }
     })
     // TODO? migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`?
   }
@@ -55,10 +55,10 @@ function getDynamo (type, callback) {
     // if SESSION_TABLE_NAME isn't defined we mock the client and just pass session thru
     let passthru = !process.env.SESSION_TABLE_NAME
     let mock = {
-      get(params, callback) {
+      get (params, callback) {
         callback()
       },
-      put(params, callback) {
+      put (params, callback) {
         callback()
       }
     }

@@ -9,7 +9,7 @@ let fs = {
   })),
   existsSync: () => manifestExists
 }
-let arcStatic = proxyquire('../../../../src/static', {fs})
+let arcStatic = proxyquire('../../../../src/static', { fs })
 
 function reset () {
   delete process.env.NODE_ENV
@@ -30,7 +30,7 @@ test('Local env returns non-fingerprinted path', t => {
   t.equal(asset, '/_static/foo.png', 'Returned non-fingerprinted path')
   asset = arcStatic('/foo.png')
   t.equal(asset, '/_static/foo.png', 'Returned non-fingerprinted path, stripping leading root slash')
-  asset = arcStatic('foo.png', {stagePath: true})
+  asset = arcStatic('foo.png', { stagePath: true })
   t.equal(asset, '/_static/foo.png', 'Returned non-fingerprinted path with stagePath option present')
 })
 
@@ -76,7 +76,7 @@ test('Passing stagePath option adds API Gateway /staging or /production to path'
   reset()
   manifestExists = true
   process.env.NODE_ENV = 'staging'
-  let asset = arcStatic('foo.png', {stagePath: true})
+  let asset = arcStatic('foo.png', { stagePath: true })
   t.equal(asset, '/staging/_static/foo-1a2b3d.png', 'Returned fingerprinted path with API Gateway stage')
 })
 

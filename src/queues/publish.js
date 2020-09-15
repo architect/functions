@@ -4,7 +4,7 @@ let queue = require('./publish-queue')
 /**
  * invoke a queue lambda by sqs queue name
  */
-module.exports = function publish(params, callback) {
+module.exports = function publish (params, callback) {
 
   if (!params.name)
     throw ReferenceError('missing params.name')

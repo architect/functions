@@ -1,10 +1,33 @@
-let {httpError} = require('./errors')
+let { httpError } = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
 
-module.exports = function responseFormatter(req, params) {
+module.exports = function responseFormatter (req, params) {
+  // Handle HTTP API v2.0 payload scenarios, which have some very strange edges
+  if (req.version && req.version === '2.0') {
+    let knownParams = [ 'statusCode', 'body', 'headers', 'isBase64Encoded', 'cookies' ]
+    let hasKnownParams = p => knownParams.some(k => k === p)
+    let is = t => typeof params === t
+    // Handle scenarios where we have a known parameter returned
+    if (is('object') &&
+        (params !== null) &&
+        Object.keys(params).some(hasKnownParams)) {
+      params // noop
+    }
+    // Handle scenarios where arbitrary stuff is returned to be JSONified
+    else if (is('number') ||
+             (is('object') && params !== null) ||
+             (is('string') && params) ||
+             Array.isArray(params) ||
+             params instanceof Buffer) {
+      params = { body: JSON.stringify(params) }
+    }
+    // Not returning is actually valid now lolnothingmatters
+    else if (!params) params = {}
+  }
+
   let isError = params instanceof Error // Doesn't really pertain to async
   let buffer
-  let bodyIsBuffer = params.body instanceof Buffer
+  let bodyIsBuffer = params.body && params.body instanceof Buffer
   if (bodyIsBuffer) buffer = params.body // Back up buffer
   if (!isError) params = JSON.parse(JSON.stringify(params)) // Deep copy to aid testing mutation
   if (bodyIsBuffer) params.body = buffer // Restore non-JSON-encoded buffer
@@ -20,16 +43,18 @@ module.exports = function responseFormatter(req, params) {
   let cacheControl = params.cacheControl ||
                      params.headers && params.headers['Cache-Control'] ||
                      params.headers && params.headers['cache-control'] || ''
-  if (params.headers && params.headers['cache-control'])
+  if (params.headers && params.headers['cache-control']) {
     delete params.headers['cache-control'] // Clean up improper casing
+  }
 
   // Headers: Content-Type
   let type = params.type ||
              params.headers && params.headers['Content-Type'] ||
              params.headers && params.headers['content-type'] ||
              'application/json; charset=utf8'
-  if (params.headers && params.headers['content-type'])
+  if (params.headers && params.headers['content-type']) {
     delete params.headers['content-type'] // Clean up improper casing
+  }
 
   // Cross-origin ritual sacrifice
   let cors = params.cors
@@ -64,9 +89,18 @@ module.exports = function responseFormatter(req, params) {
   let statusCode = providedStatus || 200
 
   let res = {
-    headers: Object.assign({}, {'Content-Type': type}, params.headers || {}),
+    headers: Object.assign({}, { 'Content-Type': type }, params.headers || {}),
     statusCode,
     body
+  }
+
+  // REST API stuff
+  if (params.multiValueHeaders) {
+    res.multiValueHeaders = params.multiValueHeaders
+  }
+  // HTTP API stuff
+  if (params.cookies) {
+    res.cookies = params.cookies
   }
 
   // Error override
@@ -77,7 +111,7 @@ module.exports = function responseFormatter(req, params) {
       ${params.message}<br>
       <pre>${params.stack}<pre>
     `
-    res = httpError({statusCode, title, message})
+    res = httpError({ statusCode, title, message })
   }
 
   /**

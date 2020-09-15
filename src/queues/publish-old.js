@@ -15,7 +15,7 @@ let aws = require('aws-sdk')
  *   }, console.log)
  *
  */
-module.exports = function _publish(params, callback) {
+module.exports = function _publish (params, callback) {
 
   // ensure required input
   if (!params.name)
@@ -55,12 +55,12 @@ module.exports = function _publish(params, callback) {
     // otherwise attempt to sqs.sendMessage
     let sqs = new aws.SQS
     waterfall([
-      function reads(callback) {
+      function reads (callback) {
         sqs.getQueueUrl({
           QueueName: name,
         }, callback)
       },
-      function  publishes(result, callback) {
+      function publishes (result, callback) {
         let QueueUrl = result.QueueUrl
         let DelaySeconds = params.delaySeconds || 0
         console.log('sqs.sendMessage', JSON.stringify({ QueueUrl, DelaySeconds, payload }))
@@ -71,7 +71,7 @@ module.exports = function _publish(params, callback) {
         }, callback)
       }
     ],
-    function _published(err, result) {
+    function _published (err, result) {
       if (err) throw err
       callback(null, result)
     })

@@ -4,7 +4,7 @@ let topic = require('./publish-topic')
 /**
  * invoke an event lambda by sns topic name
  */
-module.exports = function publish(params, callback) {
+module.exports = function publish (params, callback) {
 
   if (!params.name)
     throw ReferenceError('missing params.name')

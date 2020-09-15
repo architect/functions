@@ -10,17 +10,19 @@ let { gzipSync } = require('zlib')
  */
 
 // Stubs
+// eslint-disable-next-line
 let prettyStub = async () => 'pretty'
 // S3
 let enable304
 let errorState
 let options = {}
 let S3Stub = {
-  S3: function ctor() {
+  S3: function ctor () {
     return {
       getObject: function (opts) {
         options = opts
         if (enable304) return {
+          // eslint-disable-next-line
           promise: async function () {
             let err = new Error('this will be a 304')
             err.code = 'NotModified'
@@ -28,13 +30,15 @@ let S3Stub = {
           }
         }
         else if (errorState) return {
+          // eslint-disable-next-line
           promise: async function () {
             let err = new Error(errorState)
             err.name = errorState
             throw err
           }
         }
-       else return {
+        else return {
+          // eslint-disable-next-line
           promise: async function () {
             return response
           }
@@ -52,7 +56,7 @@ let staticStub = {
 }
 
 // Generates proxy read requests
-function read (params={}) {
+function read (params = {}) {
   let { Bucket, Key, IfNoneMatch, isProxy, config, rootPath } = params
   return {
     Bucket: Bucket || defaultBucket,
@@ -66,7 +70,7 @@ function read (params={}) {
 
 // Generates proxy read responses for comparison
 let response
-function createResponse(ct, fc, args) {
+function createResponse (ct, fc, args) {
   response = {
     ContentType: ct || imgContentType,
     ETag: imgETag,

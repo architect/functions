@@ -5,16 +5,16 @@ let str = i => JSON.stringify(i)
 let b64encode = i => new Buffer.from(i).toString('base64')
 
 // Bodies
-let hi = {hi: 'there'}
-let hiBase64 = {base64: b64encode('hi there')} // Arc 5
+let hi = { hi: 'there' }
+let hiBase64 = { base64: b64encode('hi there') } // Arc 5
 let hiBase64file = b64encode('hi there\n') // text file style
 let hiFormURL = b64encode('hi=there')
 
 // Content types
-let json = {'Content-Type': 'application/json'}
-let formURLencoded = {'Content-Type': 'application/x-www-form-urlencoded'}
-let multiPartFormData = {'Content-Type': 'multipart/form-data'}
-let octetStream = {'Content-Type': 'application/octet-stream'}
+let json = { 'Content-Type': 'application/json' }
+let formURLencoded = { 'Content-Type': 'application/x-www-form-urlencoded' }
+let multiPartFormData = { 'Content-Type': 'multipart/form-data' }
+let octetStream = { 'Content-Type': 'application/octet-stream' }
 
 test('Architect v6+ requests', t => {
   t.plan(8)
@@ -35,7 +35,7 @@ test('Architect v6+ requests', t => {
   // Alt JSON API
   req = {
     body: b64encode(str(hi)),
-    headers: {'Content-Type': 'application/vnd.api+json'},
+    headers: { 'Content-Type': 'application/vnd.api+json' },
     isBase64Encoded: true
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
@@ -60,11 +60,11 @@ test('Architect v6+ requests', t => {
     headers: multiPartFormData,
     isBase64Encoded: true
   }
-  t.equals(str(parseBody(req)), str({base64: hiBase64file}), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str({ base64: hiBase64file }), `body matches ${str(req.body)}`)
 
   // Pass through octet stream / base64
   req.headers = octetStream
-  t.equals(str(parseBody(req)), str({base64: hiBase64file}), `body matches ${str(req.body)}`)
+  t.equals(str(parseBody(req)), str({ base64: hiBase64file }), `body matches ${str(req.body)}`)
 
 })
 

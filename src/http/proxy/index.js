@@ -19,7 +19,7 @@ let errors = require('../errors')
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
-function proxy (config={}) {
+function proxy (config = {}) {
   return async function httpProxy (req) {
     let { ARC_STATIC_BUCKET, ARC_STATIC_SPA, NODE_ENV } = process.env
     let deprecated = req.version === undefined || req.version === '1.0'
@@ -59,7 +59,7 @@ function proxy (config={}) {
       let isFile = last ? last.includes('.') : false
       let isRoot = path === '/'
 
-      Key = isRoot? 'index.html' : path.substring(1) // Always remove leading slash
+      Key = isRoot ? 'index.html' : path.substring(1) // Always remove leading slash
 
       // Append default index.html to requests to folder paths
       if (isRoot === false && isFile === false) {
@@ -71,7 +71,7 @@ function proxy (config={}) {
      * Alias
      *   Allows a Key to be manually overridden
      */
-    let aliasing = config && config.alias && config.alias.hasOwnProperty(path)
+    let aliasing = config && config.alias && config.alias.path
     if (aliasing) {
       Key = config.alias[path].substring(1) // Always remove leading slash
     }

@@ -8,5 +8,5 @@ test('events.publish should throw if there is no parameter name', t => {
 
 test('events.publish should throw if there is no parameter payload', t => {
   t.plan(1)
-  t.throws(() => { publish({name: 'batman'})}, /missing params.payload/, 'throws missing payload parameter exception')
+  t.throws(() => { publish({ name: 'batman' })}, /missing params.payload/, 'throws missing payload parameter exception')
 })

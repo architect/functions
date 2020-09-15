@@ -16,10 +16,10 @@ function proxyConfig () {
   <li>If using <code>arc.http.proxy</code>, pass in a valid config object</li>
 </ul>
 <a href="https://arc.codes/primitives/static" target="_blank">Learn more</a>`
-  return httpError({title, message})
+  return httpError({ title, message })
 }
 
-function httpError ({statusCode=502, title='Unknown error', message=''}) {
+function httpError ({ statusCode = 502, title = 'Unknown error', message = '' }) {
   title = title === 'Error'
     ? `${statusCode} error`
     : `${statusCode} error: ${title}`

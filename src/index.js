@@ -22,7 +22,7 @@ let arc = {
   queues,
   static: _static,
   tables,
-  ws: {send},
+  ws: { send },
 }
 
 // backwards compat

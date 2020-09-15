@@ -6,18 +6,18 @@ let find = require('./find')
 let create = require('./create')
 let update = require('./update')
 
-module.exports = {read, write}
+module.exports = { read, write }
 
 /**
  * reads request for session cookie and looks it up in dynamo
  */
-function read(request, callback) {
+function read (request, callback) {
 
   // be async/await friendly
   let promise
   if (!callback) {
-    promise = new Promise(function(res, rej) {
-      callback = function(err, result) {
+    promise = new Promise(function (res, rej) {
+      callback = function (err, result) {
         err ? rej(err) : res(result)
       }
     })
@@ -34,12 +34,12 @@ function read(request, callback) {
     rawCookie = request.cookies.join(';')
   }
   let jar = cookie.parse(rawCookie || '')
-  let sesh = jar.hasOwnProperty('_idx')
+  let sesh = jar._idx
   let valid = unsign(jar._idx || '', secret)
 
   // find or create a new session
-  let exec = sesh && valid? find.bind({}, name) : create.bind({}, name)
-  let params = sesh && valid? valid : {}
+  let exec = sesh && valid ? find.bind({}, name) : create.bind({}, name)
+  let params = sesh && valid ? valid : {}
 
   exec(params, callback)
   return promise
@@ -50,13 +50,13 @@ function read(request, callback) {
  * - _idx
  * - _secret
  */
-function write(params, callback) {
+function write (params, callback) {
 
   // be async/await friendly
   let promise
   if (!callback) {
-    promise = new Promise(function(res, rej) {
-      callback = function(err, result) {
+    promise = new Promise(function (res, rej) {
+      callback = function (err, result) {
         err ? rej(err) : res(result)
       }
     })
@@ -66,7 +66,7 @@ function write(params, callback) {
   let name = process.env.SESSION_TABLE_NAME || 'arc-sessions'
   let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
 
-  update(name, params, function _update(err) {
+  update(name, params, function _update (err) {
     if (err) {
       callback(err)
     }

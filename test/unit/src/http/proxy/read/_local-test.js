@@ -18,10 +18,11 @@ let staticStub = {
   'images/this-is-fine.gif': 'images/this-is-fine-a1c3e5.gif',
   'publicfile.md': 'publicfile-b2d4f6.md'
 }
+// eslint-disable-next-line
 let prettyStub = async () => 'pretty'
 
 // Generates proxy read requests
-function read (params={}) {
+function read (params = {}) {
   let { Key, IfNoneMatch, isProxy, config } = params
   return {
     Key: Key || 'images/this-is-fine.gif',
@@ -49,6 +50,7 @@ let imgName = 'images/this-is-fine.gif'
 let imgContents = Buffer.from('Just imagine some image contents here\n')
 let imgContentType = 'image/gif'
 let imgETag = hash(imgContents)
+/* eslint indent: 0 */
 let binary = [
   137, 80, 78, 71,  13,  10,  26,  10,   0,  0, 0, 13,
    73, 72, 68, 82,   0,   0,   0,   1,   0,  0, 0,  1,
@@ -166,7 +168,7 @@ test('Local proxy reader returns 304 (aka S3 NotModified)', async t => {
   let params = read({ IfNoneMatch: hash(imgContents) })
   let result = await readLocal(params)
   t.equal(result.statusCode, 304, 'Returns statusCode of 304 if ETag matches')
-  t.equal(result.headers['ETag'], hash(imgContents) , 'Etag matches request')
+  t.equal(result.headers['ETag'], hash(imgContents), 'Etag matches request')
 
   reset()
 })

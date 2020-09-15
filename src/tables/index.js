@@ -18,11 +18,11 @@ let client = false
  *  return {statusCode: 200}
  * }
  */
-function tables(callback) {
+function tables (callback) {
   let promise
   if (!callback) {
-    promise = new Promise(function ugh(res, rej) {
-      callback = function errback(err, result) {
+    promise = new Promise(function ugh (res, rej) {
+      callback = function errback (err, result) {
         if (err) rej(err)
         else res(result)
       }
@@ -42,7 +42,7 @@ function tables(callback) {
     waterfall([
       lookup.tables,
       factory,
-      function(created, callback) {
+      function (created, callback) {
         client = created
         callback(null, client)
       }
