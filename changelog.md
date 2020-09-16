@@ -4,7 +4,15 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.14.0] 2020-09-10
+## [3.13.1] 2020-09-16
+
+### Fixed
+
+- Fixed bad call in `http.proxy` alias config
+
+---
+
+## [3.13.0] 2020-09-10
 
 ### Added
 
@@ -14,7 +22,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ---
 
-## [3.13.3] 2020-07-29
+## [3.12.3] 2020-07-29
 
 ### Added
 

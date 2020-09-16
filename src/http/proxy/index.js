@@ -71,7 +71,7 @@ function proxy (config = {}) {
      * Alias
      *   Allows a Key to be manually overridden
      */
-    let aliasing = config && config.alias && config.alias.path
+    let aliasing = config && config.alias && config.alias[path]
     if (aliasing) {
       Key = config.alias[path].substring(1) // Always remove leading slash
     }
