@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.2] 2020-09-21
+
+### Fixed
+
+- Fixes backward compat for legacy super old school content-type based responses (e.g. `{ html: 'foo' }`)
+
+---
+
 ## [3.13.1] 2020-09-16
 
 ### Fixed
