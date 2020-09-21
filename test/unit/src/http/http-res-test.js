@@ -421,9 +421,34 @@ test('Architect v5 (REST) + Functions + ARC_CLOUDFORMATION = true', t => {
   })
 })
 
-test('Architect v4 + Functions statically-bound content type responses', t => {
+test('Architect v4-style + Functions statically-bound content type responses (REST)', t => {
   t.plan(24)
   let request = requests.arc5.getIndex
+  let r = responses.arc4
+  let run = (response, data, contentType) => {
+    let handler = http((req, res) => res(response))
+    handler(request, {}, (err, res) => {
+      t.notOk(err, 'No error')
+      // Don't double-encode JSON
+      if (res.headers['Content-Type'].includes('json'))
+        t.equal(str(data), res.body, match('res.body', res.body))
+      else
+        t.equal(str(data), str(res.body), match('res.body', res.body))
+      t.true(res.headers['Content-Type'].includes(contentType), `Correct Content-Type header sent: ${contentType}`)
+      t.equal(res.statusCode, 200, 'Responded with 200')
+    })
+  }
+  run(r.css, r.css.css, 'text/css')
+  run(r.html, r.html.html, 'text/html')
+  run(r.js, r.js.js, 'text/javascript')
+  run(r.json, r.json.json, 'application/json')
+  run(r.text, r.text.text, 'text/plain')
+  run(r.xml, r.xml.xml, 'application/xml')
+})
+
+test('Architect v4-style + Functions statically-bound content type responses (HTTP)', t => {
+  t.plan(24)
+  let request = requests.arc6.http.getIndex
   let r = responses.arc4
   let run = (response, data, contentType) => {
     let handler = http((req, res) => res(response))

@@ -4,13 +4,21 @@ let binaryTypes = require('./helpers/binary-types')
 module.exports = function responseFormatter (req, params) {
   // Handle HTTP API v2.0 payload scenarios, which have some very strange edges
   if (req.version && req.version === '2.0') {
+    // New school AWS
     let knownParams = [ 'statusCode', 'body', 'headers', 'isBase64Encoded', 'cookies' ]
     let hasKnownParams = p => knownParams.some(k => k === p)
+    // Old school Arc
+    let staticallyBound = [ 'html', 'css', 'js', 'text', 'json', 'xml' ]
+    let isStaticallyBound = p => staticallyBound.some(k => k === p)
+
     let is = t => typeof params === t
     // Handle scenarios where we have a known parameter returned
     if (is('object') &&
         (params !== null) &&
-        Object.keys(params).some(hasKnownParams)) {
+        !Array.isArray(params) &&
+        Object.keys.length === 1 &&
+        (Object.keys(params).some(hasKnownParams) ||
+         Object.keys(params).some(isStaticallyBound))) {
       params // noop
     }
     // Handle scenarios where arbitrary stuff is returned to be JSONified
