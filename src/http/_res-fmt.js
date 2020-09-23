@@ -8,6 +8,9 @@ module.exports = function responseFormatter (req, params) {
     let knownParams = [ 'statusCode', 'body', 'headers', 'isBase64Encoded', 'cookies' ]
     let hasKnownParams = p => knownParams.some(k => k === p)
     // Old school Arc
+    let tidyParams = [ 'code', 'cookie', 'cors', 'location', 'session', 'status' ]
+    let hasTidyParams = p => tidyParams.some(k => k === p)
+    // Older school Arc
     let staticallyBound = [ 'html', 'css', 'js', 'text', 'json', 'xml' ]
     let isStaticallyBound = p => staticallyBound.some(k => k === p)
 
@@ -18,6 +21,7 @@ module.exports = function responseFormatter (req, params) {
         !Array.isArray(params) &&
         Object.keys.length === 1 &&
         (Object.keys(params).some(hasKnownParams) ||
+         Object.keys(params).some(hasTidyParams) ||
          Object.keys(params).some(isStaticallyBound))) {
       params // noop
     }

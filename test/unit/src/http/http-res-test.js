@@ -471,7 +471,34 @@ test('Architect v4-style + Functions statically-bound content type responses (HT
   run(r.xml, r.xml.xml, 'application/xml')
 })
 
-test('Architect <6 + Functions response params', t => {
+test('Architect <6 + Functions old school response params (HTTP)', t => {
+  t.plan(11)
+  let request = requests.arc6.http.getIndex
+
+  run(responses.arc.location, request, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
+    t.equal(responses.arc.location.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
+  })
+  run(responses.arc.status, request, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc.status.status, res.statusCode, match('code', res.statusCode))
+  })
+  run(responses.arc.code, request, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc.code.code, res.statusCode, match('status', res.statusCode))
+  })
+  run(responses.arc.statusCode, request, (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc.statusCode.statusCode, res.statusCode, match('statusCode', res.statusCode))
+  })
+  run(responses.arc.session, request, (err, res) => {
+    t.notOk(err, 'No error')
+    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
+  })
+})
+
+test('Architect <6 + Functions old school response params (REST)', t => {
   t.plan(11)
   let request = requests.arc5.getIndex
 

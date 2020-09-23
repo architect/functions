@@ -4,11 +4,19 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.3] 2020-09-23
+
+### Fixed
+
+- Fixes backward compat for legacy old school tidy Arc response params (e.g. `{ location: '/foo' }`) when used in `HTTP` APIs
+
+---
+
 ## [3.13.2] 2020-09-21
 
 ### Fixed
 
-- Fixes backward compat for legacy super old school content-type based responses (e.g. `{ html: 'foo' }`)
+- Fixes backward compat for legacy super old school content-type based responses (e.g. `{ html: 'foo' }`) when used in `HTTP` APIs
 
 ---
 
