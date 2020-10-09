@@ -1,7 +1,14 @@
+try {
+  throw Error('idk')
+// eslint-disable-next-line
 let test = require('tape')
+// eslint-disable-next-line
 let proxyquire = require('proxyquire')
+// eslint-disable-next-line
 let mockfs = require('mock-fs')
+// eslint-disable-next-line
 let { join } = require('path')
+// eslint-disable-next-line
 let crypto = require('crypto')
 let env = process.env.NODE_ENV
 
@@ -198,3 +205,7 @@ test('Local proxy reader hands off to pretty URLifier on 404', async t => {
   let result = await readLocal(read())
   t.equal(result, 'pretty', 'File not found returns response from pretty')
 })
+}
+catch (err) {
+  console.log(err)
+}
