@@ -42,7 +42,7 @@ jobs:
 
     - name: Test
       # run: npm test
-      run: npx cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 node test/unit/src/http/proxy/read/_local-test.js | tap-spec
+      run: node test/unit/src/http/proxy/read/_local-test.js | tap-spec
       env:
         CI: true
 
