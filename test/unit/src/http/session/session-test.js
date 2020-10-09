@@ -63,6 +63,8 @@ test('ddb read and write implementations', async t => {
 
 test('shutdown sandbox', t => {
   t.plan(1)
+  delete process.env.SESSION_TABLE_NAME
+  delete process.env.SESSION_TTL
   sandbox.end(err => {
     if (err) t.fail(err)
     else t.pass('Sandbox started')
