@@ -1,5 +1,4 @@
 try {
-  throw Error('idk')
 // eslint-disable-next-line
 let test = require('tape')
 // eslint-disable-next-line
