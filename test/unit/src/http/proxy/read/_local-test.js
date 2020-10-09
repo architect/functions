@@ -72,7 +72,8 @@ let mdContents = 'This is a file in public/\nCalling to an ![image](${STATIC(\'i
 let defaultCacheControl = 'public, max-age=0, must-revalidate'
 
 // Ok, we're good to go
-let readLocal = proxyquire('../../../../../../src/http/proxy/read/_local', {
+let req = join('..', '..', '..', '..', '..', '..', 'src', 'http', 'proxy', 'read', '_local')
+let readLocal = proxyquire(req, {
   './_pretty': prettyStub
 })
 
