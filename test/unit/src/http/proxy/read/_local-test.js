@@ -88,7 +88,8 @@ test('Local proxy reader returns formatted response from text payload (200)', as
   setup()
   t.plan(6)
   // TODO test without path_to_static (legacy mode?)
-
+  // TODO ↓ remove me! ↓
+  console.log(`thePath:`, thePath)
   mockfs({
     [thePath]: imgContents
   })
