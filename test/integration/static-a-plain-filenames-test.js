@@ -1,8 +1,6 @@
 let exec = require('child_process').execSync
-let exists = require('path-exists').sync
-let fs = require('fs')
-let join = require('path').join
-let mkdir = require('mkdirp').sync
+let { copyFileSync, existsSync: exists, mkdirSync: mkdir } = require('fs')
+let { join } = require('path')
 let test = require('tape')
 
 let arc
@@ -23,9 +21,9 @@ let resetEnv = () => {
 
 test('Set up mocked files', t => {
   t.plan(2)
-  mkdir(shared)
-  fs.copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
-  fs.copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
+  mkdir(shared, { recursive: true })
+  copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
+  copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
   t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
   t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   process.chdir(tmp)
