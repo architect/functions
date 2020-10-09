@@ -39,7 +39,7 @@ function read (params = {}) {
 }
 
 // Some utilities
-let publicPath = join(process.cwd(), 'public')
+let publicPath = process.cwd() + '/' + 'public'
 let hash = thing => crypto.createHash('sha256').update(thing).digest('hex')
 let dec = i => Buffer.from(i, 'base64').toString()
 let b64 = buf => Buffer.from(buf).toString('base64')
@@ -82,13 +82,15 @@ test('Set up env', t => {
   t.ok(readLocal, 'Loaded readLocal')
 })
 
+let thePath = publicPath + '/' + imgName
+
 test('Local proxy reader returns formatted response from text payload (200)', async t => {
   setup()
   t.plan(6)
   // TODO test without path_to_static (legacy mode?)
 
   mockfs({
-    [join(publicPath, imgName)]: imgContents
+    [thePath]: imgContents
   })
   let result = await readLocal(read())
   t.equal(result.statusCode, 200, 'Returns statusCode: 200')
@@ -106,7 +108,7 @@ test('Local proxy reader returns formatted response from binary payload (200)', 
   t.plan(2)
 
   mockfs({
-    [join(publicPath, imgName)]: Buffer.from(binary)
+    [thePath]: Buffer.from(binary)
   })
   let result = await readLocal(read())
   t.equal(result.headers['ETag'], hash(Buffer.from(binary)), 'Returns correct ETag')
@@ -124,7 +126,7 @@ test('Local proxy reader unsets ARC_STATIC_PREFIX and returns formatted response
   t.ok(process.env.ARC_STATIC_PREFIX, 'ARC_STATIC_PREFIX set')
 
   mockfs({
-    [join(publicPath, imgName)]: imgContents
+    [thePath]: imgContents
   })
   let params = read({ Key: `${process.env.ARC_STATIC_PREFIX}/${imgName}` })
   let result = await readLocal(params)
@@ -149,7 +151,7 @@ test('Local proxy reader unsets ARC_STATIC_FOLDER (deprecated) and returns forma
   t.ok(process.env.ARC_STATIC_FOLDER, 'ARC_STATIC_FOLDER set')
 
   mockfs({
-    [join(publicPath, imgName)]: imgContents
+    [thePath]: imgContents
   })
   let params = read({ Key: `${process.env.ARC_STATIC_FOLDER}/${imgName}` })
   let result = await readLocal(params)
@@ -170,7 +172,7 @@ test('Local proxy reader returns 304 (aka S3 NotModified)', async t => {
   t.plan(2)
 
   mockfs({
-    [join(publicPath, imgName)]: imgContents
+    [thePath]: imgContents
   })
   let params = read({ IfNoneMatch: hash(imgContents) })
   let result = await readLocal(params)
@@ -187,8 +189,8 @@ test('Local proxy reader templatizes with local paths when fingerprinting is ena
 
   process.env.NODE_ENV = 'staging'
   mockfs({
-    [join(publicPath, mdName)]: mdContents,
-    [join(publicPath, imgName)]: imgContents
+    [publicPath + '/' + mdName]: mdContents,
+    [thePath]: imgContents
   })
   let params = read({ Key: mdName, config: { assets: staticStub } })
   let result = await readLocal(params)
