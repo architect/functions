@@ -31,12 +31,13 @@ test('jwe read and write implementations', async t => {
   t.ok(cookie.includes(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
-let end
-test('set up sandbox for ddb testing', async t => {
+test('set up sandbox for ddb testing', t => {
   t.plan(1)
   process.chdir(join(process.cwd(), 'test', 'mock', 'project'))
-  end = await sandbox.start()
-  t.ok(true, 'started sandbox')
+  sandbox.start({}, err => {
+    if (err) t.fail(err)
+    else t.pass('Sandbox started')
+  })
 })
 
 test('ddb read and write implementations', async t => {
@@ -62,6 +63,10 @@ test('ddb read and write implementations', async t => {
 
 test('shutdown sandbox', t => {
   t.plan(1)
-  end()
-  t.pass('Sandbox shutdown')
+  delete process.env.SESSION_TABLE_NAME
+  delete process.env.SESSION_TTL
+  sandbox.end(err => {
+    if (err) t.fail(err)
+    else t.pass('Sandbox started')
+  })
 })

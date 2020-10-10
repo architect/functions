@@ -1,8 +1,6 @@
 let exec = require('child_process').execSync
-let exists = require('path-exists').sync
-let fs = require('fs')
+let { copyFileSync, existsSync: exists, mkdirSync: mkdir } = require('fs')
 let join = require('path').join
-let mkdir = require('mkdirp').sync
 let test = require('tape')
 
 let arc
@@ -16,9 +14,9 @@ let static
 
 test('Set up mocked arc', t => {
   t.plan(2)
-  mkdir(shared)
-  fs.copyFileSync(join(mock, 'mock-arc-fingerprint'), join(shared, '.arc'))
-  fs.copyFileSync(join(mock, 'mock-arc-fingerprint'), join(tmp, '.arc'))
+  mkdir(shared, { recursive: true })
+  copyFileSync(join(mock, 'mock-arc-fingerprint'), join(shared, '.arc'))
+  copyFileSync(join(mock, 'mock-arc-fingerprint'), join(tmp, '.arc'))
   t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
   t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   process.chdir(tmp)
@@ -36,7 +34,7 @@ test('Fingerprinting only enabled if static manifest is found', t => {
 
 test('Set up mocked static manifest', t => {
   t.plan(2)
-  fs.copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
+  copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
   // eslint-disable-next-line
   static = require(join(shared, 'static.json'))

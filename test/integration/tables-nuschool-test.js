@@ -1,13 +1,10 @@
 let sandbox = require('@architect/sandbox')
-let exec = require('child_process').execSync
+let { execSync: exec } = require('child_process')
 let test = require('tape')
-let mkdir = require('mkdirp').sync
-let exists = require('path-exists').sync
-let join = require('path').join
-let fs = require('fs')
+let { join } = require('path')
+let { copyFileSync, existsSync: exists, mkdirSync: mkdir  } = require('fs')
 
 let arc
-let server
 let data
 
 let mock = join(__dirname, '..', 'mock')
@@ -18,10 +15,10 @@ let origCwd = process.cwd()
 
 test('Set up mocked files', t => {
   t.plan(3)
-  mkdir(shared)
-  fs.copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
-  fs.copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
-  fs.copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
+  mkdir(shared, { recursive: true })
+  copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
+  copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
+  copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
   t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
   t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
@@ -32,8 +29,9 @@ test('Set up mocked files', t => {
 
 test('starts the db server', t => {
   t.plan(1)
-  server = sandbox.db.start(function _start () {
-    t.ok(true, 'started db server')
+  sandbox.tables.start({}, err => {
+    if (err) t.fail(err)
+    else t.pass('Sandbox started')
   })
 })
 
@@ -137,8 +135,10 @@ test('tables update()', async t => {
 
 test('server closes', t => {
   t.plan(1)
-  server.close()
-  t.ok(true, 'closed')
+  sandbox.tables.end(err => {
+    if (err) t.fail(err)
+    else t.pass('Sandbox ended')
+  })
 })
 
 test('Clean up env', t => {
