@@ -1,7 +1,7 @@
 name: Node CI
 
 # Push tests pushes; PR tests merges
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 defaults:
   run:
@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         node-version: [ 10.x, 12.x, 14.x ]
-        os: [windows-latest, ubuntu-latest, macOS-latest ]
+        os: [ windows-latest, ubuntu-latest, macOS-latest ]
 
     # Go
     steps:
