@@ -1,13 +1,7 @@
-try {
-// eslint-disable-next-line
 let test = require('tape')
-// eslint-disable-next-line
 let proxyquire = require('proxyquire')
-// eslint-disable-next-line
 let mockfs = require('mock-fs')
-// eslint-disable-next-line
 let { join } = require('path')
-// eslint-disable-next-line
 let crypto = require('crypto')
 let env = process.env.NODE_ENV
 
@@ -39,21 +33,16 @@ function read (params = {}) {
 }
 
 // Some utilities
-let publicPath = process.cwd() + '/' + 'public'
-publicPath = publicPath.replace(/\\/g, '/')
+let publicPath = join(process.cwd(), 'public')
 let hash = thing => crypto.createHash('sha256').update(thing).digest('hex')
 let dec = i => Buffer.from(i, 'base64').toString()
 let b64 = buf => Buffer.from(buf).toString('base64')
 function setup () {
   process.env.ARC_SANDBOX_PATH_TO_STATIC = publicPath
 }
-function reset (t) {
+function reset () {
   process.env.NODE_ENV = env
-  // TODO ↓ remove me! ↓
-  console.log(`got to restore`)
   mockfs.restore()
-  console.log(`passed restore`)
-  t.pass('idk')
 }
 
 // File contents
@@ -77,8 +66,7 @@ let mdContents = 'This is a file in public/\nCalling to an ![image](${STATIC(\'i
 let defaultCacheControl = 'public, max-age=0, must-revalidate'
 
 // Ok, we're good to go
-let req = join('..', '..', '..', '..', '..', '..', 'src', 'http', 'proxy', 'read', '_local')
-let readLocal = proxyquire(req, {
+let readLocal = proxyquire('../../../../../../src/http/proxy/read/_local', {
   './_pretty': prettyStub
 })
 
@@ -87,138 +75,118 @@ test('Set up env', t => {
   t.ok(readLocal, 'Loaded readLocal')
 })
 
-let thePath = publicPath + '/' + imgName
-
 test('Local proxy reader returns formatted response from text payload (200)', async t => {
   setup()
-  t.plan(7)
+  t.plan(6)
   // TODO test without path_to_static (legacy mode?)
-  // TODO ↓ remove me! ↓
-  console.log(`thePath:`, thePath)
+
   mockfs({
-    [thePath]: imgContents
+    [join(publicPath, imgName)]: imgContents
   })
-  // TODO ↓ remove me! ↓
-  console.log(`got past mockfs`)
   let result = await readLocal(read())
-  // TODO ↓ remove me! ↓
-  console.log(`result:`, result)
+  reset() // Must be reset before any tape tests are resolved because mock-fs#201
   t.equal(result.statusCode, 200, 'Returns statusCode: 200')
   t.equal(result.headers['Cache-Control'], defaultCacheControl, 'Returns correct cache-control')
   t.equal(result.headers['Content-Type'], imgContentType, 'Returns correct content-type')
   t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
   t.equal(result.body, b64(imgContents), 'Returns correct body')
   t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
-  // TODO ↓ remove me! ↓
-  console.log(`got to the end of assertions`)
-  reset(t)
 })
 
 test('Local proxy reader returns formatted response from binary payload (200)', async t => {
   setup()
-  t.plan(3)
+  t.plan(2)
 
   mockfs({
-    [thePath]: Buffer.from(binary)
+    [join(publicPath, imgName)]: Buffer.from(binary)
   })
   let result = await readLocal(read())
+  reset() // Must be reset before any tape tests are resolved because mock-fs#201
   t.equal(result.headers['ETag'], hash(Buffer.from(binary)), 'Returns correct ETag')
   t.equal(result.body, b64(binary), 'Returns correct body')
-
-  reset(t)
 })
 
 test('Local proxy reader unsets ARC_STATIC_PREFIX and returns formatted response (200)', async t => {
   setup()
-  t.plan(8)
+  t.plan(7)
 
   // Local reads should unset ARC_STATIC_PREFIX, which is intended for remote/S3 use only
   process.env.ARC_STATIC_PREFIX = 'foobar'
   t.ok(process.env.ARC_STATIC_PREFIX, 'ARC_STATIC_PREFIX set')
 
   mockfs({
-    [thePath]: imgContents
+    [join(publicPath, imgName)]: imgContents
   })
   let params = read({ Key: `${process.env.ARC_STATIC_PREFIX}/${imgName}` })
   let result = await readLocal(params)
+  reset() // Must be reset before any tape tests are resolved because mock-fs#201
   t.equal(result.statusCode, 200, 'Returns statusCode: 200')
   t.equal(result.headers['Cache-Control'], defaultCacheControl, 'Returns correct cache-control')
   t.equal(result.headers['Content-Type'], imgContentType, 'Returns correct content-type')
   t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
   t.equal(result.body, b64(imgContents), 'Returns correct body')
   t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
-
   delete process.env.ARC_STATIC_PREFIX
-
-  reset(t)
 })
 
-// test('Local proxy reader unsets ARC_STATIC_FOLDER (deprecated) and returns formatted response (200)', async t => {
-//   setup()
-//   t.plan(7)
+test('Local proxy reader unsets ARC_STATIC_FOLDER (deprecated) and returns formatted response (200)', async t => {
+  setup()
+  t.plan(7)
 
-//   // Local reads should unset ARC_STATIC_FOLDER, which is intended for remote/S3 use only
-//   process.env.ARC_STATIC_FOLDER = 'foobar'
-//   t.ok(process.env.ARC_STATIC_FOLDER, 'ARC_STATIC_FOLDER set')
+  // Local reads should unset ARC_STATIC_FOLDER, which is intended for remote/S3 use only
+  process.env.ARC_STATIC_FOLDER = 'foobar'
+  t.ok(process.env.ARC_STATIC_FOLDER, 'ARC_STATIC_FOLDER set')
 
-//   mockfs({
-//     [thePath]: imgContents
-//   })
-//   let params = read({ Key: `${process.env.ARC_STATIC_FOLDER}/${imgName}` })
-//   let result = await readLocal(params)
-//   t.equal(result.statusCode, 200, 'Returns statusCode: 200')
-//   t.equal(result.headers['Cache-Control'], defaultCacheControl, 'Returns correct cache-control')
-//   t.equal(result.headers['Content-Type'], imgContentType, 'Returns correct content-type')
-//   t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
-//   t.equal(result.body, b64(imgContents), 'Returns correct body')
-//   t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
+  mockfs({
+    [join(publicPath, imgName)]: imgContents
+  })
+  let params = read({ Key: `${process.env.ARC_STATIC_FOLDER}/${imgName}` })
+  let result = await readLocal(params)
+  reset() // Must be reset before any tape tests are resolved because mock-fs#201
+  t.equal(result.statusCode, 200, 'Returns statusCode: 200')
+  t.equal(result.headers['Cache-Control'], defaultCacheControl, 'Returns correct cache-control')
+  t.equal(result.headers['Content-Type'], imgContentType, 'Returns correct content-type')
+  t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
+  t.equal(result.body, b64(imgContents), 'Returns correct body')
+  t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
+  delete process.env.ARC_STATIC_FOLDER
+})
 
-//   delete process.env.ARC_STATIC_FOLDER
+test('Local proxy reader returns 304 (aka S3 NotModified)', async t => {
+  setup()
+  t.plan(2)
 
-//   reset()
-// })
+  mockfs({
+    [join(publicPath, imgName)]: imgContents
+  })
+  let params = read({ IfNoneMatch: hash(imgContents) })
+  let result = await readLocal(params)
+  reset() // Must be reset before any tape tests are resolved because mock-fs#201
+  t.equal(result.statusCode, 304, 'Returns statusCode of 304 if ETag matches')
+  t.equal(result.headers['ETag'], hash(imgContents), 'Etag matches request')
+})
 
-// test('Local proxy reader returns 304 (aka S3 NotModified)', async t => {
-//   setup()
-//   t.plan(2)
+test('Local proxy reader templatizes with local paths when fingerprinting is enabled', async t => {
+  // Tests to ensure ${ARC_STATIC('foo.gif')} doesn't use fingerprinted filenames locally
+  setup()
+  t.plan(3)
 
-//   mockfs({
-//     [thePath]: imgContents
-//   })
-//   let params = read({ IfNoneMatch: hash(imgContents) })
-//   let result = await readLocal(params)
-//   t.equal(result.statusCode, 304, 'Returns statusCode of 304 if ETag matches')
-//   t.equal(result.headers['ETag'], hash(imgContents), 'Etag matches request')
+  process.env.NODE_ENV = 'staging'
+  mockfs({
+    [join(publicPath, mdName)]: mdContents,
+    [join(publicPath, imgName)]: imgContents
+  })
+  let params = read({ Key: mdName, config: { assets: staticStub } })
+  let result = await readLocal(params)
+  reset() // Must be reset before any tape tests are resolved because mock-fs#201
+  t.notEqual(result.body, b64(mdContents), `Contents containing template calls mutated: ${dec(result.body)}`)
+  t.ok(dec(result.body).includes(imgName), `Used non-fingerprinted filename in sandbox mode: ${imgName}`)
+  t.notOk(dec(result.body).includes(staticStub[imgName]), `Did not use fingerprinted filename in sandbox mode: ${staticStub[imgName]}`)
+})
 
-//   reset()
-// })
-
-// test('Local proxy reader templatizes with local paths when fingerprinting is enabled', async t => {
-//   // Tests to ensure ${ARC_STATIC('foo.gif')} doesn't use fingerprinted filenames locally
-//   setup()
-//   t.plan(3)
-
-//   process.env.NODE_ENV = 'staging'
-//   mockfs({
-//     [publicPath + '/' + mdName]: mdContents,
-//     [thePath]: imgContents
-//   })
-//   let params = read({ Key: mdName, config: { assets: staticStub } })
-//   let result = await readLocal(params)
-//   t.notEqual(result.body, b64(mdContents), `Contents containing template calls mutated: ${dec(result.body)}`)
-//   t.ok(dec(result.body).includes(imgName), `Used non-fingerprinted filename in sandbox mode: ${imgName}`)
-//   t.notOk(dec(result.body).includes(staticStub[imgName]), `Did not use fingerprinted filename in sandbox mode: ${staticStub[imgName]}`)
-
-//   reset()
-// })
-
-// test('Local proxy reader hands off to pretty URLifier on 404', async t => {
-//   // We'll let the pretty / 404 tests handle whether a 404 is actually returned
-//   t.plan(1)
-//   let result = await readLocal(read())
-//   t.equal(result, 'pretty', 'File not found returns response from pretty')
-// })
-}
-catch (err) {
-  console.log(err)
-}
+test('Local proxy reader hands off to pretty URLifier on 404', async t => {
+  // We'll let the pretty / 404 tests handle whether a 404 is actually returned
+  t.plan(1)
+  let result = await readLocal(read())
+  t.equal(result, 'pretty', 'File not found returns response from pretty')
+})
