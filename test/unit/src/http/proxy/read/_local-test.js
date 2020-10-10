@@ -40,6 +40,7 @@ function read (params = {}) {
 
 // Some utilities
 let publicPath = process.cwd() + '/' + 'public'
+publicPath = publicPath.replace(/\\/g, '/')
 let hash = thing => crypto.createHash('sha256').update(thing).digest('hex')
 let dec = i => Buffer.from(i, 'base64').toString()
 let b64 = buf => Buffer.from(buf).toString('base64')
@@ -93,7 +94,11 @@ test('Local proxy reader returns formatted response from text payload (200)', as
   mockfs({
     [thePath]: imgContents
   })
+  // TODO ↓ remove me! ↓
+  console.log(`got past mockfs`)
   let result = await readLocal(read())
+  // TODO ↓ remove me! ↓
+  console.log(`result:`, result)
   t.equal(result.statusCode, 200, 'Returns statusCode: 200')
   t.equal(result.headers['Cache-Control'], defaultCacheControl, 'Returns correct cache-control')
   t.equal(result.headers['Content-Type'], imgContentType, 'Returns correct content-type')
