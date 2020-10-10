@@ -49,7 +49,10 @@ function setup () {
 }
 function reset () {
   process.env.NODE_ENV = env
+  // TODO ↓ remove me! ↓
+  console.log(`got to restore`)
   mockfs.restore()
+  console.log(`passed restore`)
 }
 
 // File contents
@@ -105,7 +108,8 @@ test('Local proxy reader returns formatted response from text payload (200)', as
   t.equal(result.headers['ETag'], imgETag, 'Returns correct ETag')
   t.equal(result.body, b64(imgContents), 'Returns correct body')
   t.ok(result.isBase64Encoded, 'Returns isBase64Encoded: true')
-
+  // TODO ↓ remove me! ↓
+  console.log(`got to the end of assertions`)
   reset()
 })
 
