@@ -8,8 +8,15 @@ module.exports = function publishLocal (params, callback) {
     path: '/events',
   },
   function done (res) {
+    let data = []
     res.resume()
-    res.on('end', () => callback())
+    res.on('data', chunk => data.push(chunk))
+    res.on('end', () => {
+      let body = Buffer.concat(data).toString()
+      let code = `${res.statusCode}`
+      if (!code.startsWith(2)) callback(Error(`Error: ${body} (${code})`))
+      else callback(null, body)
+    })
   })
   req.write(JSON.stringify(params))
   req.end('\n')

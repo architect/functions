@@ -46,10 +46,20 @@ module.exports = function _publish (params, callback) {
       method: 'POST',
       port,
       path: '/queues',
+    },
+    function done (res) {
+      let data = []
+      res.resume()
+      res.on('data', chunk => data.push(chunk))
+      res.on('end', () => {
+        let body = Buffer.concat(data).toString()
+        let code = `${res.statusCode}`
+        if (!code.startsWith(2)) callback(Error(`Error: ${body} (${code})`))
+        else callback(null, body)
+      })
     })
     req.write(JSON.stringify(params))
-    req.end()
-    callback()
+    req.end('\n')
   }
   else {
     // otherwise attempt to sqs.sendMessage
