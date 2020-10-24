@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.4] 2020-10-24
+
+### Fixed
+
+- Return errors on local `@events` + `@queues` publishing
+
+---
+
 ## [3.13.3] 2020-09-23
 
 ### Fixed
