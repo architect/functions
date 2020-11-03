@@ -4,6 +4,20 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.5] 2020-11-03
+
+### Changed
+
+- Updated session test to no longer use legacy session table name
+- Updated dependencies
+
+
+### Fixed
+
+- Handle body parsing `HTTP` APIs with v2.0 Lambda req payloads that include raw JSON; fixes @architect#997, thanks @mawdesley!
+
+---
+
 ## [3.13.4] 2020-10-24
 
 ### Fixed
