@@ -42,7 +42,7 @@ test('set up sandbox for ddb testing', t => {
 
 test('ddb read and write implementations', async t => {
   t.plan(5)
-  process.env.SESSION_TABLE_NAME = 'arc-sessions'
+  process.env.SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
   process.env.SESSION_TTL = 14400
   let fakerequest = {}
   let session = await read(fakerequest)
