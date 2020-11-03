@@ -54,7 +54,7 @@ module.exports = function _publish (params, callback) {
       res.on('end', () => {
         let body = Buffer.concat(data).toString()
         let code = `${res.statusCode}`
-        if (!code.startsWith(2)) callback(Error(`Error: ${body} (${code})`))
+        if (!code.startsWith(2)) callback(Error(`${body} (${code})`))
         else callback(null, body)
       })
     })
