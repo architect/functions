@@ -17,9 +17,17 @@ let multiPartFormData = { 'Content-Type': 'multipart/form-data' }
 let octetStream = { 'Content-Type': 'application/octet-stream' }
 
 test('Architect v6+ requests', t => {
-  t.plan(8)
-  // Pass through empty body (although in practice we'll never see this, as we transform to empty object)
+  t.plan(9)
+  // HTTP + Lambda v2.0 payloads pass in raw JSON
   let req = {
+    body: str(hi),
+    headers: json,
+    isBase64Encoded: false
+  }
+  t.equals(str(parseBody(req)), str(hi), `body matches ${req.body}`)
+
+  // Pass through empty body (although in practice we'll never see this, as we transform to empty object)
+  req = {
     body: null,
     headers: json
   }
