@@ -19,15 +19,18 @@ module.exports = function parseBody (req) {
     let isString = typeof request.body === 'string'
     let isBase64 = request.isBase64Encoded
     let isParsing = isString && isBase64
-    let isJSON = (contentType('application/json') || contentType('application/vnd.api+json')) && isParsing
+    let isJSON = (contentType('application/json') || contentType('application/vnd.api+json')) && isString
     let isFormURLEncoded = contentType('application/x-www-form-urlencoded') && isParsing
     let isMultiPartFormData = contentType('multipart/form-data') && isParsing
     let isOctetStream = contentType('application/octet-stream') && isParsing
 
     if (isJSON) {
       try {
-        // Handles base64 + JSON-encoded payloads (>Arc 6)
-        let data = new Buffer.from(request.body, 'base64').toString()
+        let data = isBase64
+          // Base64 + JSON-encoded payloads (>Arc 6 REST)
+          ? Buffer.from(request.body, 'base64').toString()
+          // Raw JSON (HTTP API + Lambda v2.0 payload)
+          : request.body
         request.body = JSON.parse(data) || {}
       }
       catch (e) {
