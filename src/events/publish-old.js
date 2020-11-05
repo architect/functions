@@ -119,7 +119,10 @@ function _scan ({ eventName }, callback) {
         callback(null, found.TopicArn)
       }
       else if (results.NextToken) {
-        __scanner({ NextToken: results.NextToken }, callback)
+        setTimeout(() => {
+          // 30tps on sns.listTopics, so let's give just a bit of buffer
+          __scanner({ NextToken: results.NextToken }, callback)
+        }, 50)
       }
       else {
         callback(Error(`topic ${eventName} not found`))

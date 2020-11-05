@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.6] 2020-11-04
+
+### Fixed
+
+- Fixed rate-limit crashes in legacy `events.publish` call; fixes #300
+
+---
+
 ## [3.13.5] 2020-11-03
 
 ### Changed
