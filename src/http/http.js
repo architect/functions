@@ -53,12 +53,14 @@ function response (req, callback, params) {
   // Format the response
   let res = responseFormatter(req, params)
 
-  // Tag the new session
-  if (params && (params.session || params.cookie)) {
-    let session = params.session || params.cookie
-    session = Object.assign({}, req.session, session)
-    // Save the session
-    write(session, function _write (err, cookie) {
+  // Legacy 'cookie' parameter, used after direct session writes
+  if (params && params.cookie) {
+    res.headers['Set-Cookie'] = params.cookie
+  }
+
+  // Save the passed session
+  if (params && params.session) {
+    write(params.session, function _write (err, cookie) {
       if (err) callback(err)
       else {
         res.headers['Set-Cookie'] = cookie
