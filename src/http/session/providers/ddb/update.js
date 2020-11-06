@@ -12,12 +12,8 @@ module.exports = function _update (name, payload, callback) {
         Item: session
       },
       function _create (err) {
-        if (err) {
-          callback(err)
-        }
-        else {
-          callback(null, session)
-        }
+        if (err) callback(err)
+        else callback(null, session)
       })
     }
   })

@@ -1,9 +1,9 @@
 @app
 test-only
 
-# Not really necessary for testing sessions anymore, but feel free to uncomment if you need to!
-# @http
-# get /
+@http
+get /http-session
+get /http-async-session
 
 @tables
 arc-sessions

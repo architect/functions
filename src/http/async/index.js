@@ -68,10 +68,12 @@ async function response (req, params) {
     res.headers['Set-Cookie'] = params.cookie
   }
 
-  // Tag the new session
+  // Save the passed session
   if (params && params.session) {
-    // Save the session
-    let cookie = await write(params.session)
+    // Tag the session data with _idx, secret, ttl, from req.session
+    let { _idx, _secret, _ttl } = req.session
+    let session = { _idx, _secret, _ttl, ...params.session }
+    let cookie = await write(session)
     res.headers['Set-Cookie'] = cookie
   }
   return res

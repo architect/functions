@@ -11,9 +11,7 @@ module.exports = function _find (name, _idx, callback) {
         Key: { _idx }
       },
       function _get (err, data) {
-        if (err) {
-          callback(err)
-        }
+        if (err) callback(err)
         else {
           let result = typeof data === 'undefined' ? false : data.Item
           if (result && result._secret) {

@@ -60,7 +60,10 @@ function response (req, callback, params) {
 
   // Save the passed session
   if (params && params.session) {
-    write(params.session, function _write (err, cookie) {
+    // Tag the session data with _idx, secret, ttl, from req.session
+    let { _idx, _secret, _ttl } = req.session
+    let session = { _idx, _secret, _ttl, ...params.session }
+    write(session, function _write (err, cookie) {
       if (err) callback(err)
       else {
         res.headers['Set-Cookie'] = cookie
