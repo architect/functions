@@ -9,7 +9,6 @@ test-app-name # all resource get prefixed with this value
 
 @aws
 region us-west-1
-profile architect
 
 # newer-style generic http routes
 @http
