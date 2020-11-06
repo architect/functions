@@ -1,6 +1,6 @@
 let cookie = require('cookie')
-let unsign = require('cookie-signature').unsign
-let sign = require('cookie-signature').sign
+let getIdx = require('./get-idx')
+let { unsign, sign } = require('cookie-signature')
 
 let find = require('./find')
 let create = require('./create')
@@ -33,9 +33,10 @@ function read (request, callback) {
   if (!rawCookie && request.cookies) {
     rawCookie = request.cookies.join(';')
   }
-  let jar = cookie.parse(rawCookie || '')
-  let sesh = jar._idx
-  let valid = unsign(jar._idx || '', secret)
+
+  let idx = getIdx(rawCookie)
+  let sesh = cookie.parse(idx)._idx
+  let valid = unsign(sesh || '', secret)
 
   // find or create a new session
   let exec = sesh && valid ? find.bind({}, name) : create.bind({}, name)

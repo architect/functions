@@ -6,6 +6,10 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ## [3.13.7] 2020-11-05
 
+### Changed
+
+- Sessions helper now uses the ordered last of multiple potential client sessions present in a cookie (if multiple are present)
+
 ### Fixed
 
 - Fixed subtle session bug where attempting to clear a session would retain old session data
