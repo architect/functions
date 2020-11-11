@@ -63,11 +63,16 @@ async function response (req, params) {
   // Format the response
   let res = responseFormatter(req, params)
 
-  // Tag the new session
-  if (params && (params.session || params.cookie)) {
-    let session = params.session || params.cookie
-    session = Object.keys(session).length === 0 ? {} : Object.assign({}, req.session, session)
-    // Save the session
+  // Legacy 'cookie' parameter, used after direct session writes
+  if (params && params.cookie) {
+    res.headers['Set-Cookie'] = params.cookie
+  }
+
+  // Save the passed session
+  if (params && params.session) {
+    // Tag the session data with _idx, secret, ttl, from req.session
+    let { _idx, _secret, _ttl } = req.session
+    let session = { _idx, _secret, _ttl, ...params.session }
     let cookie = await write(session)
     res.headers['Set-Cookie'] = cookie
   }

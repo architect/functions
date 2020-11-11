@@ -4,6 +4,19 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.7] 2020-11-05
+
+### Changed
+
+- Sessions helper now uses the ordered last of multiple potential client sessions present in a cookie (if multiple are present)
+
+### Fixed
+
+- Fixed subtle session bug where attempting to clear a session would retain old session data
+- Fixed broken legacy `cookie` response param behavior, restoring behavior of being an alias for setting a `set-cookie` header, and not for writing a session
+
+---
+
 ## [3.13.6] 2020-11-04
 
 ### Fixed

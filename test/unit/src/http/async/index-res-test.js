@@ -208,11 +208,11 @@ test('Architect v5 (REST): dependency-free responses', async t => {
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc5.cookie, request)
-  t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
+  t.equal(res.headers['Set-Cookie'], responses.arc5.cookie.cookie, `Cookie set: ${responses.arc5.cookie.cookie}...`)
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc5.secureCookie, request)
-  t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
+  t.equal(res.headers['Set-Cookie'], responses.arc5.secureCookie.cookie, `Cookie set: ${responses.arc5.secureCookie.cookie}...`)
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc5.secureCookieHeader, request)

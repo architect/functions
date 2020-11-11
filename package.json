@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "3.13.6",
+  "version": "3.13.7-RC.1",
   "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
   "homepage": "https://github.com/architect/functions",
   "repository": {
@@ -61,7 +61,8 @@
     "proxyquire": "^2.1.3",
     "sinon": "^9.2.1",
     "tap-spec": "^5.0.0",
-    "tape": "^5.0.1"
+    "tape": "^5.0.1",
+    "tiny-json-http": "^7.3.0"
   },
   "eslintConfig": {
     "extends": "@architect/eslint-config"
