@@ -4,11 +4,21 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.8] 2020-11-12
+
+### Changed
+
+- Internal change for JWE token issuance, thanks @lpetre!
+- Ensure JWE session helper also uses the ordered last of multiple potential client sessions present in a cookie (if multiple are present)
+
+---
+
 ## [3.13.7] 2020-11-05
 
 ### Changed
 
 - Sessions helper now uses the ordered last of multiple potential client sessions present in a cookie (if multiple are present)
+
 
 ### Fixed
 

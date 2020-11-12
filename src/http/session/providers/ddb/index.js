@@ -1,5 +1,5 @@
 let cookie = require('cookie')
-let getIdx = require('./get-idx')
+let getIdx = require('../_get-idx')
 let { unsign, sign } = require('cookie-signature')
 
 let find = require('./find')

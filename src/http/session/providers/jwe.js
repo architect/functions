@@ -1,10 +1,11 @@
+let getIdx = require('./_get-idx')
 let cookie = require('cookie')
 let jwt = require('node-webtokens')
 let alg = 'dir'
 let enc = 'A128GCM'
 
-// 32 bit key size
-let fallback = Buffer.from('12345678901234567890123456789012').toString('base64')
+// 128bit key size
+let fallback = Buffer.from('1234567890123456').toString('base64')
 
 // need to STRONGLY encourage setting ARC_APP_SECRET in the docs
 let key = process.env.ARC_APP_SECRET || fallback
@@ -32,15 +33,15 @@ function read (req, callback) {
       }
     })
   }
-  // TODO: uppercase 'Cookie' is not the header name on AWS Lambda; it's
-  // lowercase 'cookie' on lambda...
-  let rawCookie = req.headers && (req.headers.Cookie || req.headers.cookie)
+  let rawCookie = req.headers && (req.headers.cookie || req.headers.Cookie)
   // Lambda payload version 2 puts the cookies in an array on the request
   if (!rawCookie && req.cookies) {
     rawCookie = req.cookies.join(';')
   }
-  let jar = cookie.parse(rawCookie || '')
-  let token = jwe.parse(jar._idx)
+
+  let idx = getIdx(rawCookie)
+  let sesh = cookie.parse(idx)._idx
+  let token = jwe.parse(sesh)
   callback(null, token.valid ? token.payload : {})
   return promise
 }
@@ -71,8 +72,9 @@ function write (payload, callback) {
   if (process.env.SESSION_DOMAIN) {
     options.domain = process.env.SESSION_DOMAIN
   }
-  if (process.env.NODE_ENV === 'testing')
+  if (process.env.NODE_ENV === 'testing') {
     delete options.secure
+  }
   callback(null, cookie.serialize(key, val, options))
   return promise
 }
