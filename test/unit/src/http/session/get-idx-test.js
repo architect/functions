@@ -1,6 +1,6 @@
 let test = require('tape')
 let { join } = require('path')
-let sut = join(process.cwd(), 'src', 'http', 'session', 'providers', 'ddb', 'get-idx')
+let sut = join(process.cwd(), 'src', 'http', 'session', 'providers', '_get-idx')
 let getIdx = require(sut)
 
 test('Set up env', t => {
