@@ -4,6 +4,19 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.9] 2021-01-13
+
+### Added
+
+- Added new alias for `arc.tables()._name` to `arc.tables().name`
+
+
+### Fixed
+
+- Fixed `arc.tables()._name` Sandbox mode returning an array instead of a string; thanks @exalted!
+
+---
+
 ## [3.13.8] 2020-11-12
 
 ### Changed
