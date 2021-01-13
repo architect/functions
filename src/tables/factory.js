@@ -32,9 +32,9 @@ module.exports = function reflectFactory (tables, callback) {
         return tables
       }
 
-      data._name = function _name (name) {
-        return tables[name]
-      }
+      let _name = name => tables[name]
+      data.name = _name
+      data._name = _name
 
       function factory (TableName) {
         return promisify({

@@ -50,9 +50,9 @@ module.exports = function sandbox (callback) {
             }, {})
           }
 
-          data._name = function _name (name) {
-            return tables.filter(t => RegExp(`^.*${name}$`).test(t))
-          }
+          let _name = name => tables.filter(t => RegExp(`^.*${name}$`).test(t))[0]
+          data.name = _name
+          data._name = _name
 
           callback(null, data)
         }
