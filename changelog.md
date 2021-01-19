@@ -4,6 +4,12 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.10] 2021-01-18
+
+### Added
+
+- Session cookie's SameSite value is configurable with ARC_SESSION_SAME_SITE environment variable
+
 ## [3.13.9] 2021-01-13
 
 ### Added
