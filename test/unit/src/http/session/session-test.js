@@ -31,6 +31,21 @@ test('jwe read and write implementations', async t => {
   t.ok(cookie.includes(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
+test('jwe SameSite is configurable', async t => {
+  t.plan(2)
+  process.env.SESSION_TABLE_NAME = 'jwe'
+  process.env.SESSION_TTL = 14400
+  let session = {}
+  // default value:
+  delete process.env.ARC_SESSION_SAME_SITE
+  let cookie = await write(session)
+  t.ok(cookie.includes(`SameSite=Lax`), 'cookie SameSite is set correctly to default')
+  // configured value:
+  process.env.ARC_SESSION_SAME_SITE = "None"
+  cookie = await write(session)
+  t.ok(cookie.includes(`SameSite=${process.env.ARC_SESSION_SAME_SITE}`), 'cookie SameSite is set correctly to configured value')
+})
+
 test('set up sandbox for ddb testing', t => {
   t.plan(1)
   process.chdir(join(process.cwd(), 'test', 'mock', 'project'))
