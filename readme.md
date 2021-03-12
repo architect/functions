@@ -126,6 +126,11 @@ Would yield the following objects:
 - `scan(params, callback)`: scans the table using `params` and invokes `callback` with the result
 - `update(params, callback)`: updates an item in the table using `params` and invokes `callback` when complete
 
+
+## `arc.ws.send({ id, payload })`
+
+Sends the object present on `payload` to the connection ID on `id`. Payload is passed to `JSON.stringify()` on your behalf. Uses [`postToConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#postToConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with no data on success.
+
 [npm]: https://www.npmjs.com/package/@architect/functions
 [sandbox]: https://www.npmjs.com/package/@architect/sandbox
 [events]: https://arc.codes/reference/events
