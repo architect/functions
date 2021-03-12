@@ -8,7 +8,7 @@ let run = require('./send')
  *
  * @param {Object} params
  * @param {String} params.id - the ws connecton id (required)
- * @param {String} params.payload - a json event payload (required)
+ * @param {Object} params.payload - an event payload (required)
  * @param {Function} callback - a node style errback (optional)
  * @returns {Promise} - returned if no callback is supplied
  */
