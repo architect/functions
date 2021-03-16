@@ -9,21 +9,27 @@ if (!env || isNotStagingOrProd) {
   process.env.NODE_ENV = 'testing'
 }
 
-let events = require('./events')
-let http = require('./http')
-let queues = require('./queues')
-let _static = require('./static')
-let tables = require('./tables')
-let send = require('./ws')
 
+let http = require('./http')
+let _static = require('./static')
+let serviceDiscovery = require('./discovery')
+/*
+*/
+let send = require('./ws')
 let arc = {
-  events,
   http,
-  queues,
   static: _static,
-  tables,
   ws: { send },
+  services: new Promise(function (resolve, reject) {
+    serviceDiscovery(function (err, serviceMap) {
+      if (err) reject(err)
+      else resolve(serviceMap)
+    })
+  }),
 }
+arc.tables = require('./tables')(arc.services)
+arc.queues = require('./queues')(arc.services)
+arc.events = require('./events')(arc.services)
 
 // backwards compat
 arc.proxy = {}
