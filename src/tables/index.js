@@ -18,7 +18,7 @@ let client = false
  *  return {statusCode: 200}
  * }
  */
-function tables (services) {
+function tables (arc) {
   let api = function (callback) {
     let promise
     if (!callback) {
@@ -42,10 +42,14 @@ function tables (services) {
     else {
       waterfall([
         function (callback) {
-          services.then(function (serviceMap) {
-            console.log('tables instantiation, service map returned', serviceMap)
-            callback(null, serviceMap.tables)
-          }).catch(callback)
+          // lazy load service map if not fetched yet
+          if (!arc.services) {
+            console.log('lazy loading tables')
+            arc._loadServices().then(function (serviceMap) {
+              callback(null, serviceMap.tables)
+            }).catch(callback)
+          }
+          else callback(arc.services.tables)
         },
         factory,
         function (created, callback) {
@@ -69,9 +73,7 @@ function tables (services) {
   api.all = old.all
   api.save = old.save
   api.change = old.change
-  api() // kick off fetching and caching the table client pre-emptively
   return api
 }
-
 
 module.exports = tables
