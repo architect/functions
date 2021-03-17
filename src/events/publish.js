@@ -1,10 +1,11 @@
 let sandbox = require('./publish-sandbox')
+let topicFactory = require('./publish-topic')
 
 /**
  * invoke an event lambda by sns topic name
  */
-module.exports = function publishFactory (services) {
-  let topic = require('./publish-topic')(services)
+module.exports = function publishFactory (arc) {
+  let topic = topicFactory(arc)
   return function publish (params, callback) {
     if (!params.name)
       throw ReferenceError('missing params.name')

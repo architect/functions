@@ -20,16 +20,22 @@ let arc = {
   http,
   static: _static,
   ws: { send },
-  services: new Promise(function (resolve, reject) {
-    serviceDiscovery(function (err, serviceMap) {
-      if (err) reject(err)
-      else resolve(serviceMap)
+  services: false,
+  _loadServices: function () {
+    return new Promise(function (resolve, reject) {
+      serviceDiscovery(function (err, serviceMap) {
+        if (err) reject(err)
+        else {
+          arc.services = serviceMap
+          resolve(arc.services)
+        }
+      })
     })
-  }),
+  }
 }
-arc.tables = require('./tables')(arc.services)
-arc.queues = require('./queues')(arc.services)
-arc.events = require('./events')(arc.services)
+arc.tables = require('./tables')(arc)
+arc.queues = require('./queues')(arc)
+arc.events = require('./events')(arc)
 
 // backwards compat
 arc.proxy = {}

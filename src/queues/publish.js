@@ -1,10 +1,11 @@
 let sandbox = require('./publish-sandbox')
+let queueFactory = require('./publish-queue')
 
 /**
  * invoke a queue lambda by sqs queue name
  */
-module.exports = function publishFactory (services) {
-  let queue = require('./publish-queue')(services)
+module.exports = function publishFactory (arc) {
+  let queue = queueFactory(arc)
   return function publish (params, callback) {
 
     if (!params.name)

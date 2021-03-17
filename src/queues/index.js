@@ -1,8 +1,9 @@
 let oldPublish = require('./publish-old')
 let subscribe = require('./subscribe')
+let publishFactory = require('./publish')
 
-module.exports = function queueFactory (services) {
-  let publish = require('./publish')(services)
+module.exports = function queueFactory (arc) {
+  let publish = publishFactory(arc)
   return {
     /**
      * arc.queues.publish

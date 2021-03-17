@@ -1,8 +1,9 @@
 let oldPublish = require('./publish-old')
 let subscribe = require('./subscribe')
+let publishFactory = require('./publish')
 
-module.exports = function eventFactory (services) {
-  let publish = require('./publish')(services)
+module.exports = function eventFactory (arc) {
+  let publish = publishFactory(arc)
   return {
     /**
      * arc.events.publish
