@@ -4,6 +4,33 @@ let aws = require('aws-sdk')
  * @returns {object} {name: value}
  */
 module.exports = function lookup (callback) {
+  if (process.env.NODE_ENV === 'testing') lookupSandbox(callback)
+  else lookupSSM(callback)
+}
+
+function lookupSandbox (callback) {
+  let port = process.env.PORT || 3333
+  let req = http.request({
+    method: 'GET',
+    port,
+    path: '/_asd',
+  },
+  function done (res) {
+    let data = []
+    res.resume()
+    res.on('data', chunk => data.push(chunk))
+    res.on('end', () => {
+      let body = Buffer.concat(data).toString()
+      let code = `${res.statusCode}`
+      if (!code.startsWith(2)) callback(Error(`_asd error; (${code}) ${body}`))
+      else callback(null, JSON.parse(body))
+    })
+  })
+  req.write(JSON.stringify(params))
+  req.end('\n')
+}
+
+function lookupSSM (callback) {
   let st = new Date().valueOf()
   let Path = `/${process.env.ARC_CLOUDFORMATION}`
   let Recursive = true
