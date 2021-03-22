@@ -1,4 +1,5 @@
 let aws = require('aws-sdk')
+let http = require('http')
 /**
  * @param {string} type - events, queues, or tables
  * @returns {object} {name: value}
@@ -26,12 +27,10 @@ function lookupSandbox (callback) {
       else callback(null, JSON.parse(body))
     })
   })
-  req.write(JSON.stringify(params))
   req.end('\n')
 }
 
 function lookupSSM (callback) {
-  let st = new Date().valueOf()
   let Path = `/${process.env.ARC_CLOUDFORMATION}`
   let Recursive = true
   let values = []
@@ -56,6 +55,7 @@ function lookupSSM (callback) {
           if (!a[type]) a[type] = {}
           let parent = a[type]
           let child, lastChild, lastParent
+          /* eslint-disable-next-line */
           while (child = hierarchy.shift()) {
             parent[child] = {}
             lastParent = parent
@@ -65,7 +65,6 @@ function lookupSSM (callback) {
           lastParent[lastChild] = b.Value
           return a
         }, {}))
-        console.log('discovery took', (new Date().valueOf() - st), 'ms')
       }
     })
   }

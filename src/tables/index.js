@@ -1,6 +1,5 @@
 let waterfall = require('run-waterfall')
 let old = require('./old')
-let lookup = require('../discovery')
 let factory = require('./factory')
 let sandbox = require('./sandbox')
 let dynamo = require('./dynamo')
@@ -19,7 +18,7 @@ let client = false
  * }
  */
 function tables (arc) {
-  let api = function (callback) {
+  function api (callback) {
     let promise
     if (!callback) {
       promise = new Promise(function ugh (res, rej) {

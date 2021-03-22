@@ -28,7 +28,7 @@ module.exports = function liveFactory (arc) {
       arc._loadServices().then(cacheLedgerAndPublish).catch(callback)
     }
     else {
-      // services were loaded before, set up queue ledger / cache 
+      // services were loaded before, set up queue ledger / cache
       cacheLedgerAndPublish(arc.services)
     }
   }
