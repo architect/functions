@@ -48,7 +48,7 @@ function tables (arc) {
               callback(null, serviceMap.tables)
             }).catch(callback)
           }
-          else callback(arc.services.tables)
+          else callback(null, arc.services.tables)
         },
         factory,
         function (created, callback) {
