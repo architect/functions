@@ -5,7 +5,6 @@ module.exports = function liveFactory (arc) {
   return function live ({ name, payload }, callback) {
 
     function publish (arn, payload, callback) {
-      console.log('sns.publish', JSON.stringify({ arn, payload }))
       let sns = new aws.SNS
       sns.publish({
         TopicArn: arn,
