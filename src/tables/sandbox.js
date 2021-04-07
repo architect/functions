@@ -19,7 +19,8 @@ module.exports = function sandbox (callback) {
         if (err) callback(err)
         else {
           let reduce = (a, b) => Object.assign({}, a, b)
-          let dontcare = tbl => tbl != 'arc-sessions' && tbl.includes('production') === false
+          // TODO: no such table name as 'arc-sessions' (they would all be in the form appname-env-tablename, so the below arc-sessions conditional is not providing value
+          let dontcare = tbl => tbl != 'arc-sessions' && tbl.includes('-production-') === false
           let tables = result.TableNames.filter(dontcare)
           let data = tables.map(function fmt (tbl) {
             let parts = tbl.split('-staging-')

@@ -4,11 +4,12 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
-## [3.13.10] 2021-01-18
+## [3.13.10] 2021-04-07
 
 ### Added
 
-- Session cookie's SameSite value is configurable with ARC_SESSION_SAME_SITE environment variable
+- Session cookie's SameSite value is configurable with ARC_SESSION_SAME_SITE environment variable; thanks @activescott!
+- Fixed issue with `arc.tables()` not generating a client for tables with the string `production` in their names in a Sandbox context
 
 ## [3.13.9] 2021-01-13
 
