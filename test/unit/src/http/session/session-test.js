@@ -41,7 +41,7 @@ test('jwe SameSite is configurable', async t => {
   let cookie = await write(session)
   t.ok(cookie.includes(`SameSite=Lax`), 'cookie SameSite is set correctly to default')
   // configured value:
-  process.env.ARC_SESSION_SAME_SITE = "None"
+  process.env.ARC_SESSION_SAME_SITE = 'None'
   cookie = await write(session)
   t.ok(cookie.includes(`SameSite=${process.env.ARC_SESSION_SAME_SITE}`), 'cookie SameSite is set correctly to configured value')
 })

@@ -24,7 +24,7 @@ function read (request, callback) {
   }
 
   // read dynamo session table
-  let name = process.env.SESSION_TABLE_NAME || 'arc-sessions'
+  let name = process.env.SESSION_TABLE_NAME || tableLogicalId('arc-sessions')
   let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
   // TODO: uppercase 'Cookie' is not the header name on AWS Lambda; it's
   // lowercase 'cookie' on lambda...
@@ -52,7 +52,6 @@ function read (request, callback) {
  * - _secret
  */
 function write (params, callback) {
-
   // be async/await friendly
   let promise
   if (!callback) {
@@ -64,7 +63,7 @@ function write (params, callback) {
   }
 
   // read dynamo session table
-  let name = process.env.SESSION_TABLE_NAME || 'arc-sessions'
+  let name = process.env.SESSION_TABLE_NAME || tableLogicalId('arc-sessions')
   let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
 
   update(name, params, function _update (err) {
@@ -92,4 +91,9 @@ function write (params, callback) {
   })
 
   return promise
+}
+
+function tableLogicalId (name) {
+  let env = process.env.NODE_ENV === 'production' ? 'production' : 'staging'
+  return `${process.env.ARC_APP_NAME}-${env}-${name}`
 }

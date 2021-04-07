@@ -24,7 +24,7 @@ let origCwd = process.cwd()
 
 test('Set up env', async t => {
   t.plan(2)
-  process.env.SESSION_TABLE_NAME = 'arc-sessions'
+  process.env.SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
   process.chdir(mock)
   t.equal(process.cwd(), mock, 'Set working dir')
   let result = await sandbox.start({ quiet: true })
