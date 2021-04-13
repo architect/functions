@@ -1,5 +1,6 @@
 let test = require('tape')
-let publish = require('../../../../src/events/publish')
+let arc = require('../../../..')
+let publish = require('../../../../src/events/publish')(arc)
 
 test('events.publish should throw if there is no parameter name', t => {
   t.plan(1)
