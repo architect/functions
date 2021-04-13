@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.14.0] 2021-04-20
+
+### Added
+
+- New `arc.services()` API for retrieving the service map object for a given app; this object contains metadata associated with all infrastructure or services leveraged by the app
+
+---
+
 ## [3.13.11] 2021-04-15
 
 ### Fixed
@@ -18,6 +26,8 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 - Session cookie's SameSite value is configurable with ARC_SESSION_SAME_SITE environment variable; thanks @activescott!
 - Fixed issue with `arc.tables()` not generating a client for tables with the string `production` in their names in a Sandbox context
+
+---
 
 ## [3.13.9] 2021-01-13
 

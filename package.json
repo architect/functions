@@ -12,7 +12,7 @@
   "scripts": {
     "lint": "eslint --fix .",
     "test:unit": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape 'test/unit/**/*-test.js' | tap-spec",
-    "test:integration": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape 'test/integration/ddb-session-test.js' | tap-spec",
+    "test:integration": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape 'test/integration/**/*-test.js' | tap-spec",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
     "test": "npm run lint && npm run test:integration && npm run coverage",
     "bundle": "echo 'For experimentation only, build from http-proxy!' && browserify src/http/proxy/arc-default-get-index.js --node --external aws-sdk --standalone proxy > dist.js",
@@ -52,6 +52,7 @@
     "@architect/eslint-config": "1.0.0",
     "@architect/sandbox": "^3.1.3",
     "aws-sdk": "2.799.0",
+    "aws-sdk-mock": "^5.1.0",
     "browserify": "^16.5.2",
     "codecov": "^3.8.1",
     "cross-env": "^7.0.2",
