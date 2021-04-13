@@ -27,14 +27,13 @@ test('Set up env', async t => {
   process.env.SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
   process.chdir(mock)
   t.equal(process.cwd(), mock, 'Set working dir')
-  let result = await sandbox.start()
+  let result = await sandbox.start({ quiet: true })
   t.equal(result, 'Sandbox successfully started', result)
 })
 
 test('Create an initial session', async t => {
   t.plan(1)
   let dest = url('/http-session')
-  console.log('going to', dest)
   let result = await tiny.get({ url: dest })
   cookie = result.headers['set-cookie'][0]
   t.ok(cookie, `Got cookie to use in sessions: ${cookie.substr(0, 50)}...`)
