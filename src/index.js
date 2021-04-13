@@ -13,21 +13,21 @@ if (!env || isNotStagingOrProd) {
 let http = require('./http')
 let _static = require('./static')
 let serviceDiscovery = require('./discovery')
-/*
-*/
+let services
+
 let send = require('./ws')
 let arc = {
   http,
   static: _static,
   ws: { send },
-  services: false,
-  _loadServices: function () {
+  services: function () {
     return new Promise(function (resolve, reject) {
-      serviceDiscovery(function (err, serviceMap) {
+      if (services) resolve(services)
+      else serviceDiscovery(function (err, serviceMap) {
         if (err) reject(err)
         else {
-          arc.services = serviceMap
-          resolve(arc.services)
+          services = serviceMap
+          resolve(services)
         }
       })
     })

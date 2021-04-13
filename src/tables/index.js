@@ -41,14 +41,9 @@ function tables (arc) {
     else {
       waterfall([
         function (callback) {
-          // lazy load service map if not fetched yet
-          if (!arc.services) {
-            console.log('lazy loading tables')
-            arc._loadServices().then(function (serviceMap) {
-              callback(null, serviceMap.tables)
-            }).catch(callback)
-          }
-          else callback(null, arc.services.tables)
+          arc.services().then(function (serviceMap) {
+            callback(null, serviceMap.tables)
+          }).catch(callback)
         },
         factory,
         function (created, callback) {
