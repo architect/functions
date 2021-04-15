@@ -11,6 +11,8 @@ module.exports = function interpolateParams (req) {
     })
     // Expect 'GET /foo' or '$default'
     req.resource = req.routeKey.split(' ')[1] || req.routeKey
+    // Backfill `req.path`
+    req.path = req.rawPath
   }
 
   // Un-null APIG-proxy-Lambda params in 6+
@@ -24,7 +26,7 @@ module.exports = function interpolateParams (req) {
   if (!req.params) req.params = req.pathParameters
   if (!req.query)  req.query  = req.queryStringParameters
 
-  // Legacy path parameter interpolation; 6+ gets this for free in `req.path`
+  // Legacy path parameter interpolation; 6+ REST gets this for free in `req.path`
   let params = /\{\w+\}/g
   if (params.test(req.path)) {
     let matches = req.path.match(params)

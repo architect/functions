@@ -55,7 +55,7 @@ test('Set up env', t => {
 })
 
 test('Architect v6 (HTTP): get /', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.getIndex
   let handler = http((req, res) => {
@@ -65,7 +65,7 @@ test('Architect v6 (HTTP): get /', t => {
 })
 
 test('Architect v6 (HTTP): get /?whats=up', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.getWithQueryString
   let handler = http((req, res) => {
@@ -75,7 +75,7 @@ test('Architect v6 (HTTP): get /?whats=up', t => {
 })
 
 test('Architect v6 (HTTP): get /?whats=up&whats=there', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.getWithQueryStringDuplicateKey
   let handler = http((req, res) => {
@@ -85,7 +85,7 @@ test('Architect v6 (HTTP): get /?whats=up&whats=there', t => {
 })
 
 test('Architect v6 (HTTP): get /nature/hiking', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.getWithParam
   let handler = http((req, res) => {
@@ -95,7 +95,7 @@ test('Architect v6 (HTTP): get /nature/hiking', t => {
 })
 
 test('Architect v6 (HTTP): get /$default', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.get$default
   let handler = http((req, res) => {
@@ -105,7 +105,7 @@ test('Architect v6 (HTTP): get /$default', t => {
 })
 
 test('Architect v6 (HTTP): post /form (JSON)', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.postJson
   let handler = http((req, res) => {
@@ -115,7 +115,7 @@ test('Architect v6 (HTTP): post /form (JSON)', t => {
 })
 
 test('Architect v6 (HTTP): post /form (form URL encoded)', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.postFormURL
   let handler = http((req, res) => {
@@ -125,7 +125,7 @@ test('Architect v6 (HTTP): post /form (form URL encoded)', t => {
 })
 
 test('Architect v6 (HTTP): post /form (octet stream)', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.postOctetStream
   let handler = http((req, res) => {
@@ -135,7 +135,7 @@ test('Architect v6 (HTTP): post /form (octet stream)', t => {
 })
 
 test('Architect v6 (HTTP): put /form (JSON)', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.putJson
   let handler = http((req, res) => {
@@ -145,7 +145,7 @@ test('Architect v6 (HTTP): put /form (JSON)', t => {
 })
 
 test('Architect v6 (HTTP): patch /form (JSON)', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.patchJson
   let handler = http((req, res) => {
@@ -155,7 +155,7 @@ test('Architect v6 (HTTP): patch /form (JSON)', t => {
 })
 
 test('Architect v6 (HTTP): delete /form (JSON)', t => {
-  t.plan(22)
+  t.plan(23)
   let end = () => t.pass('Final callback called')
   let request = reqs.arc6.http.deleteJson
   let handler = http((req, res) => {

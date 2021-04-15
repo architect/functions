@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.11] 2021-04-15
+
+### Fixed
+
+- Restored `req.path` convenience parameter missing from HTTP APIs; thanks @crtr0!
+
+---
+
 ## [3.13.10] 2021-04-07
 
 ### Added
