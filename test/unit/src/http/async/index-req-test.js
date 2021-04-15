@@ -56,7 +56,7 @@ test('Set up env', t => {
 })
 
 test('Architect v6 (HTTP): get /', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.getIndex
   let req
   let fn = async request => {
@@ -69,7 +69,7 @@ test('Architect v6 (HTTP): get /', async t => {
 })
 
 test('Architect v6 (HTTP): get /?whats=up', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.getWithQueryString
   let req
   let fn = async request => {
@@ -82,7 +82,7 @@ test('Architect v6 (HTTP): get /?whats=up', async t => {
 })
 
 test('Architect v6 (HTTP): get /?whats=up&whats=there', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.getWithQueryStringDuplicateKey
   let req
   let fn = async request => {
@@ -95,7 +95,7 @@ test('Architect v6 (HTTP): get /?whats=up&whats=there', async t => {
 })
 
 test('Architect v6 (HTTP): get /nature/hiking', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.getWithParam
   let req
   let fn = async request => {
@@ -108,7 +108,7 @@ test('Architect v6 (HTTP): get /nature/hiking', async t => {
 })
 
 test('Architect v6 (HTTP): get /$default', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.get$default
   let req
   let fn = async request => {
@@ -121,7 +121,7 @@ test('Architect v6 (HTTP): get /$default', async t => {
 })
 
 test('Architect v6 (HTTP): post /form (JSON)', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.postJson
   let req
   let fn = async request => {
@@ -134,7 +134,7 @@ test('Architect v6 (HTTP): post /form (JSON)', async t => {
 })
 
 test('Architect v6 (HTTP): post /form (form URL encoded)', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.postFormURL
   let req
   let fn = async request => {
@@ -147,7 +147,7 @@ test('Architect v6 (HTTP): post /form (form URL encoded)', async t => {
 })
 
 test('Architect v6 (HTTP): post /form (multipart form data)', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.postMultiPartFormData
   let req
   let fn = async request => {
@@ -160,7 +160,7 @@ test('Architect v6 (HTTP): post /form (multipart form data)', async t => {
 })
 
 test('Architect v6 (HTTP): post /form (octet stream)', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.postOctetStream
   let req
   let fn = async request => {
@@ -173,7 +173,7 @@ test('Architect v6 (HTTP): post /form (octet stream)', async t => {
 })
 
 test('Architect v6 (HTTP): put /form (JSON)', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.putJson
   let req
   let fn = async request => {
@@ -186,7 +186,7 @@ test('Architect v6 (HTTP): put /form (JSON)', async t => {
 })
 
 test('Architect v6 (HTTP): patch /form (JSON)', async t => {
-  t.plan(21)
+  t.plan(22)
   let request = reqs.arc6.http.patchJson
   let req
   let fn = async request => {
