@@ -105,8 +105,8 @@ test('Peek and find nested index.html', async t => {
     headers,
     isFolder
   })
-  reset() // Must be reset before any tape tests are resolved because mock-fs#201
   t.equal(result.body, msg, 'Successfully peeked into a local folder without a trailing slash')
+  reset()
 })
 
 test('Peek and do not find nested index.html', async t => {
@@ -190,9 +190,9 @@ test('Return a custom 404', async t => {
     headers,
     isFolder
   })
-  reset() // Must be reset before any tape tests are resolved because mock-fs#201
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 with custom 404 error from local')
   t.equal(result.body, msg, 'Output is custom 404 page from local')
+  reset()
 })
 
 test('Return the default 404', async t => {
@@ -222,9 +222,9 @@ test('Return the default 404', async t => {
     headers,
     isFolder
   })
-  reset() // Must be reset before any tape tests are resolved because mock-fs#201
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if local file is not found')
   t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from local')
+  reset()
 })
 
 test('Teardown', t => {
