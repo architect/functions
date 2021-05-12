@@ -27,6 +27,26 @@ test('discovery should parse hierarchical SSM parameters into a service map obje
   })
 })
 
+test('discovery should parse hierarchical SSM parameters, even ones of different depths, into a service map object', t => {
+  t.plan(6)
+  aws.mock('SSM', 'getParametersByPath', (params, cb) => cb(null, {
+    Parameters: [
+      { Name: '/app/tables/cats', Value: 'tableofcats' },
+      { Name: '/app/cloudwatch/metrics/catbarf', Value: 'somuchbarf' },
+      { Name: '/app/cloudwatch/metrics/chill', Value: 'quite' }
+    ]
+  }))
+  discovery((err, services) => {
+    t.notOk(err, 'no error passed to callback')
+    t.equals(services.tables.cats, 'tableofcats', 'cat table value set up in correct place of service map')
+    t.ok(services.cloudwatch, 'cloudwatch object exists')
+    t.ok(services.cloudwatch.metrics, 'cloudwatch.metrics object exists')
+    t.equals(services.cloudwatch.metrics.catbarf, 'somuchbarf', 'cloudwatch.metrics.catbarf variable has correct value')
+    t.ok(services.cloudwatch.metrics.chill, 'quite', 'cloudwatch.metrics.child variable has correct value')
+    aws.restore()
+  })
+})
+
 test('discovery should parse several pages of hierarchical SSM parameters into a service map object', t => {
   t.plan(5)
   let ssmCounter = 0
