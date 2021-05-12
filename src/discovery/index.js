@@ -43,7 +43,7 @@ module.exports = function lookup (callback) {
           let child, lastChild, lastParent
           /* eslint-disable-next-line */
           while (child = hierarchy.shift()) {
-            parent[child] = {}
+            if (!parent[child]) parent[child] = {}
             lastParent = parent
             parent = parent[child]
             lastChild = child
