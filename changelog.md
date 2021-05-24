@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.13.12] 2021-05-24
+
+### Changed
+
+- Removed unnecessary console logging for `@events` + `@queues` publishing
+
+---
+
 ## [3.13.11] 2021-04-15
 
 ### Fixed
