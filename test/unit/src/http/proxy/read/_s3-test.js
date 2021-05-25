@@ -263,8 +263,8 @@ test('Fingerprint: template calls are replaced inline on non-captured requests',
   t.equal(options.Bucket, Bucket, `Used alternate bucket: ${options.Bucket}`)
   t.equal(options.Key, Key, `Read fingerprinted filename: ${options.Key}`)
   t.notEqual(fileContents, dec(result.body), `Contents containing template calls mutated: ${dec(result.body)}`)
-  t.ok(dec(result.body).includes(staticStub['images/this-is-fine.gif']), `Contents now include fingerprinted asset: ${staticStub['images/this-is-fine.gif']}`)
-  t.ok(dec(result.body).includes(staticStub['images/hold-onto-your-butts.gif']), `Contents now include fingerprinted asset: ${staticStub['images/hold-onto-your-butts.gif']}`)
+  t.match(dec(result.body), new RegExp(staticStub['images/this-is-fine.gif']), `Contents now include fingerprinted asset: ${staticStub['images/this-is-fine.gif']}`)
+  t.match(dec(result.body), new RegExp(staticStub['images/hold-onto-your-butts.gif']), `Contents now include fingerprinted asset: ${staticStub['images/hold-onto-your-butts.gif']}`)
 })
 
 test('Fingerprint: template calls are replaced inline on captured requests', async t => {
@@ -280,8 +280,8 @@ test('Fingerprint: template calls are replaced inline on captured requests', asy
   t.equal(options.Bucket, Bucket, `Used alternate bucket: ${options.Bucket}`)
   t.equal(options.Key, staticStub[Key], `Read fingerprinted filename: ${options.Key}`)
   t.notEqual(fileContents, result.body, `Contents containing template calls mutated: ${result.body}`)
-  t.ok(dec(result.body).includes(staticStub['images/this-is-fine.gif']), `Contents now include fingerprinted asset: ${staticStub['images/this-is-fine.gif']}`)
-  t.ok(dec(result.body).includes(staticStub['images/hold-onto-your-butts.gif']), `Contents now include fingerprinted asset: ${staticStub['images/hold-onto-your-butts.gif']}`)
+  t.match(dec(result.body), new RegExp(staticStub['images/this-is-fine.gif']), `Contents now include fingerprinted asset: ${staticStub['images/this-is-fine.gif']}`)
+  t.match(dec(result.body), new RegExp(staticStub['images/hold-onto-your-butts.gif']), `Contents now include fingerprinted asset: ${staticStub['images/hold-onto-your-butts.gif']}`)
 })
 
 test('S3 proxy reader hands off to pretty URLifier on 404', async t => {
@@ -299,6 +299,6 @@ test('S3 proxy reader returns 500 error on S3 error', async t => {
   errorState = 'this is a random error state'
   let result = await readS3(read())
   t.equal(result.statusCode, 500, 'Returns statusCode of 500 if S3 errors')
-  t.ok(result.body.includes(errorState), 'Error message included in response')
+  t.match(result.body, new RegExp(errorState), 'Error message included in response')
   errorState = false
 })

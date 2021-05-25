@@ -28,7 +28,7 @@ test('Config: bucket', async t => {
   // Test no bucket config
   let result = await proxy(req)
   t.equal(result.statusCode, 502, 'Missing bucket config responds with 502')
-  t.ok(result.body.includes('Index not found'), 'Missing bucket config presents helpful error')
+  t.match(result.body, /Index not found/, 'Missing bucket config presents helpful error')
 
   // Test ARC_STATIC_BUCKET
   process.env.ARC_STATIC_BUCKET = productionBucket

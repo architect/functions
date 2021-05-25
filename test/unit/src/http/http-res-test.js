@@ -44,88 +44,88 @@ test('Architect v6 (HTTP)', t => {
   run(responses.arc6.http.noReturn, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.emptyReturn, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.string, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc6.http.string), res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.object, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc6.http.object), res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.array, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc6.http.array), res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.buffer, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc6.http.buffer), res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.number, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc6.http.number), res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.bodyOnly, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.http.bodyOnly.body, res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.bodyWithStatus, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.http.bodyWithStatus.body, res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.bodyWithStatusAndContentType, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.http.bodyWithStatusAndContentType.body, res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.encodedWithBinaryType, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.http.encodedWithBinaryType.body, res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/pdf'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/pdf/, 'Unspecified content type defaults to JSON')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.cookies, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.http.cookies.body, res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(str(responses.arc6.http.cookies.cookies), str(res.cookies), match('res.cookies', res.cookies))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.secureCookies, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.http.secureCookies.body, res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(str(responses.arc6.http.secureCookies.cookies), str(res.cookies), match('res.cookies', res.cookies))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
   run(responses.arc6.http.secureCookieHeader, request, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.http.secureCookieHeader.body, res.body, match('res.body', res.body))
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(responses.arc6.rest.secureCookieHeader.headers['set-cookie'], res.headers['set-cookie'], match(`res.headers['set-cookie']`, res.headers['set-cookie']))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
@@ -300,7 +300,7 @@ test('Architect v5 (REST) + Functions', t => {
   })
   run(responses.arc5.defaultsToJson, request, (err, res) => {
     t.notOk(err, 'No error')
-    t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+    t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
 })
@@ -434,7 +434,7 @@ test('Architect v4-style + Functions statically-bound content type responses (RE
         t.equal(str(data), res.body, match('res.body', res.body))
       else
         t.equal(str(data), str(res.body), match('res.body', res.body))
-      t.true(res.headers['Content-Type'].includes(contentType), `Correct Content-Type header sent: ${contentType}`)
+      t.match(res.headers['Content-Type'], new RegExp(contentType), `Correct Content-Type header sent: ${contentType}`)
       t.equal(res.statusCode, 200, 'Responded with 200')
     })
   }
@@ -459,7 +459,7 @@ test('Architect v4-style + Functions statically-bound content type responses (HT
         t.equal(str(data), res.body, match('res.body', res.body))
       else
         t.equal(str(data), str(res.body), match('res.body', res.body))
-      t.true(res.headers['Content-Type'].includes(contentType), `Correct Content-Type header sent: ${contentType}`)
+      t.match(res.headers['Content-Type'], new RegExp(contentType), `Correct Content-Type header sent: ${contentType}`)
       t.equal(res.statusCode, 200, 'Responded with 200')
     })
   }
@@ -494,7 +494,7 @@ test('Architect <6 + Functions old school response params (HTTP)', t => {
   })
   run(responses.arc.session, request, (err, res) => {
     t.notOk(err, 'No error')
-    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
+    t.match(res.headers['Set-Cookie'], /_idx=/, `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
   })
 })
 
@@ -521,7 +521,7 @@ test('Architect <6 + Functions old school response params (REST)', t => {
   })
   run(responses.arc.session, request, (err, res) => {
     t.notOk(err, 'No error')
-    t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
+    t.match(res.headers['Set-Cookie'], /_idx=/, `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
   })
 })
 
@@ -533,7 +533,7 @@ test('Test errors', t => {
   handler(request, {}, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 500, 'Error response, 500 returned')
-    t.ok(res.body.includes(error.message), `Error response included error message: ${error.message}`)
+    t.match(res.body, new RegExp(error.message), `Error response included error message: ${error.message}`)
   })
 })
 
