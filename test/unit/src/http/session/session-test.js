@@ -24,11 +24,11 @@ test('jwe read and write implementations', async t => {
   t.comment(JSON.stringify(session))
   t.comment(JSON.stringify(cookie))
   t.comment(JSON.stringify(inception))
-  t.ok(inception.one === 1, 'read back again')
+  t.equal(inception.one, 1, 'read back again')
   // Lambda payload version 2
   let inception2 = await read({ cookies: [ cookie ] })
-  t.ok(inception2.one === 1, 'read back again from payload version 2')
-  t.ok(cookie.includes(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
+  t.equal(inception2.one, 1, 'read back again from payload version 2')
+  t.match(cookie, new RegExp(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
 test('jwe SameSite is configurable', async t => {
@@ -39,11 +39,11 @@ test('jwe SameSite is configurable', async t => {
   // default value:
   delete process.env.ARC_SESSION_SAME_SITE
   let cookie = await write(session)
-  t.ok(cookie.includes(`SameSite=Lax`), 'cookie SameSite is set correctly to default')
+  t.match(cookie, /SameSite=Lax/, 'cookie SameSite is set correctly to default')
   // configured value:
   process.env.ARC_SESSION_SAME_SITE = 'None'
   cookie = await write(session)
-  t.ok(cookie.includes(`SameSite=${process.env.ARC_SESSION_SAME_SITE}`), 'cookie SameSite is set correctly to configured value')
+  t.match(cookie, new RegExp(`SameSite=${process.env.ARC_SESSION_SAME_SITE}`), 'cookie SameSite is set correctly to configured value')
 })
 
 test('set up sandbox for ddb testing', t => {
@@ -72,8 +72,8 @@ test('ddb read and write implementations', async t => {
   t.equals(inception.one, 1, 'read back modified cookie')
   // Lambda payload version 2
   let inception2 = await read({ cookies: [ cookie ] })
-  t.ok(inception2.one === 1, 'read back again from payload version 2')
-  t.ok(cookie.includes(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
+  t.equals(inception2.one, 1, 'read back again from payload version 2')
+  t.match(cookie, new RegExp(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
 test('shutdown sandbox', t => {

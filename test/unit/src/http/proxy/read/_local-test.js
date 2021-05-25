@@ -179,8 +179,8 @@ test('Local proxy reader templatizes with local paths when fingerprinting is ena
   let params = read({ Key: mdName, config: { assets: staticStub } })
   let result = await readLocal(params)
   t.notEqual(result.body, b64(mdContents), `Contents containing template calls mutated: ${dec(result.body)}`)
-  t.ok(dec(result.body).includes(imgName), `Used non-fingerprinted filename in sandbox mode: ${imgName}`)
-  t.notOk(dec(result.body).includes(staticStub[imgName]), `Did not use fingerprinted filename in sandbox mode: ${staticStub[imgName]}`)
+  t.match(dec(result.body), new RegExp(imgName), `Used non-fingerprinted filename in sandbox mode: ${imgName}`)
+  t.doesNotMatch(dec(result.body), new RegExp(staticStub[imgName]), `Did not use fingerprinted filename in sandbox mode: ${staticStub[imgName]}`)
   reset()
 })
 

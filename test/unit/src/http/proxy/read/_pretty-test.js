@@ -123,7 +123,7 @@ test('Peek and do not find nested index.html', async t => {
     isFolder
   })
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if S3 file is not found')
-  t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from S3')
+  t.match(result.body, /NoSuchKey/, 'Error message included in response from S3')
 
   // Local
   process.env.NODE_ENV = 'testing'
@@ -134,7 +134,7 @@ test('Peek and do not find nested index.html', async t => {
     isFolder
   })
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if local file is not found')
-  t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from local')
+  t.match(result.body, /NoSuchKey/, 'Error message included in response from local')
   reset()
 })
 
@@ -208,7 +208,7 @@ test('Return the default 404', async t => {
     isFolder
   })
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if S3 file is not found')
-  t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from S3')
+  t.match(result.body, /NoSuchKey/, 'Error message included in response from S3')
 
   // Local
   process.env.NODE_ENV = 'staging'
@@ -223,7 +223,7 @@ test('Return the default 404', async t => {
     isFolder
   })
   t.equal(result.statusCode, 404, 'Returns statusCode of 404 if local file is not found')
-  t.ok(result.body.includes('NoSuchKey'), 'Error message included in response from local')
+  t.match(result.body, /NoSuchKey/, 'Error message included in response from local')
   reset()
 })
 

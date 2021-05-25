@@ -51,75 +51,75 @@ test('Architect v6 (HTTP)', async t => {
 
   let res = await run(responses.arc6.http.noReturn, request)
   t.equal(res.body, '', 'Empty body passed')
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.emptyReturn, request)
   t.equal(res.body, '', 'Empty body passed')
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.string, request)
   t.equal(str(responses.arc6.http.string), res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.object, request)
   t.equal(str(responses.arc6.http.object), res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.array, request)
   t.equal(str(responses.arc6.http.array), res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.buffer, request)
   t.equal(str(responses.arc6.http.buffer), res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.number, request)
   t.equal(str(responses.arc6.http.number), res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.bodyOnly, request)
   t.equal(responses.arc6.http.bodyOnly.body, res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.bodyWithStatus, request)
   t.equal(responses.arc6.http.bodyWithStatus.body, res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.bodyWithStatusAndContentType, request)
   t.equal(responses.arc6.http.bodyWithStatusAndContentType.body, res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.encodedWithBinaryType, request)
   t.equal(responses.arc6.http.encodedWithBinaryType.body, res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/pdf'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/pdf/, 'Actual content type returned in header')
   t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.cookies, request)
   t.equal(responses.arc6.http.cookies.body, res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(str(responses.arc6.http.cookies.cookies), str(res.cookies), match('res.cookies', res.cookies))
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.secureCookies, request)
   t.equal(responses.arc6.http.secureCookies.body, res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(str(responses.arc6.http.secureCookies.cookies), str(res.cookies), match('res.cookies', res.cookies))
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc6.http.secureCookieHeader, request)
   t.equal(responses.arc6.http.secureCookieHeader.body, res.body, match('res.body', res.body))
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(responses.arc6.rest.secureCookieHeader.headers['set-cookie'], res.headers['set-cookie'], match(`res.headers['set-cookie']`, res.headers['set-cookie']))
   t.equal(res.statusCode, 200, 'Responded with 200')
 
@@ -275,7 +275,7 @@ test('Architect v5 (REST) + Functions', async t => {
   t.equal(res.statusCode, 200, 'Responded with 200')
 
   res = await run(responses.arc5.defaultsToJson, request)
-  t.ok(res.headers['Content-Type'].includes('application/json'), 'Unspecified content type defaults to JSON')
+  t.match(res.headers['Content-Type'], /application\/json/, 'Unspecified content type defaults to JSON')
   t.equal(res.statusCode, 200, 'Responded with 200')
 })
 
@@ -373,7 +373,7 @@ test('Architect <6 response params', async t => {
   t.equal(responses.arc.statusCode.statusCode, res.statusCode, match('status', res.statusCode))
 
   res = await run(responses.arc.session, request)
-  t.ok(res.headers['Set-Cookie'].includes('_idx='), `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
+  t.match(res.headers['Set-Cookie'], /_idx=/, `Cookie set: ${res.headers['Set-Cookie'].substr(0, 75)}...`)
 })
 
 test('Should prevent further middleware from running when a response is returned', t => {

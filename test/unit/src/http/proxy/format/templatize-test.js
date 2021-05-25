@@ -26,18 +26,18 @@ test('Templatizer passes through non-fingerprinted assets', t => {
   t.plan(6)
   let response = { body: buf('here is an asset: ${STATIC(\'this-is-fine.gif\')}') }
   let result = sut({ response }).body.toString()
-  t.notOk(result.includes('${STATIC(\'this-is-fine.gif\')}'), 'Templatizer stripped out STATIC')
-  t.ok(result.includes('this-is-fine.gif'), 'Templatizer left in asset reference')
+  t.doesNotMatch(result, /${STATIC(\'this-is-fine.gif\')}/, 'Templatizer stripped out STATIC')
+  t.match(result, /this-is-fine.gif/, 'Templatizer left in asset reference')
 
   response = { body: buf('here is an asset: ${arc.static(\'this-is-fine.gif\')}') }
   result = sut({ response }).body.toString()
-  t.notOk(result.includes('${arc.static(\'this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
-  t.ok(result.includes('this-is-fine.gif'), 'Templatizer left in asset reference')
+  t.doesNotMatch(result, /${arc.static(\'this-is-fine.gif\')}/, 'Templatizer stripped out arc.static')
+  t.match(result, /this-is-fine.gif/, 'Templatizer left in asset reference')
 
   response = { body: buf('here is an asset: ${arc.static(\'/this-is-fine.gif\')}') }
   result = sut({ response }).body.toString()
-  t.notOk(result.includes('${arc.static(\'/this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
-  t.ok(result.includes('/this-is-fine.gif'), 'Templatizer left in asset reference (including leading slash)')
+  t.doesNotMatch(result, /${arc.static(\'\/this-is-fine.gif\')}/, 'Templatizer stripped out arc.static')
+  t.match(result, /\/this-is-fine.gif/, 'Templatizer left in asset reference (including leading slash)')
 })
 
 test('Templatizer replaces fingerprinted assets', t => {
@@ -48,20 +48,20 @@ test('Templatizer replaces fingerprinted assets', t => {
   }
   let response = { body: buf('here is an asset: ${STATIC(\'this-is-fine.gif\')}') }
   let result = sut({ response, assets }).body.toString()
-  t.notOk(result.includes('${STATIC(\'this-is-fine.gif\')}'), 'Templatizer stripped out STATIC')
-  t.ok(result.includes(fingerprinted), 'Templatizer replaced asset reference with fingerprint')
+  t.doesNotMatch(result, /${STATIC(\'this-is-fine.gif\')}/, 'Templatizer stripped out STATIC')
+  t.match(result, new RegExp(fingerprinted), 'Templatizer replaced asset reference with fingerprint')
 
   response = { body: buf('here is an asset: ${arc.static(\'this-is-fine.gif\')}') }
   result = sut({ response, assets }).body.toString()
-  t.notOk(result.includes('${arc.static(\'this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
-  t.ok(result.includes(fingerprinted), 'Templatizer replaced asset reference with fingerprint')
+  t.doesNotMatch(result, /${arc.static(\'this-is-fine.gif\')}/, 'Templatizer stripped out arc.static')
+  t.match(result, new RegExp(fingerprinted), 'Templatizer replaced asset reference with fingerprint')
 
   // Leading slash
   fingerprinted = '/this-is-fine-abc123.gif'
   response = { body: buf('here is an asset: ${arc.static(\'/this-is-fine.gif\')}') }
   result = sut({ response, assets }).body.toString()
-  t.notOk(result.includes('${arc.static(\'/this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
-  t.ok(result.includes(fingerprinted), 'Templatizer replaced asset reference with fingerprint (including leading slash)')
+  t.doesNotMatch(result, /${arc.static(\'\/this-is-fine.gif\')}/, 'Templatizer stripped out arc.static')
+  t.match(result, new RegExp(fingerprinted), 'Templatizer replaced asset reference with fingerprint (including leading slash)')
 })
 
 test('Templatizer does not replace fingerprinted assets locally', t => {
@@ -72,16 +72,16 @@ test('Templatizer does not replace fingerprinted assets locally', t => {
   let isLocal = true
   let response = { body: buf('here is an asset: ${STATIC(\'this-is-fine.gif\')}') }
   let result = sut({ response, assets, isLocal }).body.toString()
-  t.notOk(result.includes('${STATIC(\'this-is-fine.gif\')}'), 'Templatizer stripped out STATIC')
-  t.ok(result.includes('this-is-fine.gif'), 'Templatizer replaced asset reference with fingerprint')
+  t.doesNotMatch(result, /${STATIC(\'this-is-fine.gif\')}/, 'Templatizer stripped out STATIC')
+  t.match(result, /this-is-fine.gif/, 'Templatizer replaced asset reference with fingerprint')
 
   response = { body: buf('here is an asset: ${arc.static(\'this-is-fine.gif\')}') }
   result = sut({ response, assets, isLocal }).body.toString()
-  t.notOk(result.includes('${arc.static(\'this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
-  t.ok(result.includes('this-is-fine.gif'), 'Templatizer replaced asset reference with fingerprint')
+  t.doesNotMatch(result, /${arc.static(\'this-is-fine.gif\')}/, 'Templatizer stripped out arc.static')
+  t.match(result, /this-is-fine.gif/, 'Templatizer replaced asset reference with fingerprint')
 
   response = { body: buf('here is an asset: ${arc.static(\'/this-is-fine.gif\')}') }
   result = sut({ response, assets, isLocal }).body.toString()
-  t.notOk(result.includes('${arc.static(\'/this-is-fine.gif\')}'), 'Templatizer stripped out arc.static')
-  t.ok(result.includes('/this-is-fine.gif'), 'Templatizer replaced asset reference with fingerprint (including leading slash)')
+  t.doesNotMatch(result, /${arc.static(\'\/this-is-fine.gif\')}/, 'Templatizer stripped out arc.static')
+  t.match(result, /\/this-is-fine.gif/, 'Templatizer replaced asset reference with fingerprint (including leading slash)')
 })

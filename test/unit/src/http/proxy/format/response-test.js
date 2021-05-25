@@ -74,22 +74,22 @@ test('Cache-Control setting', t => {
   // JSON
   _basicResponse.response.headers['Content-Type'] = 'application/json'
   result = normalize(_basicResponse)
-  t.ok(result.headers['Cache-Control'].includes('no-cache'), 'JSON responses are anti-cached')
+  t.match(result.headers['Cache-Control'], /no-cache/, 'JSON responses are anti-cached')
 
   // JSON API
   _basicResponse.response.headers['Content-Type'] = 'application/vnd.api+json'
   result = normalize(_basicResponse)
-  t.ok(result.headers['Cache-Control'].includes('no-cache'), 'JSON API responses are anti-cached')
+  t.match(result.headers['Cache-Control'], /no-cache/, 'JSON API responses are anti-cached')
 
   // HTML
   _basicResponse.response.headers['Content-Type'] = 'text/html'
   result = normalize(_basicResponse)
-  t.ok(result.headers['Cache-Control'].includes('no-cache'), 'HTML responses are anti-cached')
+  t.match(result.headers['Cache-Control'], /no-cache/, 'HTML responses are anti-cached')
 
   // cacheControl param sets Cache-Control (and overrides anti-cache)
   _basicResponse.config.cacheControl = 'meh'
   result = normalize(_basicResponse)
-  t.ok(result.headers['Cache-Control'].includes('meh'), 'cacheControl setting is respected and wins over anti-cache logic')
+  t.match(result.headers['Cache-Control'], /meh/, 'cacheControl setting is respected and wins over anti-cache logic')
 
 })
 
