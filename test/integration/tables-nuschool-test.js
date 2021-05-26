@@ -42,6 +42,26 @@ test('tables() returns table object', async t => {
   t.ok(data.messages, 'messages table object exists')
 })
 
+test('tables().name() returns the table\'s name', async t => {
+  t.plan(3)
+  const { name } = await arc.tables()
+  t.equal(name('accounts'), 'test-app-name-staging-accounts')
+  t.equal(name('messages'), 'test-app-name-staging-messages')
+  t.equal(name('accounts-messages'), 'test-app-name-staging-accounts-messages')
+})
+
+test('tables().reflect() returns the table map', async t => {
+  t.plan(1)
+  const { reflect } = await arc.tables()
+  const tables = await reflect()
+  t.deepEqual(tables, {
+    accounts: 'test-app-name-staging-accounts',
+    messages: 'test-app-name-staging-messages',
+    'accounts-messages': 'test-app-name-staging-accounts-messages',
+    'arc-sessions': 'test-app-name-staging-arc-sessions',
+  })
+})
+
 test('tables put()', async t => {
   t.plan(1)
   let item = await data.accounts.put({
