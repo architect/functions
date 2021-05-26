@@ -33,7 +33,7 @@ function tables (arc) {
      */
     let runningLocally = process.env.NODE_ENV === 'testing'
     if (runningLocally) {
-      sandbox(callback)
+      sandbox(dynamo, callback)
     }
     else if (client) {
       callback(null, client)

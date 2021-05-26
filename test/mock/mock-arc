@@ -58,6 +58,10 @@ messages
   msgID *String
   posted **String
 
+accounts-messages
+  accountID *String
+  msgID *String
+
 # add a global secondary index
 # same syntax as adding a table; just different keys
 @indexes
