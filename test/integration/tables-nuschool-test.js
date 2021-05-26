@@ -36,17 +36,18 @@ test('starts the db server', t => {
 })
 
 test('tables() returns table object', async t => {
-  t.plan(2)
+  t.plan(3)
   data = await arc.tables()
   t.ok(data.accounts, 'accounts table object exists')
   t.ok(data.messages, 'messages table object exists')
+  t.ok(data['accounts-messages'], 'accounts-messages table object exists')
 })
 
 test('tables().name() returns the table\'s name', async t => {
   t.plan(3)
   const { name } = await arc.tables()
-  t.equal(name('accounts'), 'test-app-name-staging-accounts')
-  t.equal(name('messages'), 'test-app-name-staging-messages')
+  t.equal(name('accounts'), 'test-app-name-staging-accounts', 'accounts table returns correct logical id')
+  t.equal(name('messages'), 'test-app-name-staging-messages', 'messages table returns correct logical id')
   t.equal(name('accounts-messages'), 'test-app-name-staging-accounts-messages')
 })
 
@@ -59,11 +60,11 @@ test('tables().reflect() returns the table map', async t => {
     messages: 'test-app-name-staging-messages',
     'accounts-messages': 'test-app-name-staging-accounts-messages',
     'arc-sessions': 'test-app-name-staging-arc-sessions',
-  })
+  }, 'map of table names to table logical ids should be correct')
 })
 
 test('tables put()', async t => {
-  t.plan(1)
+  t.plan(2)
   let item = await data.accounts.put({
     accountID: 'fake',
     foo: 'bar',
@@ -73,19 +74,34 @@ test('tables put()', async t => {
     }
   })
   t.ok(item, 'returned item')
+  item = null
+  item = await data['accounts-messages'].put({
+    accountID: 'fake',
+    msgID: 'alsofake',
+    extra: true
+  })
+  t.ok(item, `returned item`)
 })
 
 test('tables get()', async t => {
-  t.plan(2)
+  t.plan(4)
   let result = await data.accounts.get({
     accountID: 'fake'
   })
-  t.ok(result, 'got result')
+  t.ok(result, 'got accounts table result')
   t.ok(result.baz.doe, 'result.baz.doe deserialized')
+  result = null
+  console.log(data['accounts-messages'].get)
+  result = await data['accounts-messages'].get({
+    accountID: 'fake',
+    msgID: 'alsofake'
+  })
+  t.ok(result, 'got accounts-messages table result')
+  t.ok(result.extra, 'result.extra deserialized')
 })
 
 test('tables delete()', async t => {
-  t.plan(2)
+  t.plan(4)
   await data.accounts.delete({
     accountID: 'fake'
   })
@@ -93,7 +109,17 @@ test('tables delete()', async t => {
   let result = await data.accounts.get({
     accountID: 'fake'
   })
-  t.equals(result, undefined, 'got undefined result')
+  t.equals(result, undefined, 'could not get deleted accounts item')
+  await data['accounts-messages'].delete({
+    accountID: 'fake',
+    msgID: 'alsofake'
+  })
+  t.ok(true, 'deleted')
+  let otherResult = await data['accounts-messages'].get({
+    accountID: 'fake',
+    msgID: 'alsofake'
+  })
+  t.equals(otherResult, undefined, 'could not get deleted accounts-messages item')
 })
 
 test('tables query()', async t => {

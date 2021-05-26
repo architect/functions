@@ -60,7 +60,7 @@ messages
 
 accounts-messages
   accountID *String
-  msgID *String
+  msgID **String
 
 # add a global secondary index
 # same syntax as adding a table; just different keys
