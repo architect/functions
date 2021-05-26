@@ -4,6 +4,15 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [3.14.1] 2021-05-25
+
+### Fixed
+
+- Fixed an issue in sandbox where table names containing other table names would
+    get the table definitions confused; thanks @reconbot!
+
+---
+
 ## [3.14.0] 2021-05-24
 
 ### Added
