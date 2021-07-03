@@ -19,8 +19,21 @@ module.exports = function _static (asset, options = {}) {
   let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
   let stagePath = options.stagePath && !local ? '/' + process.env.NODE_ENV : ''
   let path = `${stagePath}/_static`
+  let read = p => readFileSync(p).toString()
+  if (options.fullManifest) {
+    if (!exists)
+      throw Error(`Could not find asset manifest. Manifest is created only when fingerprinting is enabled.`)
+    let pkg = JSON.parse(read(manifest))
+    if (!local) {
+      let assetListFingerprinted = Object.values(pkg).map(asset => `${path}/${asset}`)
+      return { path, assets: assetListFingerprinted }
+    }
+    else {
+      let assetList = Object.keys(pkg).map(asset => `${path}/${asset}`)
+      return { path, assets: assetList }
+    }
+  }
   if (!local && exists && !isIndex) {
-    let read = p => readFileSync(p).toString()
     let pkg = JSON.parse(read(manifest))
     let asset = pkg[key]
     if (!asset)

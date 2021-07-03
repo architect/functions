@@ -80,6 +80,35 @@ test('Passing stagePath option adds API Gateway /staging or /production to path'
   t.equal(asset, '/staging/_static/foo-1a2b3d.png', 'Returned fingerprinted path with API Gateway stage')
 })
 
+test('Throws if full manifest requested but doesn\'t exist', t => {
+  t.plan(1)
+  reset()
+  manifestExists = false
+  process.env.NODE_ENV = 'staging'
+  t.throws(() => {
+    arcStatic('', { fullManifest: true })
+  }, 'Throws if full manifest requested but doesn\'t exist')
+})
+
+test('Requesting full manifest in local environment', t => {
+  t.plan(1)
+  reset()
+  manifestExists = true
+  process.env.NODE_ENV = 'testing'
+  let asset = arcStatic('foo.png', { fullManifest: true })
+  console.log(asset)
+  t.ok( asset.path === '/_static' && asset.assets[0] == '/_static/foo.png', 'Requesting full manifest in local environment')
+})
+
+test('Requesting full manifest not in local environment', t => {
+  t.plan(1)
+  reset()
+  manifestExists = true
+  process.env.NODE_ENV = 'staging'
+  let asset = arcStatic('foo.png', { fullManifest: true })
+  t.ok(asset.path === '/_static' && asset.assets[0] === '/_static/foo-1a2b3d.png', 'Requesting full manifest not in local environment')
+})
+
 test('Reset', t => {
   reset()
   process.env.NODE_ENV = env
