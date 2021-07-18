@@ -293,6 +293,16 @@ test('S3 proxy reader hands off to pretty URLifier on 404', async t => {
   errorState = false
 })
 
+
+test('S3 proxy reader responds with null in passthru mode', async t => {
+  setup()
+  t.plan(1)
+  errorState = 'NoSuchKey'
+  let result = await readS3(read({ config: { passthru: true } }))
+  t.equal(result, null, 'File not found returns null in passthru mode')
+  errorState = false
+})
+
 test('S3 proxy reader returns 500 error on S3 error', async t => {
   setup()
   t.plan(2)
