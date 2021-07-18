@@ -193,7 +193,6 @@ test('Local proxy reader hands off to pretty URLifier on 404', async t => {
 
 test('Local proxy reader returns null if passthru mode', async t => {
   t.plan(1)
-  // let params = read({ Key: 'not/going/to/find/this.gif', config: { passthru: true } })
   let params = read({  config: { passthru: true } })
   let result = await readLocal(params)
   console.log({ result })
