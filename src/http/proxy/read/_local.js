@@ -57,6 +57,7 @@ module.exports = async function readLocal (params) {
     let contentType = mime.contentType(extname(Key))
 
     if (!existsSync(filePath)) {
+      if (config.passthru) return null
       return await pretty({ Key: filePath, config, isFolder })
     }
 
@@ -120,6 +121,7 @@ module.exports = async function readLocal (params) {
   catch (err) {
     let notFound = err.name === 'NoSuchKey'
     if (notFound) {
+      if (config.passthru)  return null
       return await pretty({ Key: filePath, config, isFolder })
     }
     else {

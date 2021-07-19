@@ -16,6 +16,7 @@ let errors = require('../errors')
  * @param config.cacheControl - string, set a custom Cache-Control max-age header value
  * @param config.plugins - object, configure proxy-plugin-* transforms per file extension
  * @param config.spa - boolean, forces index.html no matter the folder depth
+ * @param config.passthru - boolean, if no file is found to serve the function returns without a response so execution can be passed
  *
  * @returns HTTPLambda - an HTTP Lambda function that proxies calls to S3
  */
