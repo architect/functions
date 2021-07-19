@@ -190,3 +190,11 @@ test('Local proxy reader hands off to pretty URLifier on 404', async t => {
   let result = await readLocal(read())
   t.equal(result, 'pretty', 'File not found returns response from pretty')
 })
+
+test('Local proxy reader returns null if passthru mode', async t => {
+  t.plan(1)
+  let params = read({  config: { passthru: true } })
+  let result = await readLocal(params)
+  console.log({ result })
+  t.equal(result, null, 'File not found returns null if passthru mode')
+})
