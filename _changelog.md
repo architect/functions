@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [4.0.0] 2021-07-25
+
+### Added
+
+- Enable `tables.scan()` to be used without passing any arguments
+
+---
+
 ## [3.14.1] 2021-05-25
 
 ### Fixed

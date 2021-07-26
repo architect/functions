@@ -66,7 +66,7 @@ module.exports = function reflectFactory (tables, callback) {
             params.TableName = TableName
             doc.query(params, callback)
           },
-          scan (params, callback) {
+          scan (params = {}, callback) {
             params.TableName = TableName
             doc.scan(params, callback)
           },
