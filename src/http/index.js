@@ -15,9 +15,6 @@ let write = require('./session/write')
 let _async = require('./async')
 let express = require('./express')
 
-// Proxy
-let proxy = require('./proxy')
-
 http.helpers = {
   bodyParser,
   interpolate,
@@ -27,11 +24,8 @@ http.helpers = {
 http.session = { read, write }
 http.async = _async
 http.express = express
-http.proxy = proxy.proxy
 
 // Legacy methods
-http.proxy.public = proxy.proxy
-http.proxy.read = proxy.read
 http.middleware = _async
 
 module.exports = http

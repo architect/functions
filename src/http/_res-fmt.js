@@ -1,4 +1,4 @@
-let { httpError } = require('./errors')
+let httpError = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
 
 module.exports = function responseFormatter (req, params) {
