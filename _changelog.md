@@ -23,7 +23,9 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
   - All legacy `@architect/functions` `proxy` calls are now removed from this package; this includes: `arc.http.proxy`, `arc.http.proxy.public`, `arc.http.proxy.read`, `arc.proxy.public`
     - Again, just aim those same calls at `@architect/asap` and things should just work - and if they do not, please let us know!
 - Breaking change: removed support for Node.js 10.x (now EOL, and no longer available to created in AWS Lambda)
-- Breaking change: removed support for Architect 5 (and lower)
+- Breaking change: removed support for handling requests from Architect 5 (and lower) APIs
+  - Responding to requests has not changed, however! Old response semantics from Architect 5 (and lower) will continue to be supported, so you'll always have a clear, clean upgrade path from older Architect projects to newer APIs
+- Normalized headers to lowercase for full HTTP 2 compatibility
 - Updated dependencies
 
 ---

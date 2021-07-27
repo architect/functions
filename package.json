@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@architect/eslint-config": "~1.0.0",
+    "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
     "@architect/sandbox": "~3.7.4",
     "aws-sdk": "~2.880.0",
     "aws-sdk-mock": "5.1.0",
