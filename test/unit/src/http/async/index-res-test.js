@@ -1,5 +1,6 @@
 /* eslint-disable require-await */
 let { join } = require('path')
+let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
 let arc = require(sut)
 let test = require('tape')
@@ -14,7 +15,10 @@ let b64dec = i => new Buffer.from(i, 'base64').toString()
 let str = i => JSON.stringify(i)
 let match = (copy, item) => `${copy} matches: ${item}`
 
+let responsesTested = []
+
 let run = async (response, request) => {
+  responsesTested.push(response)
   let fn = () => response
   let handler = arc.http.async(fn)
   return handler(request)
@@ -277,6 +281,7 @@ test('Architect v4 + Functions statically-bound content type responses (HTTP)', 
   let request = requests.arc7.getIndex
   let r = legacyResponses.arc4
   let go = async (response, data, contentType) => {
+    responsesTested.push(response)
     let res = await run(response, request)
     // Don't double-encode JSON
     if (res.headers['content-type'].includes('json')) {
@@ -302,6 +307,7 @@ test('Architect v4 + Functions statically-bound content type responses (REST)', 
   let request = requests.arc6.getIndex
   let r = legacyResponses.arc4
   let go = async (response, data, contentType) => {
+    responsesTested.push(response)
     let res = await run(response, request)
     // Don't double-encode JSON
     if (res.headers['content-type'].includes('json')) {
@@ -416,6 +422,34 @@ test('Throw if middleware does not return a response (REST)', async t => {
   catch (err) {
     t.ok(err, 'exception thrown')
   }
+})
+
+test('Verify all Arc v7 (HTTP) + Arc v6 (REST) + legacy response fixtures were tested', t => {
+  let totalReqs = Object.keys(responses.arc7).length +
+                  Object.keys(responses.arc6).length +
+                  Object.keys(legacyResponses.arc5).length +
+                  Object.keys(legacyResponses.arc4).length +
+                  Object.keys(legacyResponses.arc).length
+  t.plan(totalReqs)
+  let tester = ([ name, req ]) => {
+    t.ok(responsesTested.some(tested => {
+      try {
+        deepStrictEqual(req, tested)
+        return true
+      }
+      catch (err) { /* noop */ }
+    }), `Tested req: ${name}`)
+  }
+  console.log(`Arc 7 responses`)
+  Object.entries(responses.arc7).forEach(tester)
+  console.log(`Arc 6 responses`)
+  Object.entries(responses.arc6).forEach(tester)
+  console.log(`Legacy Arc 5 responses`)
+  Object.entries(legacyResponses.arc5).forEach(tester)
+  console.log(`Legacy Arc 4 responses`)
+  Object.entries(legacyResponses.arc4).forEach(tester)
+  console.log(`Legacy Arc responses`)
+  Object.entries(legacyResponses.arc).forEach(tester)
 })
 
 test('Teardown', t => {

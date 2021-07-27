@@ -1,5 +1,6 @@
 /* eslint-disable require-await */
 let { join } = require('path')
+let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
 let arc = require(sut)
 let test = require('tape')
@@ -21,8 +22,11 @@ let arc6RestPrettyParams = {
   query: 'queryStringParameters'
 }
 
+let requestsTested = []
+
 function check ({ req, request, t }) {
   console.log(`Got request:`, req)
+  requestsTested.push(request)
 
   // Make sure all original keys are present and accounted for
   Object.keys(request).forEach(key => {
@@ -476,6 +480,24 @@ test('arc.http.async should pass along original request if function does not ret
   let handler = arc.http.async(one, two)
   await handler(req)
   t.equal(str(gotOne), str(gotTwo), match('second function request', `${str(gotTwo).substr(0, 50)}...`))
+})
+
+test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t => {
+  let totalReqs = Object.keys(reqs.arc7).length + Object.keys(reqs.arc6).length
+  t.plan(totalReqs)
+  let tester = ([ name, req ]) => {
+    t.ok(requestsTested.some(tested => {
+      try {
+        deepStrictEqual(req, tested)
+        return true
+      }
+      catch (err) { /* noop */ }
+    }), `Tested req: ${name}`)
+  }
+  console.log(`Arc 7 requests`)
+  Object.entries(reqs.arc7).forEach(tester)
+  console.log(`Arc 6 requests`)
+  Object.entries(reqs.arc6).forEach(tester)
 })
 
 test('Teardown', t => {

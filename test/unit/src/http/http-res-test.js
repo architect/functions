@@ -1,4 +1,5 @@
 let { join } = require('path')
+let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
 let { http } = require(sut)
 let test = require('tape')
@@ -12,7 +13,10 @@ let b64dec = i => new Buffer.from(i, 'base64').toString()
 let str = i => JSON.stringify(i)
 let match = (copy, item) => `${copy} matches: ${item}`
 
+let responsesTested = []
+
 let run = (response, request, callback) => {
+  responsesTested.push(response)
   let handler = http((req, res) => res(response))
   handler(request, {}, callback)
 }
@@ -324,6 +328,7 @@ test('Architect v4 + Functions statically-bound content type responses (HTTP)', 
   let r = legacyResponses.arc4
   let run = (response, data, contentType) => {
     let handler = http((req, res) => res(response))
+    responsesTested.push(response)
     handler(request, {}, (err, res) => {
       t.notOk(err, 'No error')
       // Don't double-encode JSON
@@ -351,6 +356,7 @@ test('Architect v4 + Functions statically-bound content type responses (REST)', 
   let r = legacyResponses.arc4
   let run = (response, data, contentType) => {
     let handler = http((req, res) => res(response))
+    responsesTested.push(response)
     handler(request, {}, (err, res) => {
       t.notOk(err, 'No error')
       // Don't double-encode JSON
@@ -448,6 +454,34 @@ test('Return an error (REST)', t => {
     t.equal(res.statusCode, 500, 'Error response, 500 returned')
     t.match(res.body, new RegExp(error.message), `Error response included error message: ${error.message}`)
   })
+})
+
+test('Verify all Arc v7 (HTTP) + Arc v6 (REST) + legacy response fixtures were tested', t => {
+  let totalReqs = Object.keys(responses.arc7).length +
+                  Object.keys(responses.arc6).length +
+                  Object.keys(legacyResponses.arc5).length +
+                  Object.keys(legacyResponses.arc4).length +
+                  Object.keys(legacyResponses.arc).length
+  t.plan(totalReqs)
+  let tester = ([ name, req ]) => {
+    t.ok(responsesTested.some(tested => {
+      try {
+        deepStrictEqual(req, tested)
+        return true
+      }
+      catch (err) { /* noop */ }
+    }), `Tested req: ${name}`)
+  }
+  console.log(`Arc 7 responses`)
+  Object.entries(responses.arc7).forEach(tester)
+  console.log(`Arc 6 responses`)
+  Object.entries(responses.arc6).forEach(tester)
+  console.log(`Legacy Arc 5 responses`)
+  Object.entries(legacyResponses.arc5).forEach(tester)
+  console.log(`Legacy Arc 4 responses`)
+  Object.entries(legacyResponses.arc4).forEach(tester)
+  console.log(`Legacy Arc responses`)
+  Object.entries(legacyResponses.arc).forEach(tester)
 })
 
 test('Teardown', t => {
