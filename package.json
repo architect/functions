@@ -37,7 +37,7 @@
     "@architect/eslint-config": "~1.0.0",
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
     "@architect/sandbox": "~4.0.0",
-    "aws-sdk": "~2.880.0",
+    "aws-sdk": "~2.956.0",
     "aws-sdk-mock": "5.1.0",
     "cross-env": "~7.0.3",
     "eslint": "~7.31.0",
