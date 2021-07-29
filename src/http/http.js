@@ -10,17 +10,17 @@ let responseFormatter = require('./_res-fmt')
 module.exports = function http (...fns) {
 
   // Ensure we've been passed only functions
-  fns.forEach(f => {
-    if (typeof f != 'function')
-      throw TypeError(f + ' not a function')
+  fns.forEach(fn => {
+    if (typeof fn !== 'function') throw TypeError(fn + ' not a function')
   })
 
   // Return an AWS Lambda continuation passing function signature
   return function lambda (request, context, callback) {
 
     // Verify the request is configured by arc
-    if (!request.headers)
+    if (!request.headers) {
       request.headers = {}
+    }
 
     // Cache the functions
     let cache = fns.slice()
@@ -31,13 +31,13 @@ module.exports = function http (...fns) {
       if (err) throw err
 
       // construct a response function
-      let req = interpolate(Object.assign({}, request, { session }))
+      let req = interpolate(Object.assign(request, { session }))
       req.body = bodyParser(req)
       let res = response.bind({}, req, callback)
 
       // loop thru middleware
       ;(function iterator (fun) {
-        function fail () {throw Error('next() called from last function')}
+        function fail () { throw Error('next() called from last function') }
         let next = iterator.bind({}, cache.shift() || fail)
         fun.call({}, req, res, next)
       })(cache.shift())
@@ -55,7 +55,7 @@ function response (req, callback, params) {
 
   // Legacy 'cookie' parameter, used after direct session writes
   if (params && params.cookie) {
-    res.headers['Set-Cookie'] = params.cookie
+    res.headers['set-cookie'] = params.cookie
   }
 
   // Save the passed session
@@ -66,7 +66,7 @@ function response (req, callback, params) {
     write(session, function _write (err, cookie) {
       if (err) callback(err)
       else {
-        res.headers['Set-Cookie'] = cookie
+        res.headers['set-cookie'] = cookie
         callback(null, res)
       }
     })

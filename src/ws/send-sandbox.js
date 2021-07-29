@@ -8,8 +8,8 @@ module.exports = function send ({ id, payload }, callback) {
     port,
     path: '/__arc',
     headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(body)
+      'content-type': 'application/json',
+      'content-length': Buffer.byteLength(body)
     }
   })
   req.on('error', callback)

@@ -28,7 +28,7 @@ function read (request, callback) {
   let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
   // TODO: uppercase 'Cookie' is not the header name on AWS Lambda; it's
   // lowercase 'cookie' on lambda...
-  let rawCookie = request.headers && (request.headers.Cookie || request.headers.cookie)
+  let rawCookie = request.headers && (request.headers.cookie || request.headers.Cookie)
   // Lambda payload version 2 puts the cookies in an array on the request
   if (!rawCookie && request.cookies) {
     rawCookie = request.cookies.join(';')

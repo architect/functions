@@ -1,8 +1,11 @@
-/* eslint require-await: 0 */
-let arc = require('../../../../../src/')
-let interpolate = require('../../../../../src/http/helpers/params')
+/* eslint-disable require-await */
+let { join } = require('path')
+let { deepStrictEqual } = require('assert')
+let sut = join(process.cwd(), 'src')
+let arc = require(sut)
 let test = require('tape')
-let reqs = require('../http-req-fixtures')
+
+let reqs = require('@architect/req-res-fixtures').http.req
 
 let str = i => JSON.stringify(i)
 let isObject = t => typeof t === 'object' && !!(t)
@@ -19,7 +22,12 @@ let arc6RestPrettyParams = {
   query: 'queryStringParameters'
 }
 
-function check ({ req, request, t, deprecated = false }) {
+let requestsTested = []
+
+function check ({ req, request, t }) {
+  console.log(`Got request:`, req)
+  requestsTested.push(request)
+
   // Make sure all original keys are present and accounted for
   Object.keys(request).forEach(key => {
     // eslint-disable-next-line
@@ -30,16 +38,18 @@ function check ({ req, request, t, deprecated = false }) {
     if (req[key] === undefined) t.fail(`Parameter is undefined: ${key}`)
     // Compare mutation of nulls into objects
     if (isNulled(key) && request[key] === null) {
-      if (unNulled(request[key], val))
+      if (unNulled(request[key], val)) {
         t.pass(match(`req.${key}`, req[key]))
-      else
+      }
+      else {
         t.fail(`Param not un-nulled: ${key}: ${val}`)
+      }
     }
     else {
       t.equal(str(val), str(req[key]), match(`req.${key}`, str(req[key])))
     }
     // Compare interpolation to nicer, backwards compat req params
-    if (arc6RestPrettyParams[key] && !deprecated) {
+    if (arc6RestPrettyParams[key]) {
       t.equal(str(req[arc6RestPrettyParams[key]]), str(req[key]), `req.${key} == req.${arc6RestPrettyParams[key]}`)
     }
   })
@@ -47,17 +57,16 @@ function check ({ req, request, t, deprecated = false }) {
 }
 
 test('Set up env', t => {
-  t.plan(3)
+  t.plan(2)
   t.ok(arc.http.async, 'Loaded HTTP async')
   t.ok(arc.http.middleware, 'Loaded HTTP middleware alias')
-  t.ok(reqs, 'Loaded request fixtures')
   // Set env var to keep from stalling on db reads in CI
   process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
-test('Architect v6 (HTTP): get /', async t => {
+test('Architect v7 (HTTP): get /', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.getIndex
+  let request = reqs.arc7.getIndex
   let req
   let fn = async request => {
     req = request
@@ -68,9 +77,9 @@ test('Architect v6 (HTTP): get /', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): get /?whats=up', async t => {
+test('Architect v7 (HTTP): get /?whats=up', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.getWithQueryString
+  let request = reqs.arc7.getWithQueryString
   let req
   let fn = async request => {
     req = request
@@ -81,9 +90,9 @@ test('Architect v6 (HTTP): get /?whats=up', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): get /?whats=up&whats=there', async t => {
+test('Architect v7 (HTTP): get /?whats=up&whats=there', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.getWithQueryStringDuplicateKey
+  let request = reqs.arc7.getWithQueryStringDuplicateKey
   let req
   let fn = async request => {
     req = request
@@ -94,9 +103,9 @@ test('Architect v6 (HTTP): get /?whats=up&whats=there', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): get /nature/hiking', async t => {
+test('Architect v7 (HTTP): get /nature/hiking', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.getWithParam
+  let request = reqs.arc7.getWithParam
   let req
   let fn = async request => {
     req = request
@@ -107,9 +116,9 @@ test('Architect v6 (HTTP): get /nature/hiking', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): get /$default', async t => {
+test('Architect v7 (HTTP): get /{proxy+} (/nature/hiking)', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.get$default
+  let request = reqs.arc7.getProxyPlus
   let req
   let fn = async request => {
     req = request
@@ -120,9 +129,9 @@ test('Architect v6 (HTTP): get /$default', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): post /form (JSON)', async t => {
+test('Architect v7 (HTTP): get /$default', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.postJson
+  let request = reqs.arc7.get$default
   let req
   let fn = async request => {
     req = request
@@ -133,9 +142,9 @@ test('Architect v6 (HTTP): post /form (JSON)', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): post /form (form URL encoded)', async t => {
+test('Architect v7 (HTTP): get /path/* (/path/hi/there)', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.postFormURL
+  let request = reqs.arc7.getCatchall
   let req
   let fn = async request => {
     req = request
@@ -146,9 +155,9 @@ test('Architect v6 (HTTP): post /form (form URL encoded)', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): post /form (multipart form data)', async t => {
+test('Architect v7 (HTTP): get /:activities/{proxy+} (/nature/hiking/wilderness)', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.postMultiPartFormData
+  let request = reqs.arc7.getWithParamAndCatchall
   let req
   let fn = async request => {
     req = request
@@ -159,9 +168,9 @@ test('Architect v6 (HTTP): post /form (multipart form data)', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): post /form (octet stream)', async t => {
+test('Architect v7 (HTTP): post /form (JSON)', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.postOctetStream
+  let request = reqs.arc7.postJson
   let req
   let fn = async request => {
     req = request
@@ -172,9 +181,9 @@ test('Architect v6 (HTTP): post /form (octet stream)', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): put /form (JSON)', async t => {
+test('Architect v7 (HTTP): post /form (form URL encoded)', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.putJson
+  let request = reqs.arc7.postFormURL
   let req
   let fn = async request => {
     req = request
@@ -185,9 +194,61 @@ test('Architect v6 (HTTP): put /form (JSON)', async t => {
   check({ req, request, t })
 })
 
-test('Architect v6 (HTTP): patch /form (JSON)', async t => {
+test('Architect v7 (HTTP): post /form (multipart form data)', async t => {
   t.plan(22)
-  let request = reqs.arc6.http.patchJson
+  let request = reqs.arc7.postMultiPartFormData
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v7 (HTTP): post /form (octet stream)', async t => {
+  t.plan(22)
+  let request = reqs.arc7.postOctetStream
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v7 (HTTP): put /form (JSON)', async t => {
+  t.plan(22)
+  let request = reqs.arc7.putJson
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v7 (HTTP): patch /form (JSON)', async t => {
+  t.plan(22)
+  let request = reqs.arc7.patchJson
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v7 (HTTP): delete /form (JSON)', async t => {
+  t.plan(22)
+  let request = reqs.arc7.deleteJson
   let req
   let fn = async request => {
     req = request
@@ -204,8 +265,8 @@ test('Architect v6 (HTTP): patch /form (JSON)', async t => {
  * - All bodies are base64 encoded
  */
 test('Architect v6 (REST): get /', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.getIndex
+  t.plan(19)
+  let request = reqs.arc6.getIndex
   let req
   let fn = async request => {
     req = request
@@ -217,8 +278,8 @@ test('Architect v6 (REST): get /', async t => {
 })
 
 test('Architect v6 (REST): get /?whats=up', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.getWithQueryString
+  t.plan(19)
+  let request = reqs.arc6.getWithQueryString
   let req
   let fn = async request => {
     req = request
@@ -230,8 +291,8 @@ test('Architect v6 (REST): get /?whats=up', async t => {
 })
 
 test('Architect v6 (REST): get /?whats=up&whats=there', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.getWithQueryStringDuplicateKey
+  t.plan(19)
+  let request = reqs.arc6.getWithQueryStringDuplicateKey
   let req
   let fn = async request => {
     req = request
@@ -243,8 +304,8 @@ test('Architect v6 (REST): get /?whats=up&whats=there', async t => {
 })
 
 test('Architect v6 (REST): get /nature/hiking', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.getWithParam
+  t.plan(19)
+  let request = reqs.arc6.getWithParam
   let req
   let fn = async request => {
     req = request
@@ -256,8 +317,34 @@ test('Architect v6 (REST): get /nature/hiking', async t => {
 })
 
 test('Architect v6 (REST): get /{proxy+}', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.getProxyPlus
+  t.plan(19)
+  let request = reqs.arc6.getProxyPlus
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (REST): get /path/* (/path/hi/there)', async t => {
+  t.plan(19)
+  let request = reqs.arc6.getCatchall
+  let req
+  let fn = async request => {
+    req = request
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(request)
+  check({ req, request, t })
+})
+
+test('Architect v6 (REST): get /:activities/{proxy+} (/nature/hiking/wilderness)', async t => {
+  t.plan(19)
+  let request = reqs.arc6.getWithParamAndCatchall
   let req
   let fn = async request => {
     req = request
@@ -269,8 +356,8 @@ test('Architect v6 (REST): get /{proxy+}', async t => {
 })
 
 test('Architect v6 (REST): post /form (JSON)', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.postJson
+  t.plan(19)
+  let request = reqs.arc6.postJson
   let req
   let fn = async request => {
     req = request
@@ -282,8 +369,8 @@ test('Architect v6 (REST): post /form (JSON)', async t => {
 })
 
 test('Architect v6 (REST): post /form (form URL encoded)', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.postFormURL
+  t.plan(19)
+  let request = reqs.arc6.postFormURL
   let req
   let fn = async request => {
     req = request
@@ -295,8 +382,8 @@ test('Architect v6 (REST): post /form (form URL encoded)', async t => {
 })
 
 test('Architect v6 (REST): post /form (multipart form data)', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.postMultiPartFormData
+  t.plan(19)
+  let request = reqs.arc6.postMultiPartFormData
   let req
   let fn = async request => {
     req = request
@@ -308,8 +395,8 @@ test('Architect v6 (REST): post /form (multipart form data)', async t => {
 })
 
 test('Architect v6 (REST): post /form (octet stream)', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.postOctetStream
+  t.plan(19)
+  let request = reqs.arc6.postOctetStream
   let req
   let fn = async request => {
     req = request
@@ -321,8 +408,8 @@ test('Architect v6 (REST): post /form (octet stream)', async t => {
 })
 
 test('Architect v6 (REST): put /form (JSON)', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.putJson
+  t.plan(19)
+  let request = reqs.arc6.putJson
   let req
   let fn = async request => {
     req = request
@@ -334,8 +421,8 @@ test('Architect v6 (REST): put /form (JSON)', async t => {
 })
 
 test('Architect v6 (REST): patch /form (JSON)', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.patchJson
+  t.plan(19)
+  let request = reqs.arc6.patchJson
   let req
   let fn = async request => {
     req = request
@@ -347,8 +434,8 @@ test('Architect v6 (REST): patch /form (JSON)', async t => {
 })
 
 test('Architect v6 (REST): delete /form (JSON)', async t => {
-  t.plan(18)
-  let request = reqs.arc6.rest.deleteJson
+  t.plan(19)
+  let request = reqs.arc6.deleteJson
   let req
   let fn = async request => {
     req = request
@@ -359,120 +446,9 @@ test('Architect v6 (REST): delete /form (JSON)', async t => {
   check({ req, request, t })
 })
 
-/**
- * Arc 5 tests against later VTL-based request shapes, which include things not present in < Arc 5, such as:
- * - `httpMethod` & `queryStringParameters` (which duplicate `method` + `query`)
- * - `body: {base64: 'base64encodedstring...'}`
- * Backwards compatibility should not be determined solely by the presense of these additional params
- */
-test('Architect v5 (REST): get /', async t => {
-  t.plan(10)
-  let request = reqs.arc5.getIndex
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('Architect v5 (REST): get /?whats=up', async t => {
-  t.plan(10)
-  let request = reqs.arc5.getWithQueryString
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('Architect v5 (REST): get /nature/hiking', async t => {
-  t.plan(10)
-  let request = reqs.arc5.getWithParam
-  interpolate(request)
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('Architect v5 (REST): post /form (JSON / form URL-encoded)', async t => {
-  t.plan(10)
-  let request = reqs.arc5.post
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('Architect v5 (REST): post /form (multipart form data-encoded)', async t => {
-  t.plan(10)
-  let request = reqs.arc5.postBinary
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('Architect v5 (REST): put /form', async t => {
-  t.plan(10)
-  let request = reqs.arc5.put
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('Architect v5 (REST): patch /form', async t => {
-  t.plan(10)
-  let request = reqs.arc5.patch
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('Architect v5 (REST): delete /form', async t => {
-  t.plan(10)
-  let request = reqs.arc5.delete
-  let req
-  let fn = async request => {
-    req = request
-    return basicResponse
-  }
-  let handler = arc.http.async(fn)
-  await handler(request)
-  check({ req, request, t, deprecated: true })
-})
-
-test('arc.middleware should allow the mutation of request object between middleware functions', t => {
+test('arc.http.async should allow the mutation of request object between middleware functions', t => {
   t.plan(1)
-  let request = reqs.arc5.getIndex
+  let request = reqs.arc7.getIndex
   let req = JSON.parse(str(request))
   function one (req) {
     req.body = req.body || {}
@@ -487,9 +463,9 @@ test('arc.middleware should allow the mutation of request object between middlew
   handler(req)
 })
 
-test('arc.middleware should pass along original request if function does not return', async t => {
+test('arc.http.async should pass along original request if function does not return', async t => {
   t.plan(1)
-  let request = reqs.arc5.getIndex
+  let request = reqs.arc7.getIndex
   let gotOne
   async function one (req) {
     gotOne = req
@@ -504,6 +480,24 @@ test('arc.middleware should pass along original request if function does not ret
   let handler = arc.http.async(one, two)
   await handler(req)
   t.equal(str(gotOne), str(gotTwo), match('second function request', `${str(gotTwo).substr(0, 50)}...`))
+})
+
+test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t => {
+  let totalReqs = Object.keys(reqs.arc7).length + Object.keys(reqs.arc6).length
+  t.plan(totalReqs)
+  let tester = ([ name, req ]) => {
+    t.ok(requestsTested.some(tested => {
+      try {
+        deepStrictEqual(req, tested)
+        return true
+      }
+      catch (err) { /* noop */ }
+    }), `Tested req: ${name}`)
+  }
+  console.log(`Arc 7 requests`)
+  Object.entries(reqs.arc7).forEach(tester)
+  console.log(`Arc 6 requests`)
+  Object.entries(reqs.arc6).forEach(tester)
 })
 
 test('Teardown', t => {

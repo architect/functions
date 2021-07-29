@@ -16,8 +16,7 @@ module.exports = function httpAsync (...fns) {
 
   // Ensure we've been passed only functions
   fns.forEach(f => {
-    if (typeof f != 'function')
-      throw TypeError(f + ' not a function')
+    if (typeof f != 'function') throw TypeError(f + ' not a function')
   })
 
   // Return an AWS Lambda async function signature
@@ -29,7 +28,7 @@ module.exports = function httpAsync (...fns) {
       if (first) {
         first = false
         let session = await read(request)
-        let req = interpolate(Object.assign({}, request, { session }))
+        let req = interpolate(Object.assign(request, { session }))
         req.body = bodyParser(req)
         request = req
       }
@@ -65,7 +64,7 @@ async function response (req, params) {
 
   // Legacy 'cookie' parameter, used after direct session writes
   if (params && params.cookie) {
-    res.headers['Set-Cookie'] = params.cookie
+    res.headers['set-cookie'] = params.cookie
   }
 
   // Save the passed session
@@ -74,7 +73,7 @@ async function response (req, params) {
     let { _idx, _secret, _ttl } = req.session
     let session = { _idx, _secret, _ttl, ...params.session }
     let cookie = await write(session)
-    res.headers['Set-Cookie'] = cookie
+    res.headers['set-cookie'] = cookie
   }
   return res
 }
