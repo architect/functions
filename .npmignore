@@ -1,12 +1,12 @@
+_changelog.md
 .arc
-.DS_Store
 .codecov.yaml
+.DS_Store
 .eslintignore
 .eslintrc.js
 .git
 .github
 .nyc_output/
-changelog.md
 contributing.md
 coverage/
 dist.js

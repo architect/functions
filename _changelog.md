@@ -4,6 +4,32 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## [4.0.0] 2021-07-25
+
+### Added
+
+- Enable `tables.scan()` to be used without passing any arguments
+
+
+### Changed
+
+- Breaking change: `arc.http.proxy` is now `@architect/asap`!
+  - ASAP is now fully independent of `@architect/functions` as of version `4.0.0` of both packages
+    - With some minor exceptions, ASAP is a drop-in replacement for `arc.http.proxy` calls and usage - no fuss, no muss!
+    - ASAP is also a faster, leaner implementation (-70% smaller, with zero dependencies)
+  - `@architect/functions` is now significantly (~25%) lighter:
+    - `@architect/functions` 3.x (with deps): ~1.1MB
+    - `@architect/functions` 4.x (with deps): ~760KB
+  - All legacy `@architect/functions` `proxy` calls are now removed from this package; this includes: `arc.http.proxy`, `arc.http.proxy.public`, `arc.http.proxy.read`, `arc.proxy.public`
+    - Again, just aim those same calls at `@architect/asap` and things should just work - and if they do not, please let us know!
+- Breaking change: removed support for Node.js 10.x (now EOL, and no longer available to created in AWS Lambda)
+- Breaking change: removed support for handling requests from Architect 5 (and lower) APIs
+  - Responding to requests has not changed, however! Old response semantics from Architect 5 (and lower) will continue to be supported, so you'll always have a clear, clean upgrade path from older Architect projects to newer APIs
+- Normalized headers to lowercase for full HTTP 2 compatibility
+- Updated dependencies
+
+---
+
 ## [3.14.1] 2021-05-25
 
 ### Fixed

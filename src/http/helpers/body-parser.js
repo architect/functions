@@ -5,7 +5,7 @@ let qs = require('querystring')
  * <Arc 6 bodies are always objects
  */
 module.exports = function parseBody (req) {
-  let ctype = req.headers['Content-Type'] || req.headers['content-type']
+  let ctype = req.headers['content-type'] || req.headers['Content-Type']
   let passthru = !req.body || !req.headers || !ctype || !Object.getOwnPropertyNames(req.body).length
   if (passthru) {
     return req.body
@@ -14,7 +14,7 @@ module.exports = function parseBody (req) {
     // Paranoid deep copy
     let request = JSON.parse(JSON.stringify(req))
     let headers = request.headers
-    let contentType = type => headers && headers['Content-Type'] && headers['Content-Type'].includes(type) || headers && headers['content-type'] && headers['content-type'].includes(type)
+    let contentType = type => headers && headers['content-type'] && headers['content-type'].includes(type) || headers && headers['Content-Type'] && headers['Content-Type'].includes(type)
 
     let isString = typeof request.body === 'string'
     let isBase64 = request.isBase64Encoded

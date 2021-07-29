@@ -38,8 +38,6 @@ arc.queues = require('./queues')(arc)
 arc.events = require('./events')(arc)
 
 // backwards compat
-arc.proxy = {}
-arc.proxy.public = http.proxy.public
 arc.middleware = http.middleware
 // backwards compat
 
