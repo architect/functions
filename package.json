@@ -38,7 +38,7 @@
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
     "@architect/sandbox": "~4.0.0",
     "aws-sdk": "~2.880.0",
-    "aws-sdk-mock": "5.1.0",
+    "aws-sdk-mock": "5.2.1",
     "cross-env": "~7.0.3",
     "eslint": "~7.31.0",
     "mock-fs": "~5.0.0",
