@@ -4,6 +4,12 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
 ---
 
+## Unreleased
+
+- Add `ws.apiGatewayManagementApi` a preconfigured `ApiGatewayManagementApi` instance. Requires `@architect/sandbox@4.3.0` or higher.
+- Add `ws.close` and `ws.info` to to close a websocket and get connection info. Requires `@architect/sandbox@4.3.0` or higher.
+- `ws.send` hasn't changed, but `ws.newSend` leverages `ws.apiGatewayManagementApi` and will replace it in the next breaking version of functions.
+
 ## [4.0.0] 2021-07-25
 
 ### Added

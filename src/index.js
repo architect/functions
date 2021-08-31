@@ -15,11 +15,11 @@ let _static = require('./static')
 let serviceDiscovery = require('./discovery')
 let services
 
-let send = require('./ws')
+let ws = require('./ws')
 let arc = {
   http,
   static: _static,
-  ws: { send },
+  ws,
   services: function () {
     return new Promise(function (resolve, reject) {
       if (services) resolve(services)

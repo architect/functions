@@ -126,10 +126,21 @@ Would yield the following objects:
 - `scan(params, callback)`: scans the table using `params` and invokes `callback` with the result
 - `update(params, callback)`: updates an item in the table using `params` and invokes `callback` when complete
 
+## `arc.ws.apiGatewayManagementApi`
 
-## `arc.ws.send({ id, payload })`
+Is a configured [ApiGatewayManagementApi](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html) instance configured to the endpoint of your arc managed websocket api gateway instance. Requires `@architect/sandbox@4.3.0` or higher.
 
-Sends the object present on `payload` to the connection ID on `id`. Payload is passed to `JSON.stringify()` on your behalf. Uses [`postToConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#postToConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with no data on success.
+## `arc.ws.send({ id, payload }, callback)`
+
+Sends the object present on `payload` to the connection ID on `id`. Payload is passed to `JSON.stringify()` on your behalf. Uses [`postToConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#postToConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with no data on success or calls the callback.
+
+## `arc.ws.close({ id }, callback)`
+
+Closes the connection with the specified `id`. Uses [`deleteConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#deleteConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with no data on success or calls the callback. Requires `@architect/sandbox@4.3.0` or higher.
+
+## `arc.ws.info({ id }, callback)`
+
+Gets info about the connection id. Uses [`getConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#getConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with the connection information or calls the callback. Requires `@architect/sandbox@4.3.0` or higher.
 
 [npm]: https://www.npmjs.com/package/@architect/functions
 [sandbox]: https://www.npmjs.com/package/@architect/sandbox

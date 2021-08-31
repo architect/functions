@@ -1,6 +1,6 @@
 let aws = require('aws-sdk')
 
-module.exports = function send ({ id, payload }, callback) {
+module.exports = function legacySendAWS ({ id, payload }, callback) {
   let endpoint
   let ARC_WSS_URL = process.env.ARC_WSS_URL
   if (!ARC_WSS_URL.startsWith('wss://')) {
