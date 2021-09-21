@@ -23,6 +23,7 @@
   },
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",
+  "types": "./types/index.d.ts",
   "dependencies": {
     "aws-serverless-express": "^3.4.0",
     "cookie": "^0.4.1",
