@@ -34,7 +34,7 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/eslint-config": "~1.0.0",
+    "@architect/eslint-config": "1.0.1",
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
     "@architect/sandbox": "~4.0.0",
     "aws-sdk": "~2.880.0",
