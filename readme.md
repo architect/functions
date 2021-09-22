@@ -133,6 +133,6 @@ Sends the object present on `payload` to the connection ID on `id`. Payload is p
 
 [npm]: https://www.npmjs.com/package/@architect/functions
 [sandbox]: https://www.npmjs.com/package/@architect/sandbox
-[events]: https://arc.codes/reference/events
-[queues]: https://arc.codes/reference/queues
-[static]: https://arc.codes/guides/static-assets
+[events]: https://arc.codes/docs/en/reference/app.arc/events
+[queues]: https://arc.codes/docs/en/reference/app.arc/queues
+[static]: https://arc.codes/docs/en/guides/frontend/static-assets
