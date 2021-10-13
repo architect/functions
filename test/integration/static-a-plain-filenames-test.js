@@ -1,4 +1,4 @@
-let exec = require('child_process').execSync
+let { execSync: exec } = require('child_process')
 let { copyFileSync, existsSync: exists, mkdirSync: mkdir } = require('fs')
 let { join } = require('path')
 let test = require('tape')

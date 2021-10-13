@@ -1,19 +1,21 @@
 let test = require('tape')
-let aws = require('aws-sdk-mock')
+let aws = require('aws-sdk')
+let awsMock = require('aws-sdk-mock')
+awsMock.setSDKInstance(aws)
 let discovery = require('../../../../src/discovery')
 
 test('discovery should callback with error if SSM errors', t => {
   t.plan(1)
-  aws.mock('SSM', 'getParametersByPath', (params, cb) => cb(true))
+  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => cb(true))
   discovery(err => {
     t.ok(err, 'error passed into discovery callback')
-    aws.restore()
+    awsMock.restore()
   })
 })
 
 test('discovery should parse hierarchical SSM parameters into a service map object', t => {
   t.plan(3)
-  aws.mock('SSM', 'getParametersByPath', (params, cb) => cb(null, {
+  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => cb(null, {
     Parameters: [
       { Name: '/app/tables/cats', Value: 'tableofcats' },
       { Name: '/app/events/walkthedog', Value: 'timetowalkthedog' }
@@ -23,13 +25,13 @@ test('discovery should parse hierarchical SSM parameters into a service map obje
     t.notOk(err, 'no error passed to callback')
     t.equals(services.tables.cats, 'tableofcats', 'cat table value set up in correct place of service map')
     t.equals(services.events.walkthedog, 'timetowalkthedog', 'dogwalking event value set up in correct place of service map')
-    aws.restore()
+    awsMock.restore()
   })
 })
 
 test('discovery should parse hierarchical SSM parameters, even ones of different depths, into a service map object', t => {
   t.plan(6)
-  aws.mock('SSM', 'getParametersByPath', (params, cb) => cb(null, {
+  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => cb(null, {
     Parameters: [
       { Name: '/app/tables/cats', Value: 'tableofcats' },
       { Name: '/app/cloudwatch/metrics/catbarf', Value: 'somuchbarf' },
@@ -43,14 +45,14 @@ test('discovery should parse hierarchical SSM parameters, even ones of different
     t.ok(services.cloudwatch.metrics, 'cloudwatch.metrics object exists')
     t.equals(services.cloudwatch.metrics.catbarf, 'somuchbarf', 'cloudwatch.metrics.catbarf variable has correct value')
     t.ok(services.cloudwatch.metrics.chill, 'quite', 'cloudwatch.metrics.child variable has correct value')
-    aws.restore()
+    awsMock.restore()
   })
 })
 
 test('discovery should parse several pages of hierarchical SSM parameters into a service map object', t => {
   t.plan(5)
   let ssmCounter = 0
-  aws.mock('SSM', 'getParametersByPath', (params, cb) => {
+  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => {
     let NextToken = null
     let Parameters = [
       { Name: '/app/tables/cats', Value: 'tableofcats' },
@@ -74,6 +76,6 @@ test('discovery should parse several pages of hierarchical SSM parameters into a
     t.equals(services.events.walkthedog, 'timetowalkthedog', 'dogwalking event value set up in correct place of service map')
     t.equals(services.tables.ofcontents, 'chapters', 'ofcontents table value set up in correct place of service map')
     t.equals(services.queues.breadline, 'favouritebakery', 'breadline queue value set up in correct place of service map')
-    aws.restore()
+    awsMock.restore()
   })
 })
