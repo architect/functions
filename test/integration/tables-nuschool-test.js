@@ -11,8 +11,6 @@ let mock = join(__dirname, '..', 'mock')
 let tmp = join(mock, 'tmp')
 let shared = join(tmp, 'node_modules', '@architect', 'shared')
 
-let origCwd = process.cwd()
-
 test('Set up mocked files', t => {
   t.plan(3)
   mkdir(shared, { recursive: true })
@@ -22,14 +20,13 @@ test('Set up mocked files', t => {
   t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
   t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
-  process.chdir(tmp)
   // eslint-disable-next-line
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
 test('starts the db server', t => {
   t.plan(1)
-  sandbox.tables.start({}, err => {
+  sandbox.tables.start({ quiet: true, cwd: tmp }, err => {
     if (err) t.fail(err)
     else t.pass('Sandbox started')
   })
@@ -190,7 +187,6 @@ test('server closes', t => {
 test('Clean up env', t => {
   t.plan(1)
   process.env.NODE_ENV = 'testing'
-  process.chdir(origCwd)
   exec(`rm -rf ${tmp}`)
   t.ok(!exists(tmp), 'Mocks cleaned up')
 })
