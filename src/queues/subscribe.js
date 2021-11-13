@@ -21,7 +21,7 @@ let parallel = require('run-parallel')
 module.exports = function _subscribe (fn) {
   if (fn.constructor.name === 'AsyncFunction') {
     return async function lambda (event) {
-      return await Promise.all(event.Records.map(async record => {
+      return Promise.all(event.Records.map(async record => {
         try {
           let result = JSON.parse(record.body)
           return await fn(result)

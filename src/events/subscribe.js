@@ -22,7 +22,7 @@ module.exports = function _subscribe (fn) {
   if (fn.constructor.name === 'AsyncFunction') {
     return async function lambda (event) {
       event = event && Object.keys(event).length ? event : fallback
-      return await Promise.all(event.Records.map(async record => {
+      return Promise.all(event.Records.map(async record => {
         try {
           let result = JSON.parse(record.Sns.Message)
           return await fn(result)
