@@ -1,12 +1,13 @@
 let { ApiGatewayManagementApi } = require('aws-sdk')
-let legacySendSandbox = require('./legacy-send-sandbox')
-let legacySendAWS = require('./legacy-send')
+let http = require('http')
+let { sandboxVersionAtLeast } = require('../sandbox')
 
 let ARC_WSS_URL = process.env.ARC_WSS_URL
 let port = process.env.ARC_INTERNAL || '3332'
+let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
 
 let apiGatewayManagementApi
-if (process.env.NODE_ENV === 'testing') {
+if (local) {
   apiGatewayManagementApi = new ApiGatewayManagementApi({
     apiVersion: '2018-11-29',
     endpoint: `http://localhost:${port}/_arc/ws`,
@@ -21,6 +22,45 @@ else {
 }
 
 /**
+ * arc.ws.legacySendSandbox
+ * Sends websocket data to older sandbox environments
+ * @param {Object} params
+ * @param {String} params.id - the ws connection id (required)
+ * @param {Object} params.payload - an event payload (required)
+ * @param {Function} callback - a node style errback (optional)
+ * @returns {Promise} - returned if no callback is supplied
+ */
+function legacySendSandbox ({ id, payload }, callback) {
+  // create a promise if no callback is defined
+  let promise
+  if (!callback) {
+    promise = new Promise(function (res, rej) {
+      callback = function (err, result) {
+        err ? rej(err) : res(result)
+      }
+    })
+  }
+
+  let port = process.env.PORT || 3333
+  let body = JSON.stringify({ id, payload })
+  let req = http.request({
+    method: 'POST',
+    port,
+    path: '/__arc',
+    headers: {
+      'content-type': 'application/json',
+      'content-length': Buffer.byteLength(body)
+    }
+  })
+  req.on('error', callback)
+  req.on('close', () => callback())
+  req.write(body)
+  req.end()
+
+  return promise
+}
+
+/**
  * arc.ws.send
  *
  * publish web socket events
@@ -32,6 +72,10 @@ else {
  * @returns {Promise} - returned if no callback is supplied
  */
 function send ({ id, payload }, callback) {
+  if (local && !sandboxVersionAtLeast('4.3.0')) {
+    return legacySendSandbox({ id, payload }, callback)
+  }
+
   let params = {
     ConnectionId: id,
     Data: JSON.stringify(payload)
@@ -82,41 +126,9 @@ function info ({ id }, callback) {
   return apiGatewayManagementApi.getConnection(params).promise()
 }
 
-/**
- * arc.ws.send
-@@ -9,28 +26,44 @@ let run = require('./send')
- * @param {Object} params
- * @param {String} params.id - the ws connection id (required)
- * @param {Object} params.payload - an event payload (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
- */
-function legacySend ({ id, payload }, callback) {
-  // create a promise if no callback is defined
-  let promise
-  if (!callback) {
-    promise = new Promise(function (res, rej) {
-      callback = function (err, result) {
-        err ? rej(err) : res(result)
-      }
-    })
-  }
-
-  let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
-  let exec = local ? legacySendSandbox : legacySendAWS
-
-  exec({
-    id,
-    payload
-  }, callback)
-
-  return promise
-}
-
 module.exports = {
   apiGatewayManagementApi,
-  send: legacySend,
-  newSend: send,
+  send,
   close,
   info,
 }
