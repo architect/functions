@@ -6,16 +6,16 @@ let ARC_WSS_URL = process.env.ARC_WSS_URL
 let port = process.env.ARC_INTERNAL || '3332'
 let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
 
-let apiGatewayManagementApi
+let _api
 if (local) {
-  apiGatewayManagementApi = new ApiGatewayManagementApi({
+  _api = new ApiGatewayManagementApi({
     apiVersion: '2018-11-29',
     endpoint: `http://localhost:${port}/_arc/ws`,
     region: process.env.AWS_REGION || 'us-west-2',
   })
 }
 else {
-  apiGatewayManagementApi = new ApiGatewayManagementApi({
+  _api = new ApiGatewayManagementApi({
     apiVersion: '2018-11-29',
     endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
   })
@@ -82,10 +82,10 @@ function send ({ id, payload }, callback) {
   }
 
   if (callback) {
-    apiGatewayManagementApi.postToConnection(params, callback)
+    _api.postToConnection(params, callback)
     return
   }
-  return apiGatewayManagementApi.postToConnection(params).promise()
+  return _api.postToConnection(params).promise()
 }
 
 /**
@@ -101,10 +101,10 @@ function send ({ id, payload }, callback) {
 function close ({ id }, callback) {
   let params = { ConnectionId: id }
   if (callback) {
-    apiGatewayManagementApi.deleteConnection(params, callback)
+    _api.deleteConnection(params, callback)
     return
   }
-  return apiGatewayManagementApi.deleteConnection(params).promise()
+  return _api.deleteConnection(params).promise()
 }
 
 /**
@@ -120,14 +120,14 @@ function close ({ id }, callback) {
 function info ({ id }, callback) {
   let params = { ConnectionId: id }
   if (callback) {
-    apiGatewayManagementApi.getConnection(params, callback)
+    _api.getConnection(params, callback)
     return
   }
-  return apiGatewayManagementApi.getConnection(params).promise()
+  return _api.getConnection(params).promise()
 }
 
 module.exports = {
-  apiGatewayManagementApi,
+  _api,
   send,
   close,
   info,
