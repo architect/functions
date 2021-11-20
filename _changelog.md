@@ -1,7 +1,7 @@
 # Architect Functions changelog
 
 ---
-Also see: [Architect changelog](https://github.com/architect/architect/blob/master/changelog.md)
+Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
 ## Unreleased

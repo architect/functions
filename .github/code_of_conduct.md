@@ -2,7 +2,7 @@
 
 We are strongly committed to ensuring the Architect community, and the various online and offline spaces in which its members congregate and collaborate, are safe, positive, inclusive, constructive, and welcoming environments.
 
-As such, the Architect project adheres to the [OpenJS Foundation Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md), which itself adheres to the [Contributor Covenant](https://www.contributor-covenant.org).
+As such, the Architect project adheres to the [OpenJS Foundation Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/main/CODE_OF_CONDUCT.md), which itself adheres to the [Contributor Covenant](https://www.contributor-covenant.org).
 
 Lack of familiarity with this or the OpenJS Foundation Codes of Conduct, or the Contributor covenant, is not an excuse for non-adherence.
 
