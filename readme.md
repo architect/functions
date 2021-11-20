@@ -5,7 +5,7 @@
 > Runtime helper library for serverless apps built with [Architect][npm]
 
 [![GitHub CI status](https://github.com/architect/functions/workflows/Node%20CI/badge.svg)](https://github.com/architect/functions/actions?query=workflow%3A%22Node+CI%22)
-<!-- [![codecov](https://codecov.io/gh/architect/functions/branch/master/graph/badge.svg)](https://codecov.io/gh/architect/functions) -->
+<!-- [![codecov](https://codecov.io/gh/architect/functions/branch/main/graph/badge.svg)](https://codecov.io/gh/architect/functions) -->
 
 Check out the full docs: [arc.codes](https://arc.codes)
 
