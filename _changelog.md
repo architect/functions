@@ -6,9 +6,9 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/mast
 
 ## Unreleased
 
-- Add `ws.apiGatewayManagementApi` a preconfigured `ApiGatewayManagementApi` instance. Requires `@architect/sandbox@4.3.0` or higher.
+- Add `ws._api_` a preconfigured `ApiGatewayManagementApi` instance. Requires `@architect/sandbox@4.3.0` or higher.
 - Add `ws.close` and `ws.info` to to close a websocket and get connection info. Requires `@architect/sandbox@4.3.0` or higher.
-- `ws.send` now leverages `ws.apiGatewayManagementApi` and falls back to the old version of send in older sandbox environments
+- `ws.send` now leverages `ws._api` and falls back to the old version of send in older sandbox environments
 
 ## [4.0.0] 2021-07-25
 
