@@ -48,8 +48,8 @@ test('jwe SameSite is configurable', async t => {
 
 test('set up sandbox for ddb testing', t => {
   t.plan(1)
-  process.chdir(join(process.cwd(), 'test', 'mock', 'project'))
-  sandbox.start({}, err => {
+  let cwd = join(process.cwd(), 'test', 'mock', 'project')
+  sandbox.start({ cwd }, err => {
     if (err) t.fail(err)
     else t.pass('Sandbox started')
   })

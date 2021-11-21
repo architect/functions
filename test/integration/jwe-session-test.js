@@ -22,14 +22,11 @@ function checkKeys (session, t) {
 
 let cookie // Assigned at setup
 let mock = join(__dirname, '..', 'mock', 'project')
-let origCwd = process.cwd()
 
 test('Set up env', async t => {
-  t.plan(2)
+  t.plan(1)
   process.env.SESSION_TABLE_NAME = 'jwe'
-  process.chdir(mock)
-  t.equal(process.cwd(), mock, 'Set working dir')
-  let result = await sandbox.start({ quiet: true })
+  let result = await sandbox.start({ quiet: true, cwd: mock })
   t.equal(result, 'Sandbox successfully started', result)
 })
 
@@ -117,10 +114,8 @@ test('Do session stuff (arc.http.async)', async t => {
 })
 
 test('Teardown', async t => {
-  t.plan(2)
+  t.plan(1)
+  delete process.env.SESSION_TABLE_NAME
   let result = await sandbox.end()
   t.equal(result, 'Sandbox successfully shut down', result)
-  delete process.env.SESSION_TABLE_NAME
-  process.chdir(origCwd)
-  t.equal(process.cwd(), origCwd, 'Reset working dir')
 })
