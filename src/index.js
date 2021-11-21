@@ -9,13 +9,12 @@ if (!env || isNotStagingOrProd) {
   process.env.NODE_ENV = 'testing'
 }
 
-
 let http = require('./http')
 let _static = require('./static')
 let serviceDiscovery = require('./discovery')
-let services
-
 let ws = require('./ws')
+
+let services
 let arc = {
   http,
   static: _static,
@@ -33,12 +32,9 @@ let arc = {
     })
   }
 }
-arc.tables = require('./tables')(arc)
-arc.queues = require('./queues')(arc)
 arc.events = require('./events')(arc)
-
-// backwards compat
-arc.middleware = http.middleware
-// backwards compat
+arc.queues = require('./queues')(arc)
+arc.tables = require('./tables')(arc)
+arc.middleware = http.middleware // backwards compat
 
 module.exports = arc

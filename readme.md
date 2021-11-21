@@ -5,145 +5,67 @@
 > Runtime helper library for serverless apps built with [Architect][npm]
 
 [![GitHub CI status](https://github.com/architect/functions/workflows/Node%20CI/badge.svg)](https://github.com/architect/functions/actions?query=workflow%3A%22Node+CI%22)
-<!-- [![codecov](https://codecov.io/gh/architect/functions/branch/main/graph/badge.svg)](https://codecov.io/gh/architect/functions) -->
 
 Check out the full docs: [arc.codes](https://arc.codes)
 
 
+## Install
+
+`npm i @architect/functions`
+
+
+## Usage
+
+```js
+let {
+  events,   // @events pub/sub
+  http,     // @http middleware + tools
+  queues,   // @queues pub/sub
+  services, // Architect resource / service discovery
+  static,   // @static asset helper
+  tables,   // @tables DynamoDB helper methods + API client
+  ws,       // @ws WebSocket helper + API client
+} = require('@architect/functions')
+```
+
+
 # API
 
-Given:
-```
-let arc = require('@architect/functions')
-```
+**`@events` methods**
+- [`events.subscribe()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.events.subscribe)
+- [`events.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.events.publish)
 
-The following APIs exists:
+**`@http` methods**
+- [`http()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http)
+- [`http.async()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.async)
+- [`http.express()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.express)
+- [`http.session()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.session)
 
+**`@queues` methods**
+- [`queues.subscribe()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues.subscribe)
+- [`queues.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues.publish)
 
-## `arc.events.subscribe(fn)`
+**Service discovery**
+- [`services()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.services)
 
-Used to define a lambda function that will act as an [event][events] handler. Event handlers are defined in your application's Architect project manifest file under the [`@events`][events] pragma. The function code for the accompanying handler to each event should use `arc.events.subscribe` to wrap the handler. For example, given the following project manifest snippet:
+**`@static` methods**
+- [`static()`]([#static](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.static))
 
-```
-@events
-concerts
-```
+**`@tables` methods**
+- [`tables()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.delete()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.get()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.put()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.query()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.scan()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.update()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.reflect()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.name`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table._db`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table._doc`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
 
-... the following file will be initialized representing the event handler for the `concerts` event, wherein you need to use `arc.events.subscribe`:
-
-```
-// file: src/events/concerts/index.js
-let arc = require('@architect/functions')
-module.exports = arc.events.subscribe(function(payload, callback) {
-  console.log(payload)
-  callback()
-})
-```
-
-
-## `arc.events.publish(params, callback)`
-
-Publishes `params.payload` to the SNS Topic (event) with name `params.name`. The `params.name` parameter should match the event defined under `@events`. Building on the example we described above, to trigger the `concerts` event handler, we would set `params.name` to be `concerts`.
-
-This allows you to publish events from any function within your application (`@app` `.arc` file namespace) to be handled by the event handler.
-
-When running in local/testing mode, will publish the event to the [sandbox][sandbox].
-
-
-## `arc.queues.subscribe(params, callback)`
-
-Used to define a lambda function that will act as a [queue][queues] handler. Queue handlers are defined in your application's `.arc` file under the [`@queues`][queues] pragma. The function code for the accompanying handler to each queued item should use `arc.queues.subscribe` to wrap the handler. For example, given the following `.arc` file snippet:
-
-```
-@queues
-concert-tickets
-```
-
-... the following file will be initialized representing the event handler for the `concert-tickets` queue, wherein you need to use `arc.queues.subscribe`:
-
-```
-// file: src/queues/concert-tickets/index.js
-let arc = require('@architect/functions')
-module.exports = arc.queues.subscribe(function(payload, callback) {
-  console.log(payload)
-  callback()
-})
-```
-
-
-## `arc.queues.publish(params, callback)`
-
-Publishes `params.payload` to the SQS Queue (queue) with name `params.name`. The `params.name` parameter should match the queue defined under `@queues`. Building on the example we described above, to trigger the `concert-tickets` queue handler, we would set `params.name` to be `concert-tickets`.
-
-This allows you to publish to queues from any function within your application (`@app` `.arc` file namespace) to be handled by the queue handler.
-
-When running in local/testing mode, will publish the event to the [sandbox][sandbox].
-
-
-## `arc.static(assetPath, options)`
-
-Returns the fully-qualified URI of a static asset for the project-relative `assetPath` parameter. Takes into account:
-
-- What environment (testing, staging, production) we are running in.
-- Whether [fingerprinting][static] is enabled.
-- Whether the override environment variable `ARC_STATIC_BUCKET` is present.
-
-`options` is an object with the following currently-supported properties:
-
-- `stagePath`: boolean, prepends `/staging` or `/production` to the asset path; useful if the current app is being run on an naked (non-domain-mapped) API Gateway
-
-
-## `arc.tables(callback)`
-
-Returns an object that can be used to access data in database tables as defined under `@tables` in your `.arc` file. For example, given the following `.arc` file snippet:
-
-```
-@tables
-accounts
-  accountID *String
-
-messages
-  msgID *String
-```
-
-Running the following code:
-
-```
-let data = await arc.tables()
-```
-
-Would yield the following objects:
-
-- `data.accounts`: reference to the `accounts` table
-- `data.messages`: reference to the `messages` table
-
-.. which contain the following methods:
-
-- `delete(key, callback)`: deletes the record from the table with key `key` and invokes `callback` with the result
-- `get(key, callback)`: retrieves the record from the table with key `key` and invokes `callback` when complete
-- `put(item, callback)`: adds `item` to the table and invokes `callback` with the item when complete
-- `query(params, callback)`: queries the table using `params` and invokes `callback` with the result
-- `scan(params, callback)`: scans the table using `params` and invokes `callback` with the result
-- `update(params, callback)`: updates an item in the table using `params` and invokes `callback` when complete
-
-## `arc.ws.apiGatewayManagementApi`
-
-Is a configured [ApiGatewayManagementApi](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html) instance configured to the endpoint of your arc managed websocket api gateway instance. Requires `@architect/sandbox@4.3.0` or higher.
-
-## `arc.ws.send({ id, payload }, callback)`
-
-Sends the object present on `payload` to the connection ID on `id`. Payload is passed to `JSON.stringify()` on your behalf. Uses [`postToConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#postToConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with no data on success or calls the callback.
-
-## `arc.ws.close({ id }, callback)`
-
-Closes the connection with the specified `id`. Uses [`deleteConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#deleteConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with no data on success or calls the callback. Requires `@architect/sandbox@4.3.0` or higher.
-
-## `arc.ws.info({ id }, callback)`
-
-Gets info about the connection id. Uses [`getConnection`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayManagementApi.html#getConnection-property) from the `ApiGatewayManagementApi`. Returns a promise with the connection information or calls the callback. Requires `@architect/sandbox@4.3.0` or higher.
-
-[npm]: https://www.npmjs.com/package/@architect/functions
-[sandbox]: https://www.npmjs.com/package/@architect/sandbox
-[events]: https://arc.codes/docs/en/reference/app.arc/events
-[queues]: https://arc.codes/docs/en/reference/app.arc/queues
-[static]: https://arc.codes/docs/en/guides/frontend/static-assets
+**`@ws` methods**
+- [`ws.send()`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.send)
+- [`ws.close()`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.close)
+- [`ws.info()`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.info)
+- [`ws._api`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.api)
