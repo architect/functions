@@ -4,9 +4,11 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
-## Unreleased
+## [4.1.1] 2021-11-22
 
-- Fix crash when no @ws is used so ARC_WSS_URL isn't set
+- Fix crash on missing `ARC_WSS_URL` env var when `@ws` is defined in a project
+
+---
 
 ## [4.1.0] 2021-11-20
 

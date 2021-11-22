@@ -1,20 +1,20 @@
-let { ApiGatewayManagementApi } = require('aws-sdk')
 let http = require('http')
+let { ApiGatewayManagementApi } = require('aws-sdk')
 let { sandboxVersionAtLeast } = require('../sandbox')
 
-let ARC_WSS_URL = process.env.ARC_WSS_URL || ''
+let { ARC_ENV, NODE_ENV, ARC_WSS_URL = '' } = process.env
 let port = process.env.ARC_INTERNAL || '3332'
-let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
+let local = ARC_ENV === 'testing' || NODE_ENV === 'testing' || process.env.ARC_LOCAL
 
 let _api
-if (local) {
+if (local && ARC_WSS_URL) {
   _api = new ApiGatewayManagementApi({
     apiVersion: '2018-11-29',
     endpoint: `http://localhost:${port}/_arc/ws`,
     region: process.env.AWS_REGION || 'us-west-2',
   })
 }
-else {
+else if (ARC_WSS_URL) {
   _api = new ApiGatewayManagementApi({
     apiVersion: '2018-11-29',
     endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
