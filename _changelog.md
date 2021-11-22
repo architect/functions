@@ -4,6 +4,10 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
+## Unreleased
+
+- Fix crash when no @ws is used so ARC_WSS_URL isn't set
+
 ## [4.1.0] 2021-11-20
 
 - Added `ws.close` and `ws.info` to close a WebSocket and get connection info. Requires `@architect/sandbox@4.3.0` or higher.

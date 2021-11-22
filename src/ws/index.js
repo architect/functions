@@ -2,7 +2,7 @@ let { ApiGatewayManagementApi } = require('aws-sdk')
 let http = require('http')
 let { sandboxVersionAtLeast } = require('../sandbox')
 
-let ARC_WSS_URL = process.env.ARC_WSS_URL
+let ARC_WSS_URL = process.env.ARC_WSS_URL || ''
 let port = process.env.ARC_INTERNAL || '3332'
 let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
 
