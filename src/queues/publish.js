@@ -23,7 +23,7 @@ module.exports = function publishFactory (arc) {
       })
     }
 
-    let isLocal = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
+    let isLocal = process.env.ARC_ENV === 'testing' || process.env.ARC_LOCAL
     let exec = isLocal ? sandbox : queue
     exec(params, callback)
     return promise

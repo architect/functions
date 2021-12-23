@@ -73,7 +73,7 @@ function write (payload, callback) {
   if (process.env.SESSION_DOMAIN) {
     options.domain = process.env.SESSION_DOMAIN
   }
-  if (process.env.NODE_ENV === 'testing') {
+  if (process.env.ARC_ENV === 'testing') {
     delete options.secure
   }
   callback(null, cookie.serialize(key, val, options))

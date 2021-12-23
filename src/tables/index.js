@@ -31,7 +31,7 @@ function tables (arc) {
     /**
      * Read Architect manifest if local / sandbox, otherwise use service reflection
      */
-    let runningLocally = process.env.NODE_ENV === 'testing'
+    let runningLocally = process.env.ARC_ENV === 'testing'
     if (runningLocally) {
       sandbox(dynamo, callback)
     }

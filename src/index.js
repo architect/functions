@@ -1,12 +1,12 @@
 /**
  * Ensure env is one of: 'testing', 'staging', or 'production'
- * - Some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
- * - Due to tables.direct auto initializing, always set (or override) default NODE_ENV to 'testing'
+ * - Some test harnesses (ahem) will automatically populate ARC_ENV with their own values, unbidden
+ * - Due to tables.direct auto initializing, always set (or override) default ARC_ENV to 'testing'
  */
-let env = process.env.NODE_ENV
+let env = process.env.ARC_ENV
 let isNotStagingOrProd = env !== 'staging' && env !== 'production'
 if (!env || isNotStagingOrProd) {
-  process.env.NODE_ENV = 'testing'
+  process.env.ARC_ENV = 'testing'
 }
 
 let http = require('./http')

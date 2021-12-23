@@ -16,8 +16,8 @@ module.exports = function _static (asset, options = {}) {
   let isIndex = asset === '/'
   let manifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
   let exists = existsSync(manifest)
-  let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
-  let stagePath = options.stagePath && !local ? '/' + process.env.NODE_ENV : ''
+  let local = process.env.ARC_ENV === 'testing' || process.env.ARC_LOCAL
+  let stagePath = options.stagePath && !local ? '/' + process.env.ARC_ENV : ''
   let path = `${stagePath}/_static`
   if (!local && exists && !isIndex) {
     let read = p => readFileSync(p).toString()

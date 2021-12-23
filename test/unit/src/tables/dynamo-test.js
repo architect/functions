@@ -1,7 +1,7 @@
 let test = require('tape')
 let file = '../../../../src/tables/dynamo'
 let dynamo
-let env = process.env.NODE_ENV
+let env = process.env.ARC_ENV
 
 function reset (t) {
   delete process.env.ARC_TABLES_PORT
@@ -19,7 +19,7 @@ function reset (t) {
 
 test('Set up env', t => {
   t.plan(5)
-  process.env.NODE_ENV = 'testing'
+  process.env.ARC_ENV = 'testing'
 
   // eslint-disable-next-line
   dynamo = require(file)
@@ -168,7 +168,7 @@ test('Live AWS infra config', t => {
   t.plan(11)
 
   // Defaults
-  process.env.NODE_ENV = 'testing'
+  process.env.ARC_ENV = 'testing'
 
   // eslint-disable-next-line
   dynamo = require(file)
@@ -198,7 +198,7 @@ test('Live AWS infra config', t => {
   reset(t)
 
   // Defaults
-  process.env.NODE_ENV = 'staging'
+  process.env.ARC_ENV = 'staging'
   process.env.AWS_REGION = 'us-west-1'
 
   // eslint-disable-next-line
@@ -237,7 +237,7 @@ test('Live AWS infra config', t => {
 
 test('Tear down env', t => {
   t.plan(1)
-  process.env.NODE_ENV = env
+  process.env.ARC_ENV = env
   reset(t)
   t.pass('Tore down env')
 })

@@ -186,7 +186,7 @@ test('server closes', t => {
 
 test('Clean up env', t => {
   t.plan(1)
-  process.env.NODE_ENV = 'testing'
+  process.env.ARC_ENV = 'testing'
   exec(`rm -rf ${tmp}`)
   t.ok(!exists(tmp), 'Mocks cleaned up')
 })

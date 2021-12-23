@@ -8,7 +8,7 @@ module.exports = function lookup (callback) {
   let Path = `/${process.env.ARC_CLOUDFORMATION}`
   let Recursive = true
   let values = []
-  let isLocal = process.env.NODE_ENV === 'testing'
+  let isLocal = process.env.ARC_ENV === 'testing'
   let config
   if (isLocal) {
     // if running in sandbox, sandbox has an SSM mock, use that

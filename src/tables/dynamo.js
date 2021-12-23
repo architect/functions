@@ -9,7 +9,7 @@ let https = require('https')
 function getDynamo (type, callback) {
   if (!type) throw ReferenceError('Must supply Dynamo service interface type')
 
-  let testing = process.env.NODE_ENV === 'testing'
+  let testing = process.env.ARC_ENV === 'testing'
   let arcLocal = process.env.ARC_LOCAL
   let port = process.env.ARC_TABLES_PORT || 5000
   let local = {
@@ -22,9 +22,9 @@ function getDynamo (type, callback) {
 
   /**
    * This module may be loaded by @arc/arc via repl
-   * - The `direct` interfaces will instantiate before NODE_ENV is set
-   * - Thus, unlike most other scenarios, don't assume the presence of NODE_ENV
-   * - Also: some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
+   * - The `direct` interfaces will instantiate before ARC_ENV is set
+   * - Thus, unlike most other scenarios, don't assume the presence of ARC_ENV
+   * - Also: some test harnesses (ahem) will automatically populate ARC_ENV with their own values, unbidden
    * - *Why this matters*: using https.Agent (and not http.Agent) will stall the Sandbox
    */
   if (!testing && !arcLocal) {

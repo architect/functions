@@ -24,7 +24,7 @@ module.exports = function _publish (params, callback) {
     throw ReferenceError('missing params.payload')
 
   // queue name normalized with appname and env
-  let name = `${process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${params.name}`
+  let name = `${process.env.ARC_APP_NAME}-${process.env.ARC_ENV}-${params.name}`
   let payload = params.payload
 
   let promise
@@ -37,7 +37,7 @@ module.exports = function _publish (params, callback) {
   }
 
   // check if we're running locally
-  let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
+  let local = process.env.ARC_ENV === 'testing' || process.env.ARC_LOCAL
   if (local) {
     let port = process.env.ARC_EVENTS_PORT || 3334
 

@@ -27,7 +27,7 @@ test('Set up mocked arc', t => {
 test('Fingerprinting only enabled if static manifest is found', t => {
   t.plan(1)
   process.env.AWS_REGION = 'us-west-1'
-  process.env.NODE_ENV = 'production'
+  process.env.ARC_ENV = 'production'
   arc.static('index.html', { reload: true })
   t.equals(arc.static('index.html'), `/_static/index.html`)
 })
@@ -47,7 +47,7 @@ test('Clean up env', t => {
   delete process.env.ARC_STATIC_PREFIX
   delete process.env.ARC_STATIC_FOLDER
   process.env.AWS_REGION = origRegion
-  process.env.NODE_ENV = 'testing'
+  process.env.ARC_ENV = 'testing'
   process.chdir(origCwd)
   exec(`rm -rf ${tmp}`)
   t.ok(!exists(tmp), 'Mocks cleaned up')

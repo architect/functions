@@ -56,7 +56,7 @@ module.exports = function _publish (params, callback) {
     })
   }
 
-  let isLocal = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
+  let isLocal = process.env.ARC_ENV === 'testing' || process.env.ARC_LOCAL
   let exec = isLocal ? _local : _live
   exec(params, callback)
   return promise
@@ -71,7 +71,7 @@ function _live (params, callback) {
   }
   else {
     let override = params.app
-    let eventName = `${override ? params.app : process.env.ARC_APP_NAME}-${process.env.NODE_ENV}-${name}`
+    let eventName = `${override ? params.app : process.env.ARC_APP_NAME}-${process.env.ARC_ENV}-${name}`
     _scan({ eventName }, function _scan (err, found) {
       if (err) throw err
       // cache the arn here
