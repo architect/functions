@@ -1,13 +1,13 @@
-let subscribe = require('./subscribe')
-let publishFactory = require('./publish')
+let pubFactory = require('./publish')
+let subFactory = require('./subscribe')
 
-module.exports = function eventFactory (arc) {
-  let publish = publishFactory(arc)
+module.exports = function eventsAndQueuesFactory (arc, type) {
+  let publish = pubFactory(arc, type)
+  let subscribe = subFactory(type)
   return {
     /**
-     * arc.events.publish
-     *
-     * publish events (sns topics)
+     * `arc.events|queues.publish`
+     * publish events and queues
      *
      * @param {Object} params
      * @param {String} params.name - the event name (required)
@@ -18,12 +18,11 @@ module.exports = function eventFactory (arc) {
     publish,
 
     /**
-     * arc.events.subscribe
-     *
-     * listen for events (sns topics)
+     * `arc.events|queues.subscribe`
+     * listen for events and queues
      *
      * @param {Function} handler - a single event handler function
-     * @returns {Lambda} - a Lambda function sig: (event, context, callback)=>
+     * @returns {Lambda} - a Lambda function sig
      */
     subscribe
   }

@@ -1,12 +1,15 @@
 let http = require('http')
 let aws = require('aws-sdk')
-let ledger = {}
+let ledger = { events: {}, queues: {} }
 
 /**
- * invoke an event lambda by sns topic name
+ * Invoke
+ * - `@events` Lambdas by EventBridge topic name
+ * - `@queues` Lambdas by SQS queue name
  */
-module.exports = function publishFactory (arc) {
-  let publishAWS = topicFactory(arc)
+module.exports = function publishFactory (arc, type) {
+  let factory = type === 'events' ? eventFactory : queueFactory
+  let publishAWS = factory(arc)
   return function publish (params, callback) {
     if (!params.name) {
       throw ReferenceError('missing params.name')
@@ -30,18 +33,18 @@ module.exports = function publishFactory (arc) {
       return promise
     }
 
-    let exec = local ? publishSandbox : publishAWS
+    let exec = local ? _publishSandbox.bind({}, type) : publishAWS
     exec(params, callback)
     return promise
   }
 }
 
-function publishSandbox (params, callback) {
+function _publishSandbox (type, params, callback) {
   let port = process.env.ARC_EVENTS_PORT
   let req = http.request({
     method: 'POST',
     port,
-    path: '/events',
+    path: '/' + type,
   },
   function done (res) {
     let data = []
@@ -58,7 +61,7 @@ function publishSandbox (params, callback) {
   req.end('\n')
 }
 
-function topicFactory (arc) {
+function eventFactory (arc) {
   return function live ({ name, payload }, callback) {
 
     function publish (arn, payload, callback) {
@@ -70,12 +73,44 @@ function topicFactory (arc) {
     }
 
     function cacheLedgerAndPublish (serviceMap) {
-      ledger = serviceMap.events
+      ledger.events = serviceMap.events
       if (!arn) callback(ReferenceError(`${name} event not found`))
       else publish(arn, payload, callback)
     }
 
-    let arn = ledger[name]
+    let arn = ledger.events[name]
+    if (arn) {
+      publish(arn, payload, callback)
+    }
+    else {
+      arc.services().then(cacheLedgerAndPublish).catch(callback)
+    }
+  }
+}
+
+function queueFactory (arc) {
+  return function live ({ name, payload, delaySeconds, groupID }, callback) {
+
+    function publish (arn, payload, callback) {
+      let sqs = new aws.SQS
+      let params = {
+        QueueUrl: arn,
+        DelaySeconds: delaySeconds || 0,
+        MessageBody: JSON.stringify(payload)
+      }
+      if (arn.endsWith('.fifo')) {
+        params.MessageGroupId = groupID || name
+      }
+      sqs.sendMessage(params, callback)
+    }
+
+    function cacheLedgerAndPublish (serviceMap) {
+      ledger.queues = serviceMap.queues
+      if (!arn) callback(ReferenceError(`${name} queue not found`))
+      else publish(arn, payload, callback)
+    }
+
+    let arn = ledger.queues[name]
     if (arn) {
       publish(arn, payload, callback)
     }

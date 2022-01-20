@@ -30,8 +30,8 @@ let arc = {
     })
   }
 }
-arc.events = require('./events')(arc)
-arc.queues = require('./queues')(arc)
+arc.events = require('./events')(arc, 'events')
+arc.queues = require('./events')(arc, 'queues')
 arc.tables = require('./tables')(arc)
 arc.middleware = http.middleware // backwards compat
 
