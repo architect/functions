@@ -1,12 +1,10 @@
 /**
  * Ensure env is one of: 'testing', 'staging', or 'production'
- * - Some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
- * - Due to tables.direct auto initializing, always set (or override) default NODE_ENV to 'testing'
  */
-let env = process.env.NODE_ENV
-let isNotStagingOrProd = env !== 'staging' && env !== 'production'
-if (!env || isNotStagingOrProd) {
-  process.env.NODE_ENV = 'testing'
+let env = process.env.ARC_ENV
+let validEnvs = [ 'testing', 'staging', 'production' ]
+if (!validEnvs.includes(env)) {
+  throw ReferenceError(`ARC_ENV env var is required for use with @architect/functions`)
 }
 
 let http = require('./http')

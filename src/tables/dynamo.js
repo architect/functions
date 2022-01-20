@@ -9,10 +9,10 @@ let https = require('https')
 function getDynamo (type, callback) {
   if (!type) throw ReferenceError('Must supply Dynamo service interface type')
 
-  let testing = process.env.NODE_ENV === 'testing'
-  let arcLocal = process.env.ARC_LOCAL
-  let port = process.env.ARC_TABLES_PORT || 5000
-  let local = {
+  // We might normally like to throw if `local && !port`, but this is also a direct DynamoDB interface in global scope, so it instantiates even if the project doesn't have tables.
+  let { ARC_ENV: env, ARC_LOCAL, ARC_TABLES_PORT: port } = process.env
+  let local = env === 'testing' || ARC_LOCAL
+  let localConfig = {
     endpoint: new aws.Endpoint(`http://localhost:${port}`),
     region: process.env.AWS_REGION || 'us-west-2' // Do not assume region is set!
   }
@@ -22,12 +22,12 @@ function getDynamo (type, callback) {
 
   /**
    * This module may be loaded by @arc/arc via repl
-   * - The `direct` interfaces will instantiate before NODE_ENV is set
-   * - Thus, unlike most other scenarios, don't assume the presence of NODE_ENV
-   * - Also: some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
+   * - The `direct` interfaces will instantiate before ARC_ENV is set
+   * - Thus, unlike most other scenarios, don't assume the presence of ARC_ENV
+   * - Also: some test harnesses (ahem) will automatically populate ARC_ENV with their own values, unbidden
    * - *Why this matters*: using https.Agent (and not http.Agent) will stall the Sandbox
    */
-  if (!testing && !arcLocal) {
+  if (!local) {
     let agent = new https.Agent({
       keepAlive: true,
       maxSockets: 50, // Node can set to Infinity; AWS maxes at 50; check back on this every once in a while
@@ -40,14 +40,14 @@ function getDynamo (type, callback) {
   }
 
   if (type === 'db') {
-    dynamo = testing
-      ? new DB(local)
+    dynamo = local
+      ? new DB(localConfig)
       : new DB
   }
 
   if (type === 'doc') {
-    dynamo = testing
-      ? new Doc(local)
+    dynamo = local
+      ? new Doc(localConfig)
       : new Doc
   }
 
@@ -62,8 +62,8 @@ function getDynamo (type, callback) {
         callback()
       }
     }
-    dynamo = testing
-      ? new Doc(local)
+    dynamo = local
+      ? new Doc(localConfig)
       : (passthru ? mock : new Doc)
   }
 

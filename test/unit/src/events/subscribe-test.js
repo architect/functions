@@ -1,6 +1,15 @@
 let test = require('tape')
 let sinon = require('sinon')
-let subscribe = require('../../../../src/events/subscribe')
+let subscribe
+
+test('Set up env', t => {
+  t.plan(1)
+  process.env.ARC_ENV = 'testing'
+  // eslint-disable-next-line
+  let arc = require('../../../..')
+  subscribe = arc.events.subscribe
+  t.ok(subscribe, 'Got events.subscribe method')
+})
 
 test('events.subscribe should invoke provided handler for each SNS event Record', t => {
   t.plan(2)
@@ -50,4 +59,10 @@ test('events.subscribe should fall back to an empty event if one is not provided
   })
   await handler()
   t.ok(fake.calledWith({}), 'subscribe handler called with empty SNS record')
+})
+
+test('Teardown', t => {
+  t.plan(1)
+  delete process.env.ARC_ENV
+  t.pass('Done!')
 })

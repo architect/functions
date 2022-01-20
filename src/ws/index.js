@@ -1,64 +1,26 @@
-let http = require('http')
 let { ApiGatewayManagementApi } = require('aws-sdk')
-let { sandboxVersionAtLeast } = require('../sandbox')
-
-let { ARC_ENV, NODE_ENV, ARC_WSS_URL = '' } = process.env
-let port = process.env.ARC_INTERNAL || '3332'
-let local = ARC_ENV === 'testing' || NODE_ENV === 'testing' || process.env.ARC_LOCAL
 
 let _api
-if (local && ARC_WSS_URL) {
-  _api = new ApiGatewayManagementApi({
-    apiVersion: '2018-11-29',
-    endpoint: `http://localhost:${port}/_arc/ws`,
-    region: process.env.AWS_REGION || 'us-west-2',
-  })
-}
-else if (ARC_WSS_URL) {
-  _api = new ApiGatewayManagementApi({
-    apiVersion: '2018-11-29',
-    endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
-  })
-}
-
-/**
- * arc.ws.legacySendSandbox
- * Sends websocket data to older sandbox environments
- * @param {Object} params
- * @param {String} params.id - the ws connection id (required)
- * @param {Object} params.payload - an event payload (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
- */
-function legacySendSandbox ({ id, payload }, callback) {
-  // create a promise if no callback is defined
-  let promise
-  if (!callback) {
-    promise = new Promise(function (res, rej) {
-      callback = function (err, result) {
-        err ? rej(err) : res(result)
-      }
+function instantiateAPI () {
+  if (_api) return
+  let { ARC_ENV: env, ARC_INTERNAL_PORT: port, ARC_LOCAL, ARC_WSS_URL } = process.env
+  let local = env === 'testing' || ARC_LOCAL
+  if (local) {
+    if (!port) throw ReferenceError('ARC_INTERNAL_PORT env var not found')
+    _api = new ApiGatewayManagementApi({
+      apiVersion: '2018-11-29',
+      endpoint: `http://localhost:${port}/_arc/ws`,
+      region: process.env.AWS_REGION || 'us-west-2',
     })
   }
-
-  let port = process.env.PORT || 3333
-  let body = JSON.stringify({ id, payload })
-  let req = http.request({
-    method: 'POST',
-    port,
-    path: '/__arc',
-    headers: {
-      'content-type': 'application/json',
-      'content-length': Buffer.byteLength(body)
-    }
-  })
-  req.on('error', callback)
-  req.on('close', () => callback())
-  req.write(body)
-  req.end()
-
-  return promise
+  else {
+    _api = new ApiGatewayManagementApi({
+      apiVersion: '2018-11-29',
+      endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
+    })
+  }
 }
+
 
 /**
  * arc.ws.send
@@ -72,10 +34,7 @@ function legacySendSandbox ({ id, payload }, callback) {
  * @returns {Promise} - returned if no callback is supplied
  */
 function send ({ id, payload }, callback) {
-  if (local && !sandboxVersionAtLeast('4.3.0')) {
-    return legacySendSandbox({ id, payload }, callback)
-  }
-
+  instantiateAPI()
   let params = {
     ConnectionId: id,
     Data: JSON.stringify(payload)
@@ -99,6 +58,7 @@ function send ({ id, payload }, callback) {
  * @returns {Promise} - returned if no callback is supplied
  */
 function close ({ id }, callback) {
+  instantiateAPI()
   let params = { ConnectionId: id }
   if (callback) {
     _api.deleteConnection(params, callback)
@@ -118,6 +78,7 @@ function close ({ id }, callback) {
  * @returns {Promise} - returned if no callback is supplied
  */
 function info ({ id }, callback) {
+  instantiateAPI()
   let params = { ConnectionId: id }
   if (callback) {
     _api.getConnection(params, callback)

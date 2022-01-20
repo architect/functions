@@ -4,6 +4,12 @@ let awsMock = require('aws-sdk-mock')
 awsMock.setSDKInstance(aws)
 let discovery = require('../../../../src/discovery')
 
+test('Set up env', t => {
+  t.plan(1)
+  process.env.ARC_APP = 'test'
+  t.pass('Set up ARC_APP env var')
+})
+
 test('discovery should callback with error if SSM errors', t => {
   t.plan(1)
   awsMock.mock('SSM', 'getParametersByPath', (params, cb) => cb(true))
@@ -78,4 +84,10 @@ test('discovery should parse several pages of hierarchical SSM parameters into a
     t.equals(services.queues.breadline, 'favouritebakery', 'breadline queue value set up in correct place of service map')
     awsMock.restore()
   })
+})
+
+test('Teardown', t => {
+  t.plan(1)
+  delete process.env.ARC_APP
+  t.pass('Done!')
 })

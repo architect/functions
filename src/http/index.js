@@ -13,7 +13,6 @@ let write = require('./session/write')
 
 // Middleware
 let _async = require('./async')
-let express = require('./express')
 
 http.helpers = {
   bodyParser,
@@ -23,7 +22,6 @@ http.helpers = {
 }
 http.session = { read, write }
 http.async = _async
-http.express = express
 
 // Legacy methods
 http.middleware = _async

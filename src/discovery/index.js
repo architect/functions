@@ -5,14 +5,18 @@ let http = require('http')
  * @returns {object} {name: value}
  */
 module.exports = function lookup (callback) {
-  let Path = `/${process.env.ARC_CLOUDFORMATION}`
+  let { ARC_APP: app, ARC_ENV: env } = process.env
+  if (!app) return callback(ReferenceError('ARC_APP env var not found'))
+  let Path = '/' + toLogicalID(`${app}-${env}`)
   let Recursive = true
   let values = []
-  let isLocal = process.env.NODE_ENV === 'testing'
+  let local = env === 'testing'
   let config
-  if (isLocal) {
+
+  if (local) {
     // if running in sandbox, sandbox has an SSM mock, use that
-    let port = process.env.ARC_INTERNAL || 3332
+    let port = process.env.ARC_INTERNAL_PORT
+    if (!port) return callback(ReferenceError('ARC_INTERNAL_PORT env var not found'))
     let region = process.env.AWS_REGION || 'us-west-2'
     config = {
       endpoint: new aws.Endpoint(`http://localhost:${port}/_arc/ssm`),
@@ -33,7 +37,7 @@ module.exports = function lookup (callback) {
       }
       else {
         values = values.concat(result.Parameters)
-        callback(null, values.reduce((a, b) => {
+        let services = values.reduce((a, b) => {
           let hierarchy = b.Name.split('/')
           hierarchy.shift() // leading slash
           hierarchy.shift() // stack name
@@ -50,10 +54,24 @@ module.exports = function lookup (callback) {
           }
           lastParent[lastChild] = b.Value
           return a
-        }, {}))
+        }, {})
+        callback(null, services)
       }
     })
   }
-
   getParams({ Path, Recursive })
+}
+
+function toLogicalID (str) {
+  str = str.replace(/([A-Z])/g, ' $1')
+  if (str.length === 1) {
+    return str.toUpperCase()
+  }
+  str = str.replace(/^[\W_]+|[\W_]+$/g, '').toLowerCase()
+  str = str.charAt(0).toUpperCase() + str.slice(1)
+  str = str.replace(/[\W_]+(\w|$)/g, (_, ch) => ch.toUpperCase())
+  if (str === 'Get') {
+    return 'GetIndex'
+  }
+  return str
 }

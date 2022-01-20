@@ -15,7 +15,6 @@
     "test:integration": "cross-env tape 'test/integration/**/*-test.js' | tap-spec",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
     "test": "npm run lint && npm run test:integration && npm run coverage",
-    "bundle": "echo 'For experimentation only, build from http-proxy!' && browserify src/http/proxy/arc-default-get-index.js --node --external aws-sdk --standalone proxy > dist.js",
     "rc": "npm version prerelease --preid RC"
   },
   "engines": {
@@ -24,7 +23,6 @@
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-serverless-express": "^3.4.0",
     "cookie": "^0.4.1",
     "cookie-signature": "^1.1.0",
     "csrf": "^3.1.0",
@@ -36,7 +34,7 @@
   "devDependencies": {
     "@architect/eslint-config": "1.0.1",
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
-    "@architect/sandbox": "^4.4.0",
+    "@architect/sandbox": "^5.0.0-RC.2",
     "aws-sdk": "~2.880.0",
     "aws-sdk-mock": "~5.4.0",
     "cross-env": "~7.0.3",
@@ -49,6 +47,9 @@
     "tape": "~5.3.2",
     "tiny-json-http": "~7.3.1"
   },
+  "files": [
+    "src/*"
+  ],
   "keywords": [
     "aws",
     "lambda",

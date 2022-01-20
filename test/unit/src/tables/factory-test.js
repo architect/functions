@@ -3,10 +3,15 @@ let proxyquire = require('proxyquire')
 
 let fakeDb = {}
 let fakeDoc = {}
+let factory
 
-let factory = proxyquire('../../../../src/tables/factory', {
-  './dynamo': { db: {}, doc: {} },
-  'run-parallel': (_, cb) => cb(null, { doc: fakeDoc, db: fakeDb })
+test('Set up env', t => {
+  t.plan(1)
+  factory = proxyquire('../../../../src/tables/factory', {
+    './dynamo': { db: {}, doc: {} },
+    'run-parallel': (_, cb) => cb(null, { doc: fakeDoc, db: fakeDb })
+  })
+  t.ok(factory, 'Tables factory ready')
 })
 
 test('tables.factory client properties', t => {
@@ -19,6 +24,7 @@ test('tables.factory client properties', t => {
     t.ok(client.bat, 'table name assigned')
   })
 })
+
 test('tables.factory client static methods', t => {
   t.plan(2)
   let tables = { quart: 'tequila' }

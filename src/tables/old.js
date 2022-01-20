@@ -1,44 +1,37 @@
-var parallel = require('run-parallel')
+let parallel = require('run-parallel')
+
 /**
- * var trigger = require('aws-dynamodb-lambda-trigger/lambda')
- *
+ * Example usage:
+ * ```
+ * let trigger = require('aws-dynamodb-lambda-trigger/lambda')
  * function onInsert(record, callback) {
  *   console.log(record)
  *   callback(null, record) // errback style; results passed to context.succeed
  * }
- *
  * module.exports = trigger.insert(onInsert)
+ * ```
  */
-
 function __trigger (types, handler) {
   return function __lambdaSignature (evt, ctx) {
-    // dynamo triggers send batches of records so we're going to create a handler for each one
-    var handlers = evt.Records.map(function (record) {
-      // for each record we construct a handler function
+    // DynamoDB triggers send batches of records, so create a handler for each
+    let handlers = evt.Records.map(function (record) {
+      // Construct a handler function for each record
       return function __actualHandler (callback) {
-        // if isInvoking we invoke the handler with the record
-        var isInvoking = types.indexOf(record.eventName) > -1
-        if (isInvoking) {
-          handler(record, callback)
-        }
-        else {
-          callback() // if not we just call the continuation (callback)
-        }
+        // If isInvoking we invoke the handler with the record
+        let isInvoking = types.indexOf(record.eventName) > -1
+        if (isInvoking) handler(record, callback)
+        else callback() // If not we just call the continuation (callback)
       }
     })
-    // executes the handlers in parallel
+    // Execute the handlers in parallel
     parallel(handlers, function __processedRecords (err, results) {
-      if (err) {
-        ctx.fail(err)
-      }
-      else {
-        ctx.succeed(results)
-      }
+      if (err) ctx.fail(err)
+      else ctx.succeed(results)
     })
   }
 }
 
-/* eslint indent: 0 */
+/* eslint-disable indent */
 module.exports = {
   insert: __trigger.bind({}, [ 'INSERT' ]),
   modify: __trigger.bind({}, [ 'MODIFY' ]),

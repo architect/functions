@@ -63,6 +63,7 @@ function write (params, callback) {
   }
 
   // read dynamo session table
+  // TODO / FIXME I think this no longer works?
   let name = process.env.SESSION_TABLE_NAME || tableLogicalId('arc-sessions')
   let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
 
@@ -83,8 +84,9 @@ function write (params, callback) {
       if (process.env.SESSION_DOMAIN) {
         options.domain = process.env.SESSION_DOMAIN
       }
-      if (process.env.NODE_ENV === 'testing')
+      if (process.env.ARC_ENV === 'testing') {
         delete options.secure
+      }
       let result = cookie.serialize('_idx', sign(params._idx, secret), options)
       callback(null, result)
     }
@@ -94,6 +96,6 @@ function write (params, callback) {
 }
 
 function tableLogicalId (name) {
-  let env = process.env.NODE_ENV === 'production' ? 'production' : 'staging'
+  let env = process.env.ARC_ENV === 'production' ? 'production' : 'staging'
   return `${process.env.ARC_APP_NAME}-${env}-${name}`
 }

@@ -1,4 +1,3 @@
-let oldPublish = require('./publish-old')
 let subscribe = require('./subscribe')
 let publishFactory = require('./publish')
 
@@ -16,14 +15,7 @@ module.exports = function queueFactory (arc) {
      * @param {Function} callback - a node style errback (optional)
      * @returns {Promise} - returned if no callback is supplied
      */
-    publish (params, callback) {
-      if (process.env.ARC_CLOUDFORMATION) {
-        return publish(params, callback)
-      }
-      else {
-        return oldPublish(params, callback)
-      }
-    },
+    publish,
 
     /**
      * arc.queues.subscribe

@@ -2,8 +2,8 @@
 let { join } = require('path')
 let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
-let arc = require(sut)
 let test = require('tape')
+let arc
 
 let reqs = require('@architect/req-res-fixtures').http.req
 
@@ -58,10 +58,13 @@ function check ({ req, request, t }) {
 
 test('Set up env', t => {
   t.plan(2)
+  // Set env var to keep from stalling on db reads in CI
+  process.env.ARC_ENV = 'testing'
+  process.env.SESSION_TABLE_NAME = 'jwe'
+  // eslint-disable-next-line
+  arc = require(sut)
   t.ok(arc.http.async, 'Loaded HTTP async')
   t.ok(arc.http.middleware, 'Loaded HTTP middleware alias')
-  // Set env var to keep from stalling on db reads in CI
-  process.env.SESSION_TABLE_NAME = 'jwe'
 })
 
 test('Architect v7 (HTTP): get /', async t => {
@@ -502,7 +505,7 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t 
 
 test('Teardown', t => {
   t.plan(1)
-  // Unset env var for future testing (ostensibly)
+  delete process.env.ARC_ENV
   delete process.env.SESSION_TABLE_NAME
   t.pass('Done')
 })

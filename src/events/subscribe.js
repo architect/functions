@@ -7,18 +7,19 @@ let fallback = {
 }
 
 /**
- * // Example usage:
+ * Example usage:
  *
- * var arc = require('@architect/functions')
- *
+ * ```
+ * let arc = require('@architect/functions')
  * function signup(record, callback) {
  *   console.log(record)
  *   callback()
  * }
- *
  * exports.handler = arc.events.subscribe(signup)
+ * ```
  */
 module.exports = function _subscribe (fn) {
+  // Async interface
   if (fn.constructor.name === 'AsyncFunction') {
     return async function lambda (event) {
       event = event && Object.keys(event).length ? event : fallback
@@ -35,14 +36,14 @@ module.exports = function _subscribe (fn) {
     }
   }
   else {
-    // callback interface
+    // Callback interface
     return function _lambdaSignature (event, context, callback) {
       event = event && Object.keys(event).length ? event : fallback
       // sns triggers send batches of records
       // so we're going to create a handler for each one
       // and execute them in parallel
       parallel(event.Records.map(function _iterator (record) {
-        // for each record we construct a handler function
+        // Construct a handler function for each record
         return function _actualHandler (callback) {
           try {
             fn(JSON.parse(record.Sns.Message), callback)

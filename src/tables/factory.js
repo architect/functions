@@ -1,5 +1,4 @@
 let dynamo = require('./dynamo')
-let promisify = require('./promisify-object')
 let parallel = require('run-parallel')
 
 /**
@@ -7,77 +6,100 @@ let parallel = require('run-parallel')
  */
 module.exports = function reflectFactory (tables, callback) {
   let { db, doc } = dynamo
-  parallel({ db, doc }, function done (err, { db, doc }) {
-    if (err) throw err
-    else {
+  let local = process.env.ARC_ENV === 'testing'
 
-      let data = Object.keys(tables).reduce((client, tablename) => {
-        client[tablename] = factory(tables[tablename])
+  parallel({ db, doc }, function done (err, { db, doc }) {
+    if (err) return callback(err)
+
+    let data = Object.keys(tables)
+      .filter(name => {
+        if (local && !name.includes('-production-')) return name
+        return name
+      })
+      .reduce((client, fullName) => {
+        let name = local ? fullName.replace(/.+-staging-/, '') : fullName
+        client[name] = factory(tables[name])
         return client
       }, {})
 
-      Object.defineProperty(data, '_db', {
-        enumerable: false,
-        value: db
+    let enumerable = false
+    Object.defineProperty(data, '_db',  { enumerable, value: db })
+    Object.defineProperty(data, '_doc', { enumerable, value: doc })
+
+    // async jic for later
+    // eslint-disable-next-line
+    data.reflect = async () => tables
+
+    let _name = name => tables[name]
+    data.name = _name
+    data._name = _name
+
+    function factory (TableName) {
+      return promisify({
+        delete (key, callback) {
+          let params = {}
+          params.TableName = TableName
+          params.Key = key
+          doc.delete(params, callback)
+        },
+        get (key, callback) {
+          let params = {}
+          params.TableName = TableName
+          params.Key = key
+          doc.get(params, function _get (err, result) {
+            if (err) callback(err)
+            else callback(null, result.Item)
+          })
+        },
+        put (item, callback) {
+          let params = {}
+          params.TableName = TableName
+          params.Item = item
+          doc.put(params, function _put (err) {
+            if (err) callback(err)
+            else callback(null, item)
+          })
+        },
+        query (params, callback) {
+          params.TableName = TableName
+          doc.query(params, callback)
+        },
+        scan (params = {}, callback) {
+          params.TableName = TableName
+          doc.scan(params, callback)
+        },
+        update (params, callback) {
+          params.TableName = TableName
+          doc.update(params, callback)
+        }
       })
-
-      Object.defineProperty(data, '_doc', {
-        enumerable: false,
-        value: doc
-      })
-
-      // async jic for later
-      // eslint-disable-next-line
-      data.reflect = async function reflect () {
-        return tables
-      }
-
-      let _name = name => tables[name]
-      data.name = _name
-      data._name = _name
-
-      function factory (TableName) {
-        return promisify({
-          delete (key, callback) {
-            let params = {}
-            params.TableName = TableName
-            params.Key = key
-            doc.delete(params, callback)
-          },
-          get (key, callback) {
-            let params = {}
-            params.TableName = TableName
-            params.Key = key
-            doc.get(params, function _get (err, result) {
-              if (err) callback(err)
-              else callback(null, result.Item)
-            })
-          },
-          put (item, callback) {
-            let params = {}
-            params.TableName = TableName
-            params.Item = item
-            doc.put(params, function _put (err) {
-              if (err) callback(err)
-              else callback(null, item)
-            })
-          },
-          query (params, callback) {
-            params.TableName = TableName
-            doc.query(params, callback)
-          },
-          scan (params = {}, callback) {
-            params.TableName = TableName
-            doc.scan(params, callback)
-          },
-          update (params, callback) {
-            params.TableName = TableName
-            doc.update(params, callback)
-          }
-        })
-      }
-
-      callback(null, data)
     }
+
+    callback(null, data)
   })
+}
+
+// accepts an object and promisifies all keys
+function promisify (obj) {
+  let copy = {}
+  Object.keys(obj).forEach(k => {
+    copy[k] = promised(obj[k])
+  })
+  return copy
+}
+
+// Accepts an errback style fn and returns a promisified fn
+function promised (fn) {
+  return function _promisified (params, callback) {
+    if (!callback) {
+      return new Promise(function (res, rej) {
+        fn(params, function (err, result) {
+          err ? rej(err) : res(result)
+        })
+      })
+    }
+    else {
+      fn(params, callback)
+    }
+  }
 }

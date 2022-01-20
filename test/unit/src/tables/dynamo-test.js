@@ -1,9 +1,9 @@
 let test = require('tape')
 let file = '../../../../src/tables/dynamo'
 let dynamo
-let env = process.env.NODE_ENV
 
 function reset (t) {
+  delete process.env.ARC_ENV
   delete process.env.ARC_TABLES_PORT
   delete process.env.AWS_REGION
   delete process.env.SESSION_TABLE_NAME
@@ -19,7 +19,8 @@ function reset (t) {
 
 test('Set up env', t => {
   t.plan(5)
-  process.env.NODE_ENV = 'testing'
+  process.env.ARC_ENV = 'testing'
+  process.env.ARC_TABLES_PORT = 5555
 
   // eslint-disable-next-line
   dynamo = require(file)
@@ -55,8 +56,10 @@ test('Local port + region configuration', t => {
   /**
    * Defaults
    */
+  process.env.ARC_ENV = 'testing'
+  process.env.ARC_TABLES_PORT = 5555
   let localhost = 'localhost'
-  let defaultPort = 5000
+  let defaultPort = 5555
   let defaultRegion = 'us-west-2'
   let host = `${localhost}:${defaultPort}`
 
@@ -110,8 +113,9 @@ test('Local port + region configuration', t => {
   /**
    * Custom
    */
-  let customPort = 5555
+  let customPort = 5666
   let customRegion = 'us-east-1'
+  process.env.ARC_ENV = 'testing'
   process.env.ARC_TABLES_PORT = customPort
   process.env.AWS_REGION = customRegion
   host = `${localhost}:${customPort}`
@@ -168,7 +172,8 @@ test('Live AWS infra config', t => {
   t.plan(11)
 
   // Defaults
-  process.env.NODE_ENV = 'testing'
+  process.env.ARC_ENV = 'testing'
+  process.env.ARC_TABLES_PORT = 5555
 
   // eslint-disable-next-line
   dynamo = require(file)
@@ -198,7 +203,7 @@ test('Live AWS infra config', t => {
   reset(t)
 
   // Defaults
-  process.env.NODE_ENV = 'staging'
+  process.env.ARC_ENV = 'staging'
   process.env.AWS_REGION = 'us-west-1'
 
   // eslint-disable-next-line
@@ -237,7 +242,6 @@ test('Live AWS infra config', t => {
 
 test('Tear down env', t => {
   t.plan(1)
-  process.env.NODE_ENV = env
   reset(t)
   t.pass('Tore down env')
 })

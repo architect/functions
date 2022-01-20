@@ -1,23 +1,23 @@
 let waterfall = require('run-waterfall')
 let old = require('./old')
 let factory = require('./factory')
-let sandbox = require('./sandbox')
 let dynamo = require('./dynamo')
 
 // cheap client cache
 let client = false
 
 /**
- * // example usage:
+ * Example usage:
+ * ```
  * let arc = require('architect/functions')
- *
  * exports.handler = async function http(req) {
  *  let data = await arc.tables()
- *  await data.tacos.put({taco: 'pollo'})
- *  return {statusCode: 200}
+ *  await data.tacos.put({ taco: 'aguacate' })
+ *  return { statusCode: 200 }
  * }
+ * ```
  */
-function tables (arc) {
+module.exports = function tables (arc) {
   function api (callback) {
     let promise
     if (!callback) {
@@ -28,22 +28,18 @@ function tables (arc) {
         }
       })
     }
-    /**
-     * Read Architect manifest if local / sandbox, otherwise use service reflection
-     */
-    let runningLocally = process.env.NODE_ENV === 'testing'
-    if (runningLocally) {
-      sandbox(dynamo, callback)
-    }
-    else if (client) {
+
+    if (client) {
       callback(null, client)
     }
     else {
       waterfall([
         function (callback) {
-          arc.services().then(function (serviceMap) {
-            callback(null, serviceMap.tables)
-          }).catch(callback)
+          arc.services()
+            .then(serviceMap => {
+              callback(null, serviceMap.tables)
+            })
+            .catch(callback)
         },
         factory,
         function (created, callback) {
@@ -54,20 +50,20 @@ function tables (arc) {
     }
     return promise
   }
+
   // Export directly for fast use
-  api.doc = dynamo.direct.doc
-  api.db = dynamo.direct.db
+  api.doc =     dynamo.direct.doc
+  api.db =      dynamo.direct.db
 
   // Legacy compat methods
-  api.insert = old.insert
-  api.modify = old.modify
-  api.update = old.update
-  api.remove = old.remove
+  api.insert =  old.insert
+  api.modify =  old.modify
+  api.update =  old.update
+  api.remove =  old.remove
   api.destroy = old.destroy
-  api.all = old.all
-  api.save = old.save
-  api.change = old.change
+  api.all =     old.all
+  api.save =    old.save
+  api.change =  old.change
+
   return api
 }
-
-module.exports = tables
