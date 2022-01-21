@@ -28,7 +28,7 @@ test('Set up env', t => {
   t.plan(2)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_ENV = 'testing'
-  process.env.SESSION_TABLE_NAME = 'jwe'
+  process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   arc = require(sut)
   t.ok(arc.http.async, 'Loaded HTTP async')
@@ -265,15 +265,11 @@ test('Architect v5 (REST) + Functions', async t => {
  * - And also not a proxy request: `!req.resource || req.resource && req.resource !== '/{proxy+}'`
  */
 test('Architect v5 (REST) + Functions do not send res.type', async t => {
-  t.plan(6)
+  t.plan(4)
   let request = requests.arc6.getIndex
-  process.env.ARC_HTTP = 'aws'
-  t.equal(process.env.ARC_HTTP, 'aws', 'Set: ARC_HTTP = aws')
-  t.notOk(process.env.ARC_CLOUDFORMATION, 'ARC_CLOUDFORMATION not set')
   t.ok(request.resource, 'Request a Lambda proxy request')
 
   let res = await run(legacyResponses.arc5.body, request)
-  delete process.env.ARC_HTTP
   t.equal(legacyResponses.arc5.body.body, res.body, match('res.body', res.body))
   t.equal(res.statusCode, 200, 'Responded with 200')
   t.notOk(res.type, 'Responded without res.type')  // This used to be t.ok, but we removed res.type in v4
@@ -306,7 +302,7 @@ test('Architect v4 + Functions statically-bound content type responses (HTTP)', 
 
 test('Architect v4 + Functions statically-bound content type responses (REST)', async t => {
   t.plan(18)
-  process.env.SESSION_TABLE_NAME = 'jwe'
+  process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   let request = requests.arc6.getIndex
   let r = legacyResponses.arc4
   let go = async (response, data, contentType) => {
@@ -458,6 +454,6 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) + legacy response fixtures were t
 test('Teardown', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.SESSION_TABLE_NAME
+  delete process.env.ARC_SESSION_TABLE_NAME
   t.pass('Done')
 })

@@ -9,12 +9,19 @@ let https = require('https')
 function getDynamo (type, callback) {
   if (!type) throw ReferenceError('Must supply Dynamo service interface type')
 
-  // We might normally like to throw if `local && !port`, but this is also a direct DynamoDB interface in global scope, so it instantiates even if the project doesn't have tables.
-  let { ARC_ENV: env, ARC_LOCAL, ARC_TABLES_PORT: port } = process.env
-  let local = env === 'testing' || ARC_LOCAL
+  // We might normally like to throw if `local && !port`, but this is also a direct DynamoDB interface in global scope
+  // Thus, this path instantiates even if the project doesn't have tables
+  let {
+    ARC_ENV,
+    ARC_LOCAL,
+    ARC_SESSION_TABLE_NAME, SESSION_TABLE_NAME,
+    ARC_TABLES_PORT: port,
+    AWS_REGION,
+  } = process.env
+  let local = ARC_ENV === 'testing' || ARC_LOCAL
   let localConfig = {
     endpoint: new aws.Endpoint(`http://localhost:${port}`),
-    region: process.env.AWS_REGION || 'us-west-2' // Do not assume region is set!
+    region: AWS_REGION || 'us-west-2' // Do not assume region is set!
   }
   let DB = aws.DynamoDB
   let Doc = aws.DynamoDB.DocumentClient
@@ -53,7 +60,7 @@ function getDynamo (type, callback) {
 
   if (type === 'session') {
     // if SESSION_TABLE_NAME isn't defined we mock the client and just pass session thru
-    let passthru = !process.env.SESSION_TABLE_NAME
+    let passthru = !ARC_SESSION_TABLE_NAME && !SESSION_TABLE_NAME
     let mock = {
       get (params, callback) {
         callback()

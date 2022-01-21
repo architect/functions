@@ -19,6 +19,11 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
   - Before this change, `@architect/functions` had 19 dependencies and weighed in at ~950KB; after it has 12 dependencies (down 7), and weighs about 475KB, about 50% reduction!
 - Breaking change: due to no actual usage, this package is no longer publishing to the GitHub Package registry, only npm
 - Added checks to ensure there are no mysterious failures when required env vars are not present
+- Preference for `ARC_*` namespaced env vars:
+  - `ARC_SESSION_TABLE_NAME` > `SESSION_TABLE_NAME`
+  - `ARC_SESSION_TTL` > `SESSION_TTL`
+  - `ARC_SESSION_DOMAIN` > `SESSION_DOMAIN`
+  - All non-namespaced names will continue to be supported until at least Architect 11; we suggest changing them over to the namespaced equivalents as soon as is convenient
 
 ---
 

@@ -60,7 +60,7 @@ test('Set up env', t => {
   t.plan(2)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_ENV = 'testing'
-  process.env.SESSION_TABLE_NAME = 'jwe'
+  process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   arc = require(sut)
   t.ok(arc.http.async, 'Loaded HTTP async')
@@ -506,6 +506,6 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t 
 test('Teardown', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.SESSION_TABLE_NAME
+  delete process.env.ARC_SESSION_TABLE_NAME
   t.pass('Done')
 })

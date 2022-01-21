@@ -23,7 +23,7 @@ let mock = join(__dirname, '..', 'mock', 'project')
 
 test('Set up env', async t => {
   t.plan(1)
-  process.env.SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
+  process.env.ARC_SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
   let result = await sandbox.start({ quiet: true, cwd: mock })
   t.equal(result, 'Sandbox successfully started', result)
 })
@@ -114,7 +114,7 @@ test('Do session stuff (arc.http.async)', async t => {
 
 test('Teardown', async t => {
   t.plan(1)
-  delete process.env.SESSION_TABLE_NAME
+  delete process.env.ARC_SESSION_TABLE_NAME
   let result = await sandbox.end()
   t.equal(result, 'Sandbox successfully shut down', result)
 })

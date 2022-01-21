@@ -3,14 +3,20 @@ let { ApiGatewayManagementApi } = require('aws-sdk')
 let _api
 function instantiateAPI () {
   if (_api) return
-  let { ARC_ENV: env, ARC_INTERNAL_PORT: port, ARC_LOCAL, ARC_WSS_URL } = process.env
-  let local = env === 'testing' || ARC_LOCAL
+  let {
+    ARC_ENV,
+    ARC_INTERNAL_PORT: port,
+    ARC_LOCAL,
+    ARC_WSS_URL,
+    AWS_REGION,
+  } = process.env
+  let local = ARC_ENV === 'testing' || ARC_LOCAL
   if (local) {
     if (!port) throw ReferenceError('ARC_INTERNAL_PORT env var not found')
     _api = new ApiGatewayManagementApi({
       apiVersion: '2018-11-29',
       endpoint: `http://localhost:${port}/_arc/ws`,
-      region: process.env.AWS_REGION || 'us-west-2',
+      region: AWS_REGION || 'us-west-2',
     })
   }
   else {

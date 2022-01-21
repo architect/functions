@@ -50,6 +50,12 @@ function read (req, callback) {
  * creates a Set-Cookie header with token payload encrypted
  */
 function write (payload, callback) {
+  let {
+    ARC_ENV,
+    ARC_SESSION_DOMAIN, SESSION_DOMAIN,
+    ARC_SESSION_SAME_SITE,
+    ARC_SESSION_TTL, SESSION_TTL,
+  } = process.env
   let promise
   if (!callback) {
     promise = new Promise(function ugh (res, rej) {
@@ -60,8 +66,8 @@ function write (payload, callback) {
   }
   let key = '_idx'
   let val = jwe.create(payload)
-  let maxAge = process.env.SESSION_TTL || 7.884e+8
-  let sameSite = process.env.ARC_SESSION_SAME_SITE || 'lax'
+  let maxAge = ARC_SESSION_TTL || SESSION_TTL || 7.884e+8
+  let sameSite = ARC_SESSION_SAME_SITE || 'lax'
   let options = {
     maxAge,
     expires: new Date(Date.now() + maxAge * 1000),
@@ -70,10 +76,10 @@ function write (payload, callback) {
     path: '/',
     sameSite,
   }
-  if (process.env.SESSION_DOMAIN) {
-    options.domain = process.env.SESSION_DOMAIN
+  if (ARC_SESSION_DOMAIN || SESSION_DOMAIN) {
+    options.domain = ARC_SESSION_DOMAIN || SESSION_DOMAIN
   }
-  if (process.env.ARC_ENV === 'testing') {
+  if (ARC_ENV === 'testing') {
     delete options.secure
   }
   callback(null, cookie.serialize(key, val, options))

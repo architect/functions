@@ -12,12 +12,13 @@ let { join } = require('path')
  * @returns {string} path - the resolved asset path (eg. /_static/index-xxx.js)
  */
 module.exports = function _static (asset, options = {}) {
+  let { ARC_ENV, ARC_LOCAL } = process.env
   let key = asset[0] === '/' ? asset.substring(1) : asset
   let isIndex = asset === '/'
   let manifest = join(process.cwd(), 'node_modules', '@architect', 'shared', 'static.json')
   let exists = existsSync(manifest)
-  let local = process.env.ARC_ENV === 'testing' || process.env.ARC_LOCAL
-  let stagePath = options.stagePath && !local ? '/' + process.env.ARC_ENV : ''
+  let local = ARC_ENV === 'testing' || ARC_LOCAL
+  let stagePath = options.stagePath && !local ? '/' + ARC_ENV : ''
   let path = `${stagePath}/_static`
   if (!local && exists && !isIndex) {
     let read = p => readFileSync(p).toString()

@@ -25,7 +25,7 @@ test('Set up env', t => {
   t.plan(1)
   // Init env var to keep from stalling on db reads in CI
   process.env.ARC_ENV = 'testing'
-  process.env.SESSION_TABLE_NAME = 'jwe'
+  process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   let arc = require(sut)
   http = arc.http
@@ -304,11 +304,8 @@ test('Architect v5 (REST) + Functions', t => {
  * - And also not a proxy request: `!req.resource || req.resource && req.resource !== '/{proxy+}'`
  */
 test('Architect v5 (REST) + Functions do not send res.type', t => {
-  t.plan(7)
+  t.plan(5)
   let request = requests.arc6.getIndex
-  process.env.ARC_HTTP = 'aws'
-  t.equal(process.env.ARC_HTTP, 'aws', 'Set: ARC_HTTP = aws')
-  t.notOk(process.env.ARC_CLOUDFORMATION, 'ARC_CLOUDFORMATION not set')
   t.ok(request.resource, 'Request a Lambda proxy request')
 
   let run = (response, callback) => {
@@ -318,7 +315,6 @@ test('Architect v5 (REST) + Functions do not send res.type', t => {
     })
   }
   run(legacyResponses.arc5.body, (err, res) => {
-    delete process.env.ARC_HTTP
     t.notOk(err, 'No error')
     t.equal(str(legacyResponses.arc5.body.body), str(res.body), match('res.body', res.body))
     t.equal(res.statusCode, 200, 'Responded with 200')
@@ -491,6 +487,6 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) + legacy response fixtures were t
 test('Teardown', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.SESSION_TABLE_NAME
+  delete process.env.ARC_SESSION_TABLE_NAME
   t.pass('Done')
 })

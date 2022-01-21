@@ -17,8 +17,8 @@ test('http.session apis exist', t => {
 
 test('jwe read and write implementations', async t => {
   t.plan(5)
-  process.env.SESSION_TABLE_NAME = 'jwe'
-  process.env.SESSION_TTL = 14400
+  process.env.ARC_SESSION_TABLE_NAME = 'jwe'
+  process.env.ARC_SESSION_TTL = 14400
   let fakerequest = {}
   let session = await read(fakerequest)
   t.ok(session, 'read session cookie')
@@ -33,13 +33,13 @@ test('jwe read and write implementations', async t => {
   // Lambda payload version 2
   let inception2 = await read({ cookies: [ cookie ] })
   t.equal(inception2.one, 1, 'read back again from payload version 2')
-  t.match(cookie, new RegExp(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
+  t.match(cookie, new RegExp(`Max-Age=${process.env.ARC_SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
 test('jwe SameSite is configurable', async t => {
   t.plan(2)
-  process.env.SESSION_TABLE_NAME = 'jwe'
-  process.env.SESSION_TTL = 14400
+  process.env.ARC_SESSION_TABLE_NAME = 'jwe'
+  process.env.ARC_SESSION_TTL = 14400
   let session = {}
   // default value:
   delete process.env.ARC_SESSION_SAME_SITE
@@ -62,8 +62,8 @@ test('set up sandbox for ddb testing', t => {
 
 test('ddb read and write implementations', async t => {
   t.plan(5)
-  process.env.SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
-  process.env.SESSION_TTL = 14400
+  process.env.ARC_SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
+  process.env.ARC_SESSION_TTL = 14400
   let fakerequest = {}
   let session = await read(fakerequest)
   t.ok(session, 'read session cookie')
@@ -78,15 +78,15 @@ test('ddb read and write implementations', async t => {
   // Lambda payload version 2
   let inception2 = await read({ cookies: [ cookie ] })
   t.equals(inception2.one, 1, 'read back again from payload version 2')
-  t.match(cookie, new RegExp(`Max-Age=${process.env.SESSION_TTL}`), 'cookie max-age is set correctly')
+  t.match(cookie, new RegExp(`Max-Age=${process.env.ARC_SESSION_TTL}`), 'cookie max-age is set correctly')
 })
 
 test('shutdown sandbox', t => {
   t.plan(1)
   delete process.env.ARC_ENV
   delete process.env.ARC_TABLES_PORT
-  delete process.env.SESSION_TABLE_NAME
-  delete process.env.SESSION_TTL
+  delete process.env.ARC_SESSION_TABLE_NAME
+  delete process.env.ARC_SESSION_TTL
   sandbox.end(err => {
     if (err) t.fail(err)
     else t.pass('Sandbox started')

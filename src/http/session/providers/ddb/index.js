@@ -12,6 +12,11 @@ module.exports = { read, write }
  * reads request for session cookie and looks it up in dynamo
  */
 function read (request, callback) {
+  let {
+    ARC_APP_NAME,
+    ARC_APP_SECRET,
+    ARC_SESSION_TABLE_NAME, SESSION_TABLE_NAME,
+  } = process.env
 
   // be async/await friendly
   let promise
@@ -24,8 +29,8 @@ function read (request, callback) {
   }
 
   // read dynamo session table
-  let name = process.env.SESSION_TABLE_NAME || tableLogicalId('arc-sessions')
-  let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
+  let name = ARC_SESSION_TABLE_NAME || SESSION_TABLE_NAME || tableLogicalId('arc-sessions')
+  let secret = ARC_APP_SECRET || ARC_APP_NAME || 'fallback'
   // TODO: uppercase 'Cookie' is not the header name on AWS Lambda; it's
   // lowercase 'cookie' on lambda...
   let rawCookie = request.headers && (request.headers.cookie || request.headers.Cookie)
@@ -52,6 +57,15 @@ function read (request, callback) {
  * - _secret
  */
 function write (params, callback) {
+  let {
+    ARC_APP_NAME,
+    ARC_APP_SECRET,
+    ARC_ENV,
+    ARC_SESSION_TABLE_NAME, SESSION_TABLE_NAME,
+    ARC_SESSION_TTL, SESSION_TTL,
+    ARC_SESSION_DOMAIN, SESSION_DOMAIN,
+  } = process.env
+
   // be async/await friendly
   let promise
   if (!callback) {
@@ -64,15 +78,15 @@ function write (params, callback) {
 
   // read dynamo session table
   // TODO / FIXME I think this no longer works?
-  let name = process.env.SESSION_TABLE_NAME || tableLogicalId('arc-sessions')
-  let secret = process.env.ARC_APP_SECRET || process.env.ARC_APP_NAME || 'fallback'
+  let name = ARC_SESSION_TABLE_NAME || SESSION_TABLE_NAME || tableLogicalId('arc-sessions')
+  let secret = ARC_APP_SECRET || ARC_APP_NAME || 'fallback'
 
   update(name, params, function _update (err) {
     if (err) {
       callback(err)
     }
     else {
-      let maxAge = process.env.SESSION_TTL || 7.884e+8
+      let maxAge = ARC_SESSION_TTL || SESSION_TTL || 7.884e+8
       let options = {
         maxAge,
         expires: new Date(Date.now() + maxAge * 1000),
@@ -81,10 +95,10 @@ function write (params, callback) {
         path: '/',
         sameSite: 'lax',
       }
-      if (process.env.SESSION_DOMAIN) {
-        options.domain = process.env.SESSION_DOMAIN
+      if (ARC_SESSION_DOMAIN || SESSION_DOMAIN) {
+        options.domain = ARC_SESSION_DOMAIN || SESSION_DOMAIN
       }
-      if (process.env.ARC_ENV === 'testing') {
+      if (ARC_ENV === 'testing') {
         delete options.secure
       }
       let result = cookie.serialize('_idx', sign(params._idx, secret), options)

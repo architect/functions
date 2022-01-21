@@ -6,13 +6,13 @@ function reset (t) {
   delete process.env.ARC_ENV
   delete process.env.ARC_TABLES_PORT
   delete process.env.AWS_REGION
-  delete process.env.SESSION_TABLE_NAME
+  delete process.env.ARC_SESSION_TABLE_NAME
   delete require.cache[require.resolve(file)]
   dynamo = undefined
 
   if (process.env.ARC_TABLES_PORT) t.fail('Did not unset ARC_TABLES_PORT')
   if (process.env.AWS_REGION) t.fail('Did not unset AWS_REGION')
-  if (process.env.SESSION_TABLE_NAME) t.fail('Did not unset SESSION_TABLE_NAME')
+  if (process.env.ARC_SESSION_TABLE_NAME) t.fail('Did not unset ARC_SESSION_TABLE_NAME')
   if (require.cache[require.resolve(file)]) t.fail('Did not reset require cache')
   if (dynamo) t.fail('Did not unset module')
 }
@@ -231,7 +231,7 @@ test('Live AWS infra config', t => {
     t.ok(typeof mock.get === 'function' && typeof mock.put === 'function', 'Got back sessions get/put mock')
   })
   // Session x callback (session table configured)
-  process.env.SESSION_TABLE_NAME = 'foo'
+  process.env.ARC_SESSION_TABLE_NAME = 'foo'
   dynamo.session((err, doc) => {
     if (err) t.fail(err)
     t.ok(doc.service.config.httpOptions.agent.options, 'Session doc HTTP agent options set')

@@ -1,9 +1,9 @@
 /**
  * Ensure env is one of: 'testing', 'staging', or 'production'
  */
-let env = process.env.ARC_ENV
+let { ARC_ENV } = process.env
 let validEnvs = [ 'testing', 'staging', 'production' ]
-if (!validEnvs.includes(env)) {
+if (!validEnvs.includes(ARC_ENV)) {
   throw ReferenceError(`ARC_ENV env var is required for use with @architect/functions`)
 }
 
