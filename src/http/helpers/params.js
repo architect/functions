@@ -3,6 +3,9 @@ let unNulled = [ 'body', 'pathParameters', 'queryStringParameters', 'multiValueQ
 let pathParams = /\{\w+\}/g
 
 module.exports = function interpolateParams (req) {
+  // Make the raw body accessible, handy for use with external libraries
+  if (req.body) req.rawBody = req.body
+
   // Handle HTTP API v2.0 payload scenarios, which omit params instead of passing them as null
   if (req.version && req.version === '2.0') {
     let { requestContext: context } = req

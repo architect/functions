@@ -15,6 +15,8 @@ let match = (copy, item) => `${copy} matches: ${item}`
 
 let responsesTested = []
 
+let copy = obj => JSON.parse(JSON.stringify(obj))
+
 let run = (response, request, callback) => {
   responsesTested.push(response)
   let handler = http((req, res) => res(response))
@@ -35,95 +37,95 @@ test('Set up env', t => {
 test('Architect v7 (HTTP)', t => {
   t.plan(63)
   let request = requests.arc7.getIndex
-  run(responses.arc7.noReturn, request, (err, res) => {
+  run(responses.arc7.noReturn, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.emptyReturn, request, (err, res) => {
+  run(responses.arc7.emptyReturn, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.string, request, (err, res) => {
+  run(responses.arc7.string, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc7.string), res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.object, request, (err, res) => {
+  run(responses.arc7.object, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc7.object), res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.array, request, (err, res) => {
+  run(responses.arc7.array, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc7.array), res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.buffer, request, (err, res) => {
+  run(responses.arc7.buffer, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc7.buffer), res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.number, request, (err, res) => {
+  run(responses.arc7.number, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(responses.arc7.number), res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.bodyOnly, request, (err, res) => {
+  run(responses.arc7.bodyOnly, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.bodyOnly.body, res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.bodyWithStatus, request, (err, res) => {
+  run(responses.arc7.bodyWithStatus, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.bodyWithStatus.body, res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.bodyWithStatusAndContentType, request, (err, res) => {
+  run(responses.arc7.bodyWithStatusAndContentType, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.bodyWithStatusAndContentType.body, res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.encodedWithBinaryType, request, (err, res) => {
+  run(responses.arc7.encodedWithBinaryType, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.encodedWithBinaryType.body, res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/pdf/, 'Unspecified content type defaults to JSON')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.cookies, request, (err, res) => {
+  run(responses.arc7.cookies, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.cookies.body, res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(str(responses.arc7.cookies.cookies), str(res.cookies), match('res.cookies', res.cookies))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.secureCookies, request, (err, res) => {
+  run(responses.arc7.secureCookies, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.secureCookies.body, res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(str(responses.arc7.secureCookies.cookies), str(res.cookies), match('res.cookies', res.cookies))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.secureCookieHeader, request, (err, res) => {
+  run(responses.arc7.secureCookieHeader, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.secureCookieHeader.body, res.body, match('res.body', res.body))
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(responses.arc7.secureCookieHeader.headers['set-cookie'], res.headers['set-cookie'], match(`res.headers['set-cookie']`, res.headers['set-cookie']))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc7.invalid, request, (err, res) => {
+  run(responses.arc7.invalid, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
     t.equal(responses.arc7.invalid.statusCode, res.statusCode, 'Responded with invalid status code')
@@ -134,54 +136,54 @@ test('Architect v6 (REST): dependency-free responses', t => {
   t.plan(44)
   let request = requests.arc6.getIndex
 
-  run(responses.arc6.body, request, (err, res) => {
+  run(responses.arc6.body, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.body.body, res.body, match('res.body', res.body))
     t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.isBase64Encoded, request, (err, res) => {
+  run(responses.arc6.isBase64Encoded, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.isBase64Encoded.body, res.body, match('res.body', res.body))
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.buffer, request, (err, res) => {
+  run(responses.arc6.buffer, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Received string (and not buffer) back')
     t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.encodedWithBinaryTypeBad, request, (err, res) => {
+  run(responses.arc6.encodedWithBinaryTypeBad, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
     t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param set automatically')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.encodedWithBinaryTypeGood, request, (err, res) => {
+  run(responses.arc6.encodedWithBinaryTypeGood, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.ok(typeof res.body === 'string', 'Body is (likely) base 64 encoded')
     t.equal(b64dec(res.body), 'hi there\n', 'Body properly auto-encoded')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.secureCookieHeader, request, (err, res) => {
+  run(responses.arc6.secureCookieHeader, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.secureCookieHeader.body, res.body, match('res.body', res.body))
     t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
     t.equal(responses.arc6.secureCookieHeader.headers['set-cookie'], res.headers['set-cookie'], match(`res.headers['set-cookie']`, res.headers['set-cookie']))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.secureCookieMultiValueHeader, request, (err, res) => {
+  run(responses.arc6.secureCookieMultiValueHeader, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc6.secureCookieMultiValueHeader.body, res.body, match('res.body', res.body))
     t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
     t.equal(str(responses.arc6.secureCookieMultiValueHeader.multiValueHeaders), str(res.multiValueHeaders), match(`res.multiValueHeaders`, str(res.multiValueHeaders)))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.multiValueHeaders, request, (err, res) => {
+  run(responses.arc6.multiValueHeaders, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
     t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
@@ -190,7 +192,7 @@ test('Architect v6 (REST): dependency-free responses', t => {
     t.equal(str(responses.arc6.multiValueHeaders.multiValueHeaders), str(res.multiValueHeaders), match(`res.multiValueHeaders`, str(res.multiValueHeaders)))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(responses.arc6.invalidMultiValueHeaders, request, (err, res) => {
+  run(responses.arc6.invalidMultiValueHeaders, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
     t.notOk(res.isBase64Encoded, 'isBase64Encoded param not passed through')
@@ -204,45 +206,45 @@ test('Architect v5 (REST): dependency-free responses', t => {
   t.plan(29)
   let request = requests.arc7.getIndex
 
-  run(legacyResponses.arc5.type, request, (err, res) => {
+  run(legacyResponses.arc5.type, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc5.type.type, res.headers['content-type'], `type matches res.headers['content-type']: ${res.headers['content-type']}`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.cookie, request, (err, res) => {
+  run(legacyResponses.arc5.cookie, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['set-cookie'], legacyResponses.arc5.cookie.cookie, `Cookie set: ${legacyResponses.arc5.cookie.cookie}...`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.secureCookie, request, (err, res) => {
+  run(legacyResponses.arc5.secureCookie, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['set-cookie'], legacyResponses.arc5.secureCookie.cookie, `Cookie set: ${legacyResponses.arc5.secureCookie.cookie}...`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.secureCookieHeader, request, (err, res) => {
+  run(legacyResponses.arc5.secureCookieHeader, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc5.secureCookieHeader.headers['set-cookie'], res.headers['set-cookie'], match(`res.headers['set-cookie']`, res.headers['set-cookie']))
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.cors, request, (err, res) => {
+  run(legacyResponses.arc5.cors, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['access-control-allow-origin'], '*', `CORS boolean set res.headers['access-control-allow-origin'] === '*'`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.isBase64Encoded, request, (err, res) => {
+  run(legacyResponses.arc5.isBase64Encoded, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc5.isBase64Encoded.body, res.body, match('res.body', res.body))
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.isBase64EncodedType, request, (err, res) => {
+  run(legacyResponses.arc5.isBase64EncodedType, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc5.isBase64EncodedType.body, res.body, match('res.body', res.body))
     t.equal(legacyResponses.arc5.isBase64EncodedType.type, res.headers['content-type'], `type matches res.headers['content-type']: ${res.headers['content-type']}`)
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.isBase64EncodedUnknownCT, request, (err, res) => {
+  run(legacyResponses.arc5.isBase64EncodedUnknownCT, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc5.isBase64EncodedUnknownCT.body, res.body, match('res.body', res.body))
     t.equal(legacyResponses.arc5.isBase64EncodedUnknownCT.headers['content-type'], res.headers['content-type'], match(`res.headers['content-type']`, res.headers['content-type']))
@@ -256,41 +258,41 @@ test('Architect v5 (REST) + Functions', t => {
   let request = requests.arc7.getIndex
   let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
 
-  run(legacyResponses.arc5.body, request, (err, res) => {
+  run(legacyResponses.arc5.body, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(str(legacyResponses.arc5.body.body), str(res.body), match('res.body', res.body))
     t.equal(res.statusCode, 200, 'Responded with 200')
     t.notOk(res.type, 'Responded with res.type set') // This used to be t.ok, but we removed res.type in v4
   })
-  run(legacyResponses.arc5.cacheControl, request, (err, res) => {
+  run(legacyResponses.arc5.cacheControl, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc5.cacheControl.cacheControl, res.headers['cache-control'], match(`res.headers['cache-control']`, str(res.headers['cache-control'])))
     if (legacyResponses.arc5.cacheControl.headers['cache-control'] && !res.headers['Cache-Control'])
       t.pass(`Headers normalized and de-duped: ${str(res.headers)}`)
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.noCacheControlHTML, request, (err, res) => {
+  run(legacyResponses.arc5.noCacheControlHTML, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['cache-control'], antiCache, 'Default anti-caching headers set for HTML response')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.noCacheControlJSON, request, (err, res) => {
+  run(legacyResponses.arc5.noCacheControlJSON, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['cache-control'], antiCache, 'Default anti-caching headers set for JSON response')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.noCacheControlJSONapi, request, (err, res) => {
+  run(legacyResponses.arc5.noCacheControlJSONapi, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.headers['cache-control'], antiCache, 'Default anti-caching headers set for JSON response')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.noCacheControlOther, request, (err, res) => {
+  run(legacyResponses.arc5.noCacheControlOther, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     let def = 'max-age=86400'
     t.equal(res.headers['cache-control'], def, 'Default caching headers set for non-HTML/JSON response')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
-  run(legacyResponses.arc5.defaultsToJson, request, (err, res) => {
+  run(legacyResponses.arc5.defaultsToJson, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.equal(res.statusCode, 200, 'Responded with 200')
@@ -310,7 +312,7 @@ test('Architect v5 (REST) + Functions do not send res.type', t => {
 
   let run = (response, callback) => {
     let handler = http((req, res) => res(response))
-    handler(request, {}, (err, res) => {
+    handler(copy(request), {}, (err, res) => {
       callback(err, res)
     })
   }
@@ -329,7 +331,7 @@ test('Architect v4 + Functions statically-bound content type responses (HTTP)', 
   let run = (response, data, contentType) => {
     let handler = http((req, res) => res(response))
     responsesTested.push(response)
-    handler(request, {}, (err, res) => {
+    handler(copy(request), {}, (err, res) => {
       t.notOk(err, 'No error')
       // Don't double-encode JSON
       if (res.headers['content-type'].includes('json')) {
@@ -357,7 +359,7 @@ test('Architect v4 + Functions statically-bound content type responses (REST)', 
   let run = (response, data, contentType) => {
     let handler = http((req, res) => res(response))
     responsesTested.push(response)
-    handler(request, {}, (err, res) => {
+    handler(copy(request), {}, (err, res) => {
       t.notOk(err, 'No error')
       // Don't double-encode JSON
       if (res.headers['content-type'].includes('json')) {
@@ -382,24 +384,24 @@ test('Architect <6 + Functions old school response params (HTTP)', t => {
   t.plan(11)
   let request = requests.arc7.getIndex
 
-  run(legacyResponses.arc.location, request, (err, res) => {
+  run(legacyResponses.arc.location, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
     t.equal(legacyResponses.arc.location.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
   })
-  run(legacyResponses.arc.status, request, (err, res) => {
+  run(legacyResponses.arc.status, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc.status.status, res.statusCode, match('code', res.statusCode))
   })
-  run(legacyResponses.arc.code, request, (err, res) => {
+  run(legacyResponses.arc.code, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc.code.code, res.statusCode, match('status', res.statusCode))
   })
-  run(legacyResponses.arc.statusCode, request, (err, res) => {
+  run(legacyResponses.arc.statusCode, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc.statusCode.statusCode, res.statusCode, match('statusCode', res.statusCode))
   })
-  run(legacyResponses.arc.session, request, (err, res) => {
+  run(legacyResponses.arc.session, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.match(res.headers['set-cookie'], /_idx=/, `Cookie set: ${res.headers['set-cookie'].substr(0, 75)}...`)
   })
@@ -409,24 +411,24 @@ test('Architect <6 + Functions old school response params (REST)', t => {
   t.plan(11)
   let request = requests.arc6.getIndex
 
-  run(legacyResponses.arc.location, request, (err, res) => {
+  run(legacyResponses.arc.location, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
     t.equal(legacyResponses.arc.location.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
   })
-  run(legacyResponses.arc.status, request, (err, res) => {
+  run(legacyResponses.arc.status, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc.status.status, res.statusCode, match('code', res.statusCode))
   })
-  run(legacyResponses.arc.code, request, (err, res) => {
+  run(legacyResponses.arc.code, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc.code.code, res.statusCode, match('status', res.statusCode))
   })
-  run(legacyResponses.arc.statusCode, request, (err, res) => {
+  run(legacyResponses.arc.statusCode, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(legacyResponses.arc.statusCode.statusCode, res.statusCode, match('statusCode', res.statusCode))
   })
-  run(legacyResponses.arc.session, request, (err, res) => {
+  run(legacyResponses.arc.session, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.match(res.headers['set-cookie'], /_idx=/, `Cookie set: ${res.headers['set-cookie'].substr(0, 75)}...`)
   })
@@ -437,7 +439,7 @@ test('Return an error (HTTP)', t => {
   let request = requests.arc7.getIndex
   let error = Error('something bad happened')
   let handler = http((req, res) => res(error))
-  handler(request, {}, (err, res) => {
+  handler(copy(request), {}, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 500, 'Error response, 500 returned')
     t.match(res.body, new RegExp(error.message), `Error response included error message: ${error.message}`)
@@ -449,7 +451,7 @@ test('Return an error (REST)', t => {
   let request = requests.arc6.getIndex
   let error = Error('something bad happened')
   let handler = http((req, res) => res(error))
-  handler(request, {}, (err, res) => {
+  handler(copy(request), {}, (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 500, 'Error response, 500 returned')
     t.match(res.body, new RegExp(error.message), `Error response included error message: ${error.message}`)

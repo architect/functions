@@ -8,7 +8,8 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ### Added
 
-- `@architect/functions` is faster and leaner than ever, now about 425KB (down from ~950KB). This means even faster cold starts.
+- `@architect/functions` is faster and leaner than ever, now about 425KB (down from ~950KB). This means even faster cold starts and overall performance!
+- Added `rawBody` property, handy for use with external libraries that may need access to the raw body contents for things like signing
 
 
 ### Changed
