@@ -5,8 +5,8 @@ let http = require('http')
  * @returns {object} {name: value}
  */
 module.exports = function lookup (callback) {
-  let { ARC_APP: app, ARC_ENV: env } = process.env
-  if (!app) return callback(ReferenceError('ARC_APP env var not found'))
+  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX } = process.env
+  if (!app) return callback(ReferenceError('ARC_APP_NAME env var not found'))
   let Path = '/' + toLogicalID(`${app}-${env}`)
   let Recursive = true
   let values = []
@@ -14,9 +14,9 @@ module.exports = function lookup (callback) {
   let config
 
   if (local) {
-    // if running in sandbox, sandbox has an SSM mock, use that
-    let port = process.env.ARC_INTERNAL_PORT
-    if (!port) return callback(ReferenceError('ARC_INTERNAL_PORT env var not found'))
+    let { ports } = JSON.parse(ARC_SANDBOX)
+    let port = ports._arc
+    if (!port) return callback(ReferenceError('Sandbox internal port not found'))
     let region = process.env.AWS_REGION || 'us-west-2'
     config = {
       endpoint: new aws.Endpoint(`http://localhost:${port}/_arc/ssm`),

@@ -5,14 +5,16 @@ function instantiateAPI () {
   if (_api) return
   let {
     ARC_ENV,
-    ARC_INTERNAL_PORT: port,
     ARC_LOCAL,
     ARC_WSS_URL,
     AWS_REGION,
+    ARC_SANDBOX,
   } = process.env
   let local = ARC_ENV === 'testing' || ARC_LOCAL
   if (local) {
-    if (!port) throw ReferenceError('ARC_INTERNAL_PORT env var not found')
+    let { ports } = JSON.parse(ARC_SANDBOX)
+    let port = ports._arc
+    if (!port) throw ReferenceError('Architect internal port not found')
     _api = new ApiGatewayManagementApi({
       apiVersion: '2018-11-29',
       endpoint: `http://localhost:${port}/_arc/ws`,

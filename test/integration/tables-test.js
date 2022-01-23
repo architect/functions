@@ -13,10 +13,9 @@ let shared = join(tmp, 'node_modules', '@architect', 'shared')
 
 test('Set up mocked files', t => {
   t.plan(3)
-  process.env.ARC_APP = 'test'
+  process.env.ARC_APP_NAME = 'test'
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_INTERNAL_PORT = 2222
-  process.env.ARC_TABLES_PORT = 5555
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555, _arc: 2222 } })
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
@@ -189,10 +188,9 @@ test('server closes', t => {
 
 test('Clean up env', t => {
   t.plan(1)
-  delete process.env.ARC_APP
+  delete process.env.ARC_APP_NAME
   delete process.env.ARC_ENV
-  delete process.env.ARC_INTERNAL_PORT
-  delete process.env.ARC_TABLES_PORT
+  delete process.env.ARC_SANDBOX
   exec(`rm -rf ${tmp}`)
   t.ok(!exists(tmp), 'Mocks cleaned up')
 })

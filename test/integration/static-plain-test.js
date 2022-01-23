@@ -11,15 +11,13 @@ let shared = join(tmp, 'node_modules', '@architect', 'shared')
 let origCwd = process.cwd()
 
 let resetEnv = () => {
-  delete process.env.AWS_REGION
   delete process.env.ARC_ENV
-  delete process.env.ARC_STATIC_PREFIX
-  delete process.env.ARC_STATIC_FOLDER
-  delete process.env.ARC_STATIC_BUCKET
 }
 
 test('Set up mocked files', t => {
   t.plan(2)
+  process.env.ARC_ENV = 'testing'
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
@@ -54,6 +52,8 @@ test('Local URL tests', t => {
 
 test('Clean up env', t => {
   t.plan(1)
+  delete process.env.ARC_ENV
+  delete process.env.ARC_SANDBOX
   process.chdir(origCwd)
   exec(`rm -rf ${tmp}`)
   t.ok(!exists(tmp), 'Mocks cleaned up')

@@ -4,13 +4,13 @@ let dynamo
 
 function reset (t) {
   delete process.env.ARC_ENV
-  delete process.env.ARC_TABLES_PORT
+  delete process.env.ARC_SANDBOX
   delete process.env.AWS_REGION
   delete process.env.ARC_SESSION_TABLE_NAME
   delete require.cache[require.resolve(file)]
   dynamo = undefined
 
-  if (process.env.ARC_TABLES_PORT) t.fail('Did not unset ARC_TABLES_PORT')
+  if (process.env.ARC_SANDBOX) t.fail('Did not unset ARC_SANDBOX')
   if (process.env.AWS_REGION) t.fail('Did not unset AWS_REGION')
   if (process.env.ARC_SESSION_TABLE_NAME) t.fail('Did not unset ARC_SESSION_TABLE_NAME')
   if (require.cache[require.resolve(file)]) t.fail('Did not reset require cache')
@@ -20,7 +20,7 @@ function reset (t) {
 test('Set up env', t => {
   t.plan(5)
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_TABLES_PORT = 5555
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
 
   // eslint-disable-next-line
   dynamo = require(file)
@@ -57,7 +57,7 @@ test('Local port + region configuration', t => {
    * Defaults
    */
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_TABLES_PORT = 5555
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
   let localhost = 'localhost'
   let defaultPort = 5555
   let defaultRegion = 'us-west-2'
@@ -116,7 +116,7 @@ test('Local port + region configuration', t => {
   let customPort = 5666
   let customRegion = 'us-east-1'
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_TABLES_PORT = customPort
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: customPort } })
   process.env.AWS_REGION = customRegion
   host = `${localhost}:${customPort}`
 
@@ -173,7 +173,7 @@ test('Live AWS infra config', t => {
 
   // Defaults
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_TABLES_PORT = 5555
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
 
   // eslint-disable-next-line
   dynamo = require(file)

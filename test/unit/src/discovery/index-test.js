@@ -6,8 +6,9 @@ let discovery = require('../../../../src/discovery')
 
 test('Set up env', t => {
   t.plan(1)
-  process.env.ARC_APP = 'test'
-  t.pass('Set up ARC_APP env var')
+  process.env.ARC_APP_NAME = 'test'
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
+  t.pass('Set up ARC_APP_NAME env var')
 })
 
 test('discovery should callback with error if SSM errors', t => {
@@ -89,5 +90,6 @@ test('discovery should parse several pages of hierarchical SSM parameters into a
 test('Teardown', t => {
   t.plan(1)
   delete process.env.ARC_APP
+  delete process.env.ARC_SANDBOX
   t.pass('Done!')
 })

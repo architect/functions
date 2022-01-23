@@ -15,17 +15,13 @@ function getDynamo (type, callback) {
     ARC_ENV,
     ARC_LOCAL,
     ARC_SESSION_TABLE_NAME, SESSION_TABLE_NAME,
-    ARC_TABLES_PORT: port,
     AWS_REGION,
+    ARC_SANDBOX,
   } = process.env
   let local = ARC_ENV === 'testing' || ARC_LOCAL
-  let localConfig = {
-    endpoint: new aws.Endpoint(`http://localhost:${port}`),
-    region: AWS_REGION || 'us-west-2' // Do not assume region is set!
-  }
   let DB = aws.DynamoDB
   let Doc = aws.DynamoDB.DocumentClient
-  let dynamo // Assigned below
+  let dynamo, localConfig // Assigned below
 
   /**
    * This module may be loaded by @arc/arc via repl
@@ -44,6 +40,15 @@ function getDynamo (type, callback) {
       httpOptions: { agent }
     })
     // TODO? migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`?
+  }
+  else {
+    // Ideally we would check the validity of the port, but since this is initiated in global scope we can't necessarily rely on `ports.tables` (which is only added by Sandbox if `inv.tables`)
+    let { ports } = JSON.parse(ARC_SANDBOX)
+    let port = ports.tables
+    localConfig = {
+      endpoint: new aws.Endpoint(`http://localhost:${port}`),
+      region: AWS_REGION || 'us-west-2' // Do not assume region is set!
+    }
   }
 
   if (type === 'db') {

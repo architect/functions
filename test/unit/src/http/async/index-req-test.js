@@ -62,6 +62,7 @@ test('Set up env', t => {
   t.plan(2)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_ENV = 'testing'
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   arc = require(sut)

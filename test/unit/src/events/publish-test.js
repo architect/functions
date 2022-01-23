@@ -4,6 +4,7 @@ let publish
 test('Set up env', t => {
   t.plan(1)
   process.env.ARC_ENV = 'testing'
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
   // eslint-disable-next-line
   let arc = require('../../../..')
   publish = arc.events.publish
@@ -23,5 +24,6 @@ test('events.publish should throw if there is no parameter payload', t => {
 test('Teardown', t => {
   t.plan(1)
   delete process.env.ARC_ENV
+  delete process.env.ARC_SANDBOX
   t.pass('Done!')
 })

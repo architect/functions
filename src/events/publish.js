@@ -26,21 +26,25 @@ module.exports = function publishFactory (arc, type) {
         }
       })
     }
-    let { ARC_ENV: env, ARC_EVENTS_PORT: port, ARC_LOCAL } = process.env
-    let local = env === 'testing' || ARC_LOCAL
+    let { ARC_ENV, ARC_LOCAL, ARC_SANDBOX } = process.env
+    let local = ARC_ENV === 'testing' || ARC_LOCAL
+    let port
+    if (local) {
+      let { ports } = JSON.parse(ARC_SANDBOX)
+      port = ports.events
+    }
     if (local && !port) {
-      callback(ReferenceError('ARC_EVENTS_PORT env var not found'))
+      callback(ReferenceError('Sandbox events port not found'))
       return promise
     }
 
-    let exec = local ? _publishSandbox.bind({}, type) : publishAWS
+    let exec = local ? _publishSandbox.bind({}, type, port) : publishAWS
     exec(params, callback)
     return promise
   }
 }
 
-function _publishSandbox (type, params, callback) {
-  let port = process.env.ARC_EVENTS_PORT
+function _publishSandbox (type, port, params, callback) {
   let req = http.request({
     method: 'POST',
     port,
