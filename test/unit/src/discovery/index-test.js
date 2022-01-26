@@ -89,7 +89,7 @@ test('discovery should parse several pages of hierarchical SSM parameters into a
 
 test('Teardown', t => {
   t.plan(1)
-  delete process.env.ARC_APP
+  delete process.env.ARC_APP_NAME
   delete process.env.ARC_SANDBOX
   t.pass('Done!')
 })

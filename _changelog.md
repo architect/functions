@@ -19,7 +19,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 - Breaking change: removed support for legacy Sandbox `@ws` internals, requiring Sandbox v5
 - Breaking change: removed `http.express` method, moved to `@architect/express`
   - Before this change, `@architect/functions` had 19 dependencies and weighed in at ~950KB; after it has 12 dependencies (down 7), and weighs about 475KB, about 50% reduction!
-- Breaking change: due to no actual usage, this package is no longer publishing to the GitHub Package registry, only npm
+- Stop publishing to the GitHub Package registry
 - Added checks to ensure there are no mysterious failures when required env vars are not present
 - Preference for `ARC_*` namespaced env vars:
   - `ARC_SESSION_TABLE_NAME` > `SESSION_TABLE_NAME`
