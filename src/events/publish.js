@@ -78,6 +78,7 @@ function eventFactory (arc) {
 
     function cacheLedgerAndPublish (serviceMap) {
       ledger.events = serviceMap.events
+      arn = ledger.events[name]
       if (!arn) callback(ReferenceError(`${name} event not found`))
       else publish(arn, payload, callback)
     }
@@ -110,6 +111,7 @@ function queueFactory (arc) {
 
     function cacheLedgerAndPublish (serviceMap) {
       ledger.queues = serviceMap.queues
+      arn = ledger.queues[name]
       if (!arn) callback(ReferenceError(`${name} queue not found`))
       else publish(arn, payload, callback)
     }
