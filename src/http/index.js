@@ -1,29 +1,20 @@
+/* eslint-disable global-require */
+
 // HTTP
 let http = require('./http')
+http.async = require('./async')
 
 // HTTP helpers
-let bodyParser = require('./helpers/body-parser')
-let interpolate = require('./helpers/params')
-let _static = require('../static')
-let url = require('./helpers/url')
+http.helpers = {
+  bodyParser:   require('./helpers/body-parser'),
+  interpolate:  require('./helpers/params'),
+  url: require('./helpers/url'),
+}
 
 // Session
-let read = require('./session/read')
-let write = require('./session/write')
-
-// Middleware
-let _async = require('./async')
-
-http.helpers = {
-  bodyParser,
-  interpolate,
-  static: _static,
-  url
+http.session = {
+  read: require('./session/read'),
+  write: require('./session/write'),
 }
-http.session = { read, write }
-http.async = _async
-
-// Legacy methods
-http.middleware = _async
 
 module.exports = http

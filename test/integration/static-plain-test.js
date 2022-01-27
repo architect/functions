@@ -29,10 +29,9 @@ test('Set up mocked files', t => {
 })
 
 test('Local URL tests', t => {
-  t.plan(7)
+  t.plan(6)
   t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path')
   t.equal(arc.static('/index.html'), '/_static/index.html', 'Basic local static path with leading slash')
-  t.equal(arc.http.helpers.static('index.html'), '/_static/index.html', 'Basic local static path (legacy)')
 
   process.env.ARC_ENV = 'testing'
   t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path (env=testing)')

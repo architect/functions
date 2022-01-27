@@ -27,7 +27,7 @@ let run = async (response, request) => {
 }
 
 test('Set up env', t => {
-  t.plan(2)
+  t.plan(1)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_ENV = 'testing'
   process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
@@ -35,7 +35,6 @@ test('Set up env', t => {
   // eslint-disable-next-line
   arc = require(sut)
   t.ok(arc.http.async, 'Loaded HTTP async')
-  t.ok(arc.http.middleware, 'Loaded HTTP middleware alias')
 })
 
 test('Architect v7 (HTTP)', async t => {

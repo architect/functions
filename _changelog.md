@@ -8,7 +8,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ### Added
 
-- `@architect/functions` is faster and leaner than ever, now about 425KB (down from ~950KB). This means even faster cold starts and overall performance!
+- `@architect/functions` is faster and leaner than ever, now down to about 425KB (from ~950KB). This means even faster cold starts and overall performance!
 - Added support for Sandbox dynamic port selection
 - Added `rawBody` property, handy for use with external libraries that may need access to the raw body contents for things like signing
 
@@ -18,7 +18,10 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 - Breaking change: Architect no longer automatically populates, relies on, or makes direct use of `NODE_ENV` or `ARC_CLOUDFORMATION` env vars. `@architect/functions` v5+ now requires Architect v10 / Sandbox v5 or later.
 - Breaking change: removed support for legacy Sandbox `@ws` internals, requiring Sandbox v5
 - Breaking change: removed `http.express` method, moved to `@architect/express`
-  - Before this change, `@architect/functions` had 19 dependencies and weighed in at ~950KB; after it has 12 dependencies (down 7), and weighs about 475KB, about 50% reduction!
+  - Before this change, `@architect/functions` had 19 dependencies and weighed in at ~950KB; after it has 12 dependencies (down 7), and weighs about 475KB, for about a 50% reduction!
+- Breaking change: removed deprecated methods:
+  - `arc.http.middleware` (deprecated August 2019) is now `arc.http.async`
+  - `arc.http.helpers.static` (deprecated June 2019) is now `arc.static`
 - Stop publishing to the GitHub Package registry
 - Added checks to ensure there are no mysterious failures when required env vars are not present
 - Preference for `ARC_*` namespaced env vars:
