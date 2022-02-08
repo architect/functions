@@ -1,5 +1,6 @@
 let aws = require('aws-sdk')
 let https = require('https')
+let { sandboxVersionAtLeast } = require('../sandbox')
 
 /**
  * Instantiates Dynamo service interfaces
@@ -9,8 +10,15 @@ let https = require('https')
 function getDynamo (type, callback) {
   if (!type) throw ReferenceError('Must supply Dynamo service interface type')
 
-  let testing = process.env.NODE_ENV === 'testing'
-  let arcLocal = process.env.ARC_LOCAL
+  let { ARC_ENV, ARC_LOCAL, NODE_ENV } = process.env
+
+  let testing = NODE_ENV === 'testing'
+  let sandbox = ARC_ENV === 'testing' || NODE_ENV === 'testing' || ARC_LOCAL
+  if (sandbox && sandboxVersionAtLeast('5.0.0')) {
+    throw ReferenceError('Incompatible version: please upgrade Architect Functions to >=5.x')
+  }
+
+  let arcLocal = ARC_LOCAL
   let port = process.env.ARC_TABLES_PORT || 5000
   let local = {
     endpoint: new aws.Endpoint(`http://localhost:${port}`),

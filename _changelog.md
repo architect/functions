@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
+## [4.1.2] 2022-02-07
+
+### Changed
+
+- Architect Functions now fails gracefully in Architect 10+ / Sandbox 5+
+
+---
+
 ## [4.1.1] 2021-11-22
 
 - Fix crash on missing `ARC_WSS_URL` env var when `@ws` is defined in a project
