@@ -29,7 +29,7 @@ test('Set up mocked files', t => {
 
 test('starts the db server', t => {
   t.plan(1)
-  sandbox.tables.start({ quiet: true, cwd: tmp }, err => {
+  sandbox.start({ quiet: true, cwd: tmp }, err => {
     if (err) t.fail(err)
     else t.pass('Sandbox started')
   })
@@ -180,7 +180,7 @@ test('tables update()', async t => {
 
 test('server closes', t => {
   t.plan(1)
-  sandbox.tables.end(err => {
+  sandbox.end(err => {
     if (err) t.fail(err)
     else t.pass('Sandbox ended')
   })
