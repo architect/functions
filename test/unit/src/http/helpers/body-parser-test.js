@@ -9,12 +9,65 @@ let hi = { hi: 'there' }
 let hiBase64 = { base64: b64encode('hi there') } // Arc 5
 let hiBase64file = b64encode('hi there\n') // text file style
 let hiFormURL = b64encode('hi=there')
+let hiText = 'hi there'
+let hiXml = '<?xml version="1.0"?><hi>there</hi>'
 
 // Content types
 let json = { 'Content-Type': 'application/json' }
 let formURLencoded = { 'Content-Type': 'application/x-www-form-urlencoded' }
 let multiPartFormData = { 'Content-Type': 'multipart/form-data' }
 let octetStream = { 'Content-Type': 'application/octet-stream' }
+let text = { 'Content-Type': 'text/plain' }
+let xmlText = { 'Content-Type': 'text/xml' }
+let xmlApp = { 'Content-Type': 'application/xml' }
+
+test('Architect v10+ requests', t => {
+  t.plan(6)
+
+  // Plain text
+  let req = {
+    body: hiText,
+    headers: text,
+    isBase64Encoded: false
+  }
+  t.equals(parseBody(req), 'hi there', `body matches ${str(req.body)}`)
+
+  req = {
+    body: b64encode(hiText),
+    headers: text,
+    isBase64Encoded: true
+  }
+  t.equals(parseBody(req), 'hi there', `body matches ${str(req.body)}`)
+
+  // XML
+  req = {
+    body: hiXml,
+    headers: xmlText,
+    isBase64Encoded: false
+  }
+  t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
+
+  req = {
+    body: hiXml,
+    headers: xmlApp,
+    isBase64Encoded: false
+  }
+  t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
+
+  req = {
+    body: b64encode(hiXml),
+    headers: xmlText,
+    isBase64Encoded: true
+  }
+  t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
+
+  req = {
+    body: b64encode(hiXml),
+    headers: xmlApp,
+    isBase64Encoded: true
+  }
+  t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
+})
 
 test('Architect v6+ requests', t => {
   t.plan(9)
