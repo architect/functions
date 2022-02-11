@@ -23,6 +23,8 @@ module.exports = function parseBody (req) {
     let isFormURLEncoded = contentType('application/x-www-form-urlencoded') && isParsing
     let isMultiPartFormData = contentType('multipart/form-data') && isParsing
     let isOctetStream = contentType('application/octet-stream') && isParsing
+    let isPlainText = contentType('text/plain') && isParsing
+    let isXml = (contentType('text/xml') || contentType('application/xml')) && isParsing
 
     if (isJSON) {
       try {
@@ -36,6 +38,10 @@ module.exports = function parseBody (req) {
       catch (e) {
         throw Error('Invalid request body encoding or invalid JSON')
       }
+    }
+
+    if (isPlainText || isXml) {
+      request.body = new Buffer.from(request.body, 'base64').toString()
     }
 
     if (isFormURLEncoded) {
