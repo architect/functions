@@ -37,6 +37,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 ### Changed
 
 - Architect Functions now fails gracefully in Architect 10+ / Sandbox 5+
+- Base 64 decodes `text/plain`, `text/xml` and `application/xml` payloads based off `Content-Type`
 
 ---
 
