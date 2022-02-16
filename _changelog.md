@@ -11,6 +11,8 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 - `@architect/functions` is faster and leaner than ever, now down to about 425KB (from ~950KB). This means even faster cold starts and overall performance!
 - Added support for Sandbox dynamic port selection
 - Added `rawBody` property, handy for use with external libraries that may need access to the raw body contents for things like signing
+  - Moving forward, Arc Functions consumers should consider the `isBase64Encoded` property to correspond only to `rawBody`, and to be unrelated to the `body` property
+  - See also: the change below re. base64 decoding of `text/plain` + `*/xml` bodies
 
 
 ### Changed
