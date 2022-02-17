@@ -1,5 +1,4 @@
 let http = require('http')
-let aws = require('aws-sdk')
 let ledger = { events: {}, queues: {} }
 
 /**
@@ -67,6 +66,9 @@ function _publishSandbox (type, port, params, callback) {
 
 function eventFactory (arc) {
   return function live ({ name, payload }, callback) {
+    // We really only want to load aws-sdk if absolutely necessary
+    // eslint-disable-next-line
+    let aws = require('aws-sdk')
 
     function publish (arn, payload, callback) {
       let sns = new aws.SNS
@@ -95,6 +97,9 @@ function eventFactory (arc) {
 
 function queueFactory (arc) {
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
+    // We really only want to load aws-sdk if absolutely necessary
+    // eslint-disable-next-line
+    let aws = require('aws-sdk')
 
     function publish (arn, payload, callback) {
       let sqs = new aws.SQS

@@ -1,6 +1,6 @@
 let uid = require('uid-safe')
 let week = require('./_week-from-now')
-let dynamo = require('../../../../tables/dynamo').session
+let { doc: dynamo } = require('../../../../tables/dynamo')
 let crsf = require('csrf')
 let parallel = require('run-parallel')
 

@@ -1,8 +1,9 @@
-let { ApiGatewayManagementApi } = require('aws-sdk')
-
 let _api
 function instantiateAPI () {
   if (_api) return
+  // We really only want to load aws-sdk if absolutely necessary
+  // eslint-disable-next-line
+  let { ApiGatewayManagementApi } = require('aws-sdk')
   let {
     ARC_ENV,
     ARC_LOCAL,
@@ -28,7 +29,6 @@ function instantiateAPI () {
     })
   }
 }
-
 
 /**
  * arc.ws.send

@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
-## [5.0.0] 2022-01-18
+## [5.0.0 - 5.0.1] 2022-01-18
 
 ### Added
 
@@ -24,6 +24,9 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 - Breaking change: removed deprecated methods:
   - `arc.http.middleware` (deprecated August 2019) is now `arc.http.async`
   - `arc.http.helpers.static` (deprecated June 2019) is now `arc.static`
+- Breaking change: removed `arc.tables.doc` + `arc.tables.db` methods
+  - These methods are still available after table instantiation like so: `let { _doc, _db} = await arc.tables()`
+  - This change enables Architect Functions to only load `aws-sdk` when absolutely necessary, making it 20-30x faster to run in Lambda for usage that does not rely on DynamoDB
 - Stop publishing to the GitHub Package registry
 - Added checks to ensure there are no mysterious failures when required env vars are not present
 - Preference for `ARC_*` namespaced env vars:

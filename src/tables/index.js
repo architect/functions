@@ -1,7 +1,6 @@
 let waterfall = require('run-waterfall')
 let old = require('./old')
 let factory = require('./factory')
-let dynamo = require('./dynamo')
 
 // cheap client cache
 let client = false
@@ -50,10 +49,6 @@ module.exports = function tables (arc) {
     }
     return promise
   }
-
-  // Export directly for fast use
-  api.doc =     dynamo.direct.doc
-  api.db =      dynamo.direct.db
 
   // Legacy compat methods
   api.insert =  old.insert

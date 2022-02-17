@@ -18,7 +18,7 @@ function reset (t) {
 }
 
 test('Set up env', t => {
-  t.plan(5)
+  t.plan(2)
   process.env.ARC_ENV = 'testing'
   process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
 
@@ -30,28 +30,18 @@ test('Set up env', t => {
     if (err) t.fail(err)
     t.ok(db, 'Got DynamoDB object (callback)')
   })
-  // DB x direct
-  t.ok(dynamo.direct.db, 'Got DynamoDB object (direct)')
 
   // Doc x callback
   dynamo.doc((err, doc) => {
     if (err) t.fail(err)
     t.ok(doc, 'Got DynamoDB document object (callback)')
   })
-  // Doc x direct
-  t.ok(dynamo.direct.doc, 'Got DynamoDB document object (direct)')
-
-  // Session x callback
-  dynamo.session((err, doc) => {
-    if (err) t.fail(err)
-    t.ok(doc, 'Got DynamoDB session document object (callback)')
-  })
 
   reset(t)
 })
 
 test('Local port + region configuration', t => {
-  t.plan(50)
+  t.plan(20)
 
   /**
    * Defaults
@@ -75,12 +65,6 @@ test('Local port + region configuration', t => {
     t.equal(db.endpoint.port, defaultPort, `DB configured 'port' property is ${defaultPort}`)
     t.equal(db.config.region, defaultRegion, `DB configured 'region' property is ${defaultRegion}`)
   })
-  // DB x direct
-  t.equal(dynamo.direct.db.endpoint.host, host, `DB configured 'host' property is ${host}`)
-  t.equal(dynamo.direct.db.endpoint.hostname, localhost, `DB configured 'hostname' property is ${localhost}`)
-  t.equal(dynamo.direct.db.endpoint.href, `http://${host}/`, `DB configured 'href' property is http://${host}/`)
-  t.equal(dynamo.direct.db.endpoint.port, defaultPort, `DB configured 'port' property is ${defaultPort}`)
-  t.equal(dynamo.direct.db.config.region, defaultRegion, `DB configured 'region' property is ${defaultRegion}`)
 
   // Doc x callback
   dynamo.doc((err, doc) => {
@@ -90,22 +74,6 @@ test('Local port + region configuration', t => {
     t.equal(doc.options.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
     t.equal(doc.options.endpoint.port, defaultPort, `Doc configured 'port' property is ${defaultPort}`)
     t.equal(doc.service.config.region, defaultRegion, `Doc configured 'region' property is ${defaultRegion}`)
-  })
-  // Doc x direct
-  t.equal(dynamo.direct.doc.options.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-  t.equal(dynamo.direct.doc.options.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-  t.equal(dynamo.direct.doc.options.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-  t.equal(dynamo.direct.doc.options.endpoint.port, defaultPort, `Doc configured 'port' property is ${defaultPort}`)
-  t.equal(dynamo.direct.doc.service.config.region, defaultRegion, `Doc configured 'region' property is ${defaultRegion}`)
-
-  // Session x callback
-  dynamo.session((err, doc) => {
-    if (err) t.fail(err)
-    t.equal(doc.options.endpoint.host, host, `Session doc configured 'host' property is ${host}`)
-    t.equal(doc.options.endpoint.hostname, localhost, `Session doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.options.endpoint.href, `http://${host}/`, `Session doc configured 'href' property is http://${host}/`)
-    t.equal(doc.options.endpoint.port, defaultPort, `Session doc configured 'port' property is ${defaultPort}`)
-    t.equal(doc.service.config.region, defaultRegion, `Session doc configured 'region' property is ${defaultRegion}`)
   })
 
   reset(t)
@@ -132,12 +100,6 @@ test('Local port + region configuration', t => {
     t.equal(db.endpoint.port, customPort, `DB configured 'port' property is ${customPort}`)
     t.equal(db.config.region, customRegion, `DB configured 'region' property is ${customRegion}`)
   })
-  // DB x direct
-  t.equal(dynamo.direct.db.endpoint.host, host, `DB configured 'host' property is ${host}`)
-  t.equal(dynamo.direct.db.endpoint.hostname, localhost, `DB configured 'hostname' property is ${localhost}`)
-  t.equal(dynamo.direct.db.endpoint.href, `http://${host}/`, `DB configured 'href' property is http://${host}/`)
-  t.equal(dynamo.direct.db.endpoint.port, customPort, `DB configured 'port' property is ${customPort}`)
-  t.equal(dynamo.direct.db.config.region, customRegion, `DB configured 'region' property is ${customRegion}`)
 
   // Doc x callback
   dynamo.doc((err, doc) => {
@@ -148,28 +110,12 @@ test('Local port + region configuration', t => {
     t.equal(doc.options.endpoint.port, customPort, `Doc configured 'port' property is ${customPort}`)
     t.equal(doc.service.config.region, customRegion, `Doc configured 'region' property is ${customRegion}`)
   })
-  // DB x direct
-  t.equal(dynamo.direct.doc.options.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-  t.equal(dynamo.direct.doc.options.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-  t.equal(dynamo.direct.doc.options.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-  t.equal(dynamo.direct.doc.options.endpoint.port, customPort, `Doc configured 'port' property is ${customPort}`)
-  t.equal(dynamo.direct.doc.service.config.region, customRegion, `Doc configured 'region' property is ${customRegion}`)
-
-  // Session x callback
-  dynamo.session((err, doc) => {
-    if (err) t.fail(err)
-    t.equal(doc.options.endpoint.host, host, `Session doc configured 'host' property is ${host}`)
-    t.equal(doc.options.endpoint.hostname, localhost, `Session doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.options.endpoint.href, `http://${host}/`, `Session doc configured 'href' property is http://${host}/`)
-    t.equal(doc.options.endpoint.port, customPort, `Session doc configured 'port' property is ${customPort}`)
-    t.equal(doc.service.config.region, customRegion, `Session doc configured 'region' property is ${customRegion}`)
-  })
 
   reset(t)
 })
 
 test('Live AWS infra config', t => {
-  t.plan(11)
+  t.plan(4)
 
   // Defaults
   process.env.ARC_ENV = 'testing'
@@ -183,21 +129,11 @@ test('Live AWS infra config', t => {
     if (err) t.fail(err)
     t.notOk(db.config.httpOptions.agent, 'DB HTTP agent options not set')
   })
-  // DB x direct
-  t.notOk(dynamo.direct.db.config.httpOptions.agent, 'DB HTTP agent options not set')
 
   // Doc x callback
   dynamo.doc((err, doc) => {
     if (err) t.fail(err)
     t.notOk(doc.service.config.httpOptions.agent, 'Doc HTTP agent options not set')
-  })
-  // Doc x direct
-  t.notOk(dynamo.direct.doc.service.config.httpOptions.agent, 'Doc HTTP agent options not set')
-
-  // Session x callback (session table not configured)
-  dynamo.session((err, doc) => {
-    if (err) t.fail(err)
-    t.notOk(doc.service.config.httpOptions.agent, 'Session doc HTTP agent options not set')
   })
 
   reset(t)
@@ -214,27 +150,11 @@ test('Live AWS infra config', t => {
     if (err) t.fail(err)
     t.ok(db.config.httpOptions.agent.options, 'DB HTTP agent options set')
   })
-  // DB x direct
-  t.ok(dynamo.direct.db.config.httpOptions.agent.options, 'DB HTTP agent options set')
 
   // Doc x callback
   dynamo.doc((err, doc) => {
     if (err) t.fail(err)
     t.ok(doc.service.config.httpOptions.agent.options, 'Doc HTTP agent options set')
-  })
-  // Doc x direct
-  t.ok(dynamo.direct.doc.service.config.httpOptions.agent.options, 'Doc HTTP agent options set')
-
-  // Session x callback (session table not configured)
-  dynamo.session((err, mock) => {
-    if (err) t.fail(err)
-    t.ok(typeof mock.get === 'function' && typeof mock.put === 'function', 'Got back sessions get/put mock')
-  })
-  // Session x callback (session table configured)
-  process.env.ARC_SESSION_TABLE_NAME = 'foo'
-  dynamo.session((err, doc) => {
-    if (err) t.fail(err)
-    t.ok(doc.service.config.httpOptions.agent.options, 'Session doc HTTP agent options set')
   })
 
   reset(t)

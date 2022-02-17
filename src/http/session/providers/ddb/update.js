@@ -1,4 +1,4 @@
-let dynamo = require('../../../../tables/dynamo').session
+let { doc: dynamo } = require('../../../../tables/dynamo')
 let week = require('./_week-from-now')
 
 module.exports = function _update (name, payload, callback) {
