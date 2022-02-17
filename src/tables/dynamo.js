@@ -1,5 +1,5 @@
-let aws = require('aws-sdk')
 let https = require('https')
+let db, doc
 
 /**
  * Instantiates Dynamo service interfaces
@@ -9,19 +9,29 @@ let https = require('https')
 function getDynamo (type, callback) {
   if (!type) throw ReferenceError('Must supply Dynamo service interface type')
 
+  // We really only want to load aws-sdk if absolutely necessary
+  // eslint-disable-next-line
+  let aws = require('aws-sdk')
+
   // We might normally like to throw if `local && !port`, but this is also a direct DynamoDB interface in global scope
   // Thus, this path instantiates even if the project doesn't have tables
   let {
     ARC_ENV,
     ARC_LOCAL,
-    ARC_SESSION_TABLE_NAME, SESSION_TABLE_NAME,
     AWS_REGION,
     ARC_SANDBOX,
   } = process.env
   let local = ARC_ENV === 'testing' || ARC_LOCAL
   let DB = aws.DynamoDB
   let Doc = aws.DynamoDB.DocumentClient
-  let dynamo, localConfig // Assigned below
+  let localConfig
+
+  if (db && type === 'db') {
+    return callback(null, db)
+  }
+  if (doc && type === 'doc') {
+    return callback(null, doc)
+  }
 
   /**
    * This module may be loaded by @arc/arc via repl
@@ -52,43 +62,22 @@ function getDynamo (type, callback) {
   }
 
   if (type === 'db') {
-    dynamo = local
+    db = local
       ? new DB(localConfig)
       : new DB
+    return callback(null, db)
   }
 
   if (type === 'doc') {
-    dynamo = local
+    doc = local
       ? new Doc(localConfig)
       : new Doc
+    return callback(null, doc)
   }
-
-  if (type === 'session') {
-    // if SESSION_TABLE_NAME isn't defined we mock the client and just pass session thru
-    let passthru = !ARC_SESSION_TABLE_NAME && !SESSION_TABLE_NAME
-    let mock = {
-      get (params, callback) {
-        callback()
-      },
-      put (params, callback) {
-        callback()
-      }
-    }
-    dynamo = local
-      ? new Doc(localConfig)
-      : (passthru ? mock : new Doc)
-  }
-
-  if (!callback) return dynamo
-  else callback(null, dynamo)
 }
 
 module.exports = {
   db: getDynamo.bind({}, 'db'),
   doc: getDynamo.bind({}, 'doc'),
   session: getDynamo.bind({}, 'session'),
-  direct: {
-    db: getDynamo('db'),
-    doc: getDynamo('doc')
-  }
 }

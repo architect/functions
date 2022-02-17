@@ -1,4 +1,4 @@
-let dynamo = require('../../../../tables/dynamo').session
+let { doc: dynamo } = require('../../../../tables/dynamo')
 let create = require('./create')
 
 module.exports = function _find (name, _idx, callback) {

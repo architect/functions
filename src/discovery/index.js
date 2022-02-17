@@ -1,10 +1,12 @@
-let aws = require('aws-sdk')
 let http = require('http')
 /**
  * @param {string} type - events, queues, or tables
  * @returns {object} {name: value}
  */
 module.exports = function lookup (callback) {
+  // We really only want to load aws-sdk if absolutely necessary
+  // eslint-disable-next-line
+  let aws = require('aws-sdk')
   let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX } = process.env
   if (!app) return callback(ReferenceError('ARC_APP_NAME env var not found'))
   let Path = '/' + toLogicalID(`${app}-${env}`)
