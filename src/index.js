@@ -1,10 +1,16 @@
+let { sandboxVersionAtLeast } = require('./lib/version')
+
 /**
  * Ensure env is one of: 'testing', 'staging', or 'production'
+ * If in Sandbox, meet version requirements
  */
-let { ARC_ENV } = process.env
+let { ARC_ENV, ARC_SANDBOX } = process.env
 let validEnvs = [ 'testing', 'staging', 'production' ]
 if (!validEnvs.includes(ARC_ENV)) {
   throw ReferenceError(`ARC_ENV env var is required for use with @architect/functions`)
+}
+if (ARC_SANDBOX && !sandboxVersionAtLeast('5.0.0')) {
+  throw ReferenceError('Incompatible version: please upgrade to Sandbox >=5.x or Architect >=10.x')
 }
 
 let http = require('./http')

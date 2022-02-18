@@ -15,7 +15,7 @@ test('Set up mocked arc', t => {
   t.plan(2)
   process.env.ARC_ENV = 'testing'
   process.env.AWS_REGION = 'us-west-1'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc-fingerprint'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc-fingerprint'), join(tmp, '.arc'))

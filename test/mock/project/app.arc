@@ -4,6 +4,7 @@ test-only
 @http
 get /http-session
 get /http-async-session
+get /incompatible-version
 post /publish-event/*
 
 @events
