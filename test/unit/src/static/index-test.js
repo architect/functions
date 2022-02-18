@@ -25,7 +25,7 @@ test('Local env returns non-fingerprinted path', t => {
   reset()
   manifestExists = true
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   let asset = arcStatic('foo.png')
   t.equal(asset, '/_static/foo.png', 'Returned non-fingerprinted path')
   asset = arcStatic('/foo.png')

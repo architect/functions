@@ -17,7 +17,7 @@ let resetEnv = () => {
 test('Set up mocked files', t => {
   t.plan(2)
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))

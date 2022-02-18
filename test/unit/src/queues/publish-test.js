@@ -4,7 +4,7 @@ let publish
 test('Set up env', t => {
   t.plan(1)
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {} })
+  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   // eslint-disable-next-line
   let arc = require('../../../..')
   publish = arc.queues.publish
