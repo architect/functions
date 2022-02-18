@@ -24,7 +24,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cookie": "^0.4.2",
-    "cookie-signature": "^1.1.0",
+    "cookie-signature": "^1.2.0",
     "csrf": "^3.1.0",
     "node-webtokens": "^1.0.4",
     "run-parallel": "^1.2.0",

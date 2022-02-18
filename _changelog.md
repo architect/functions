@@ -4,7 +4,7 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
-## [5.0.0 - 5.0.1] 2022-01-18
+## [5.0.0 - 5.0.2] 2022-01-18
 
 ### Added
 
@@ -18,6 +18,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 ### Changed
 
 - Breaking change: Architect no longer automatically populates, relies on, or makes direct use of `NODE_ENV` or `ARC_CLOUDFORMATION` env vars. `@architect/functions` v5+ now requires Architect v10 / Sandbox v5 or later.
+  - Added top-level check for correct minimum version, fixes #1313; thanks @monkbroc!
 - Breaking change: removed support for legacy Sandbox `@ws` internals, requiring Sandbox v5
 - Breaking change: removed `http.express` method, moved to `@architect/express`
   - Before this change, `@architect/functions` had 19 dependencies and weighed in at ~950KB; after it has 12 dependencies (down 7), and weighs about 475KB, for about a 50% reduction!
