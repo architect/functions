@@ -26,8 +26,6 @@ let run = (response, request, callback) => {
 test('Set up env', t => {
   t.plan(1)
   // Init env var to keep from stalling on db reads in CI
-  process.env.ARC_ENV = 'testing'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   let arc = require(sut)
@@ -490,7 +488,6 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) + legacy response fixtures were t
 test('Teardown', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.ARC_SANDBOX
   delete process.env.ARC_SESSION_TABLE_NAME
   t.pass('Done')
 })

@@ -17,7 +17,6 @@ let resetEnv = () => {
 test('Set up mocked files', t => {
   t.plan(2)
   process.env.ARC_ENV = 'testing'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
@@ -52,7 +51,6 @@ test('Local URL tests', t => {
 test('Clean up env', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.ARC_SANDBOX
   process.chdir(origCwd)
   exec(`rm -rf ${tmp}`)
   t.ok(!exists(tmp), 'Mocks cleaned up')

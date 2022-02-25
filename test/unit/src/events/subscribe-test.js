@@ -4,8 +4,6 @@ let subscribe
 
 test('Set up env', t => {
   t.plan(1)
-  process.env.ARC_ENV = 'testing'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   // eslint-disable-next-line
   let arc = require('../../../..')
   subscribe = arc.events.subscribe
@@ -65,6 +63,5 @@ test('events.subscribe should fall back to an empty event if one is not provided
 test('Teardown', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.ARC_SANDBOX
   t.pass('Done!')
 })

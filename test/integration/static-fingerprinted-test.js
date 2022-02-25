@@ -13,9 +13,7 @@ let static
 
 test('Set up mocked arc', t => {
   t.plan(2)
-  process.env.ARC_ENV = 'testing'
   process.env.AWS_REGION = 'us-west-1'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: {}, version: '5.0.0' })
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc-fingerprint'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc-fingerprint'), join(tmp, '.arc'))
@@ -44,7 +42,7 @@ test('Set up mocked static manifest', t => {
 test('Clean up env', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.ARC_SANDBOX
+  delete process.env.AWS_REGION
   process.chdir(origCwd)
   exec(`rm -rf ${tmp}`)
   t.ok(!exists(tmp), 'Mocks cleaned up')

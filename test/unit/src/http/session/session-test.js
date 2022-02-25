@@ -5,8 +5,6 @@ let read, write
 
 test('http.session apis exist', t => {
   t.plan(2)
-  process.env.ARC_ENV = 'testing'
-  process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
   // eslint-disable-next-line
   let arc = require('../../../../../')
   read = arc.http.session.read
@@ -84,7 +82,6 @@ test('ddb read and write implementations', async t => {
 test('shutdown sandbox', t => {
   t.plan(1)
   delete process.env.ARC_ENV
-  delete process.env.ARC_SANDBOX
   delete process.env.ARC_SESSION_TABLE_NAME
   delete process.env.ARC_SESSION_TTL
   sandbox.end(err => {

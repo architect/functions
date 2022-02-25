@@ -6,6 +6,10 @@ let { sandboxVersionAtLeast } = require('./lib/version')
  */
 let { ARC_ENV, ARC_SANDBOX } = process.env
 let validEnvs = [ 'testing', 'staging', 'production' ]
+// Backfill ARC_ENV if Functions is running outside of Sandbox in a test suite
+if (!ARC_ENV) {
+  process.env.ARC_ENV = ARC_ENV = 'testing'
+}
 if (!validEnvs.includes(ARC_ENV)) {
   throw ReferenceError(`ARC_ENV env var is required for use with @architect/functions`)
 }
