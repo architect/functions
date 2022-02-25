@@ -1,8 +1,23 @@
 let test = require('tape')
-let aws = require('aws-sdk')
-let awsMock = require('aws-sdk-mock')
-awsMock.setSDKInstance(aws)
-let discovery = require('../../../../src/discovery')
+let proxyquire = require('proxyquire')
+
+let err, page1, page2, ssmCounter = 0
+let ssm = class {
+  constructor () {
+    this.getParametersByPath = (params, callback) => {
+      let result = ssmCounter === 0 ? page1 : page2
+      ssmCounter++
+      callback(err, result)
+    }
+  }
+}
+let discovery = proxyquire('../../../../src/discovery', {
+  'aws-sdk/clients/ssm': ssm
+})
+let reset = () => {
+  err = page1 = page2 = undefined
+  ssmCounter = 0
+}
 
 test('Set up env', t => {
   t.plan(1)
@@ -12,38 +27,38 @@ test('Set up env', t => {
 
 test('discovery should callback with error if SSM errors', t => {
   t.plan(1)
-  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => cb(true))
+  err = true
   discovery(err => {
     t.ok(err, 'error passed into discovery callback')
-    awsMock.restore()
+    reset()
   })
 })
 
 test('discovery should parse hierarchical SSM parameters into a service map object', t => {
   t.plan(3)
-  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => cb(null, {
+  page1 = {
     Parameters: [
       { Name: '/app/tables/cats', Value: 'tableofcats' },
       { Name: '/app/events/walkthedog', Value: 'timetowalkthedog' }
     ]
-  }))
+  }
   discovery((err, services) => {
     t.notOk(err, 'no error passed to callback')
     t.equals(services.tables.cats, 'tableofcats', 'cat table value set up in correct place of service map')
     t.equals(services.events.walkthedog, 'timetowalkthedog', 'dogwalking event value set up in correct place of service map')
-    awsMock.restore()
+    reset()
   })
 })
 
 test('discovery should parse hierarchical SSM parameters, even ones of different depths, into a service map object', t => {
   t.plan(6)
-  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => cb(null, {
+  page1 = {
     Parameters: [
       { Name: '/app/tables/cats', Value: 'tableofcats' },
       { Name: '/app/cloudwatch/metrics/catbarf', Value: 'somuchbarf' },
       { Name: '/app/cloudwatch/metrics/chill', Value: 'quite' }
     ]
-  }))
+  }
   discovery((err, services) => {
     t.notOk(err, 'no error passed to callback')
     t.equals(services.tables.cats, 'tableofcats', 'cat table value set up in correct place of service map')
@@ -51,38 +66,27 @@ test('discovery should parse hierarchical SSM parameters, even ones of different
     t.ok(services.cloudwatch.metrics, 'cloudwatch.metrics object exists')
     t.equals(services.cloudwatch.metrics.catbarf, 'somuchbarf', 'cloudwatch.metrics.catbarf variable has correct value')
     t.ok(services.cloudwatch.metrics.chill, 'quite', 'cloudwatch.metrics.child variable has correct value')
-    awsMock.restore()
+    reset()
   })
 })
 
 test('discovery should parse several pages of hierarchical SSM parameters into a service map object', t => {
   t.plan(5)
-  let ssmCounter = 0
-  awsMock.mock('SSM', 'getParametersByPath', (params, cb) => {
-    let NextToken = null
-    let Parameters = [
-      { Name: '/app/tables/cats', Value: 'tableofcats' },
-      { Name: '/app/events/walkthedog', Value: 'timetowalkthedog' }
-    ]
-    if (ssmCounter === 1) {
-      Parameters[0].Name = '/app/queues/breadline'
-      Parameters[0].Value = 'favouritebakery'
-      Parameters[1].Name = '/app/tables/ofcontents'
-      Parameters[1].Value = 'chapters'
-    }
-    else {
-      NextToken = 'yes'
-    }
-    ssmCounter++
-    cb(null, { NextToken, Parameters })
-  })
+  page1 = { NextToken: 'yes', Parameters: [
+    { Name: '/app/tables/cats', Value: 'tableofcats' },
+    { Name: '/app/events/walkthedog', Value: 'timetowalkthedog' }
+  ] }
+  page2 = { NextToken: null, Parameters: [
+    { Name: '/app/queues/breadline', Value: 'favouritebakery' },
+    { Name: '/app/tables/ofcontents', Value: 'chapters' }
+  ] }
   discovery((err, services) => {
     t.notOk(err, 'no error passed to callback')
     t.equals(services.tables.cats, 'tableofcats', 'cat table value set up in correct place of service map')
     t.equals(services.events.walkthedog, 'timetowalkthedog', 'dogwalking event value set up in correct place of service map')
     t.equals(services.tables.ofcontents, 'chapters', 'ofcontents table value set up in correct place of service map')
     t.equals(services.queues.breadline, 'favouritebakery', 'breadline queue value set up in correct place of service map')
-    awsMock.restore()
+    reset()
   })
 })
 

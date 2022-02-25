@@ -76,12 +76,12 @@ function _publishSandbox (type, params, callback) {
 
 function eventFactory (arc) {
   return function live ({ name, payload }, callback) {
-    // We really only want to load aws-sdk if absolutely necessary
+    // We really only want to load aws-sdk if absolutely necessary, and only the client we need
     // eslint-disable-next-line
-    let aws = require('aws-sdk')
+    let SNS = require('aws-sdk/clients/sns')
 
     function publish (arn, payload, callback) {
-      let sns = new aws.SNS
+      let sns = new SNS
       sns.publish({
         TopicArn: arn,
         Message: JSON.stringify(payload)
@@ -107,12 +107,12 @@ function eventFactory (arc) {
 
 function queueFactory (arc) {
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
-    // We really only want to load aws-sdk if absolutely necessary
+    // We really only want to load aws-sdk if absolutely necessary, and only the client we need
     // eslint-disable-next-line
-    let aws = require('aws-sdk')
+    let SQS = require('aws-sdk/clients/sqs')
 
     function publish (arn, payload, callback) {
-      let sqs = new aws.SQS
+      let sqs = new SQS
       let params = {
         QueueUrl: arn,
         DelaySeconds: delaySeconds || 0,
