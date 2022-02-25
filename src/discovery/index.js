@@ -5,9 +5,9 @@ let http = require('http')
  * @returns {object} {name: value}
  */
 module.exports = function lookup (callback) {
-  // We really only want to load aws-sdk if absolutely necessary
+  // We really only want to load aws-sdk if absolutely necessary, and only the client we need
   // eslint-disable-next-line
-  let aws = require('aws-sdk')
+  let SSM = require('aws-sdk/clients/ssm')
   let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, AWS_REGION } = process.env
   let local = env === 'testing'
   if (!local && !app) {
@@ -30,14 +30,13 @@ module.exports = function lookup (callback) {
       }
       port = ports._arc
     }
-    let region = AWS_REGION || 'us-west-2'
     config = {
-      endpoint: new aws.Endpoint(`http://localhost:${port}/_arc/ssm`),
-      region,
+      endpoint: `http://localhost:${port}/_arc/ssm`,
+      region: AWS_REGION || 'us-west-2',
       httpOptions: { agent: new http.Agent() }
     }
   }
-  let ssm = new aws.SSM(config)
+  let ssm = new SSM(config)
 
   function getParams (params) {
     ssm.getParametersByPath(params, function done (err, result) {
