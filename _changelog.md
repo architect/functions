@@ -4,6 +4,20 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
+## [5.0.3] 2022-02-24
+
+### Added
+
+- Enable Functions v5 to be used as a bare module in test suites without setting env vars (see `ARC_ENV` requirement below)
+  - Functions now makes a best-effort attempt to find Sandbox ports via internal SSM
+
+
+### Changed
+
+- Relax requirement for `ARC_ENV` env var; backfill it to `testing` if not found
+
+---
+
 ## [5.0.0 - 5.0.2] 2022-01-18
 
 ### Added

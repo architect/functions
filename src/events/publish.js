@@ -1,5 +1,7 @@
 let http = require('http')
+let getPorts = require('../lib/get-ports')
 let ledger = { events: {}, queues: {} }
+let port
 
 /**
  * Invoke
@@ -25,25 +27,33 @@ module.exports = function publishFactory (arc, type) {
         }
       })
     }
-    let { ARC_ENV, ARC_LOCAL, ARC_SANDBOX } = process.env
+    let { ARC_ENV, ARC_LOCAL } = process.env
     let local = ARC_ENV === 'testing' || ARC_LOCAL
-    let port
-    if (local) {
-      let { ports } = JSON.parse(ARC_SANDBOX)
-      port = ports.events
+
+    if (local && port) {
+      _publishSandbox(type, params, callback)
     }
-    if (local && !port) {
-      callback(ReferenceError('Sandbox events port not found'))
-      return promise
+    else if (local) {
+      getPorts((err, ports) => {
+        if (err) callback(err)
+        else {
+          port = ports.events
+          if (!port) {
+            return callback(ReferenceError('Sandbox events port not found'))
+          }
+          _publishSandbox(type, params, callback)
+        }
+      })
+    }
+    else {
+      publishAWS(params, callback)
     }
 
-    let exec = local ? _publishSandbox.bind({}, type, port) : publishAWS
-    exec(params, callback)
     return promise
   }
 }
 
-function _publishSandbox (type, port, params, callback) {
+function _publishSandbox (type, params, callback) {
   let req = http.request({
     method: 'POST',
     port,

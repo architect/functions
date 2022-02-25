@@ -1,4 +1,5 @@
 let http = require('http')
+
 /**
  * @param {string} type - events, queues, or tables
  * @returns {object} {name: value}
@@ -7,19 +8,29 @@ module.exports = function lookup (callback) {
   // We really only want to load aws-sdk if absolutely necessary
   // eslint-disable-next-line
   let aws = require('aws-sdk')
-  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX } = process.env
-  if (!app) return callback(ReferenceError('ARC_APP_NAME env var not found'))
+  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, AWS_REGION } = process.env
+  let local = env === 'testing'
+  if (!local && !app) {
+    return callback(ReferenceError('ARC_APP_NAME env var not found'))
+  }
+  if (local && !app) {
+    app = 'arc-app'
+  }
   let Path = '/' + toLogicalID(`${app}-${env}`)
   let Recursive = true
   let values = []
-  let local = env === 'testing'
   let config
 
   if (local) {
-    let { ports } = JSON.parse(ARC_SANDBOX)
-    let port = ports._arc
-    if (!port) return callback(ReferenceError('Sandbox internal port not found'))
-    let region = process.env.AWS_REGION || 'us-west-2'
+    let port = 2222
+    if (ARC_SANDBOX) {
+      let { ports } = JSON.parse(ARC_SANDBOX)
+      if (!ports._arc) {
+        return callback(ReferenceError('Sandbox internal port not found'))
+      }
+      port = ports._arc
+    }
+    let region = AWS_REGION || 'us-west-2'
     config = {
       endpoint: new aws.Endpoint(`http://localhost:${port}/_arc/ssm`),
       region,
@@ -30,7 +41,13 @@ module.exports = function lookup (callback) {
 
   function getParams (params) {
     ssm.getParametersByPath(params, function done (err, result) {
-      if (err) {
+      if (err && local &&
+          err.message.includes('Inaccessible host') &&
+          err.message.includes('localhost')) {
+        let msg = 'Sandbox internal services are unavailable, please ensure Sandbox is running'
+        callback(ReferenceError(msg))
+      }
+      else if (err) {
         callback(err)
       }
       else if (result.NextToken) {

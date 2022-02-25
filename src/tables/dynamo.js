@@ -1,4 +1,5 @@
 let https = require('https')
+let getPorts = require('../lib/get-ports')
 let db, doc
 
 /**
@@ -19,12 +20,10 @@ function getDynamo (type, callback) {
     ARC_ENV,
     ARC_LOCAL,
     AWS_REGION,
-    ARC_SANDBOX,
   } = process.env
   let local = ARC_ENV === 'testing' || ARC_LOCAL
   let DB = aws.DynamoDB
   let Doc = aws.DynamoDB.DocumentClient
-  let localConfig
 
   if (db && type === 'db') {
     return callback(null, db)
@@ -50,34 +49,43 @@ function getDynamo (type, callback) {
       httpOptions: { agent }
     })
     // TODO? migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`?
-  }
-  else {
-    // Ideally we would check the validity of the port, but since this is initiated in global scope we can't necessarily rely on `ports.tables` (which is only added by Sandbox if `inv.tables`)
-    let { ports } = JSON.parse(ARC_SANDBOX)
-    let port = ports.tables
-    localConfig = {
-      endpoint: new aws.Endpoint(`http://localhost:${port}`),
-      region: AWS_REGION || 'us-west-2' // Do not assume region is set!
+
+    if (type === 'db') {
+      db = new DB
+      return callback(null, db)
+    }
+    if (type === 'doc') {
+      doc = new Doc
+      return callback(null, doc)
     }
   }
+  else {
+    getPorts((err, ports) => {
+      if (err) callback(err)
+      else {
+        let port = ports.tables
+        if (!port) {
+          return callback(ReferenceError('Sandbox tables port not found'))
+        }
+        let localConfig = {
+          endpoint: new aws.Endpoint(`http://localhost:${port}`),
+          region: AWS_REGION || 'us-west-2' // Do not assume region is set!
+        }
+        if (type === 'db') {
+          db = new DB(localConfig)
+          return callback(null, db)
+        }
 
-  if (type === 'db') {
-    db = local
-      ? new DB(localConfig)
-      : new DB
-    return callback(null, db)
-  }
-
-  if (type === 'doc') {
-    doc = local
-      ? new Doc(localConfig)
-      : new Doc
-    return callback(null, doc)
+        if (type === 'doc') {
+          doc = new Doc(localConfig)
+          return callback(null, doc)
+        }
+      }
+    })
   }
 }
 
 module.exports = {
   db: getDynamo.bind({}, 'db'),
   doc: getDynamo.bind({}, 'doc'),
-  session: getDynamo.bind({}, 'session'),
 }
