@@ -4,12 +4,17 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
-## [next] 2022-02-24
+## [5.0.4] 2022-02-24
 
 ### Changed
 
 - Deep require `aws-sdk` deps for a potentially large cold start perf boost
   - In small-scale testing, we found this can further reduce cold start performance by 2.5-5x, averaging ~150ms on Lambda
+
+
+### Fixed
+
+- Fixed usage with custom stack names; fixes #1322, thanks @Lugana707, @pgte
 
 ---
 

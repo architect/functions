@@ -1,5 +1,3 @@
-let http = require('http')
-
 /**
  * @param {string} type - events, queues, or tables
  * @returns {object} {name: value}
@@ -8,15 +6,15 @@ module.exports = function lookup (callback) {
   // We really only want to load aws-sdk if absolutely necessary, and only the client we need
   // eslint-disable-next-line
   let SSM = require('aws-sdk/clients/ssm')
-  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, AWS_REGION } = process.env
+  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, ARC_STACK_NAME: stack, AWS_REGION } = process.env
   let local = env === 'testing'
-  if (!local && !app) {
-    return callback(ReferenceError('ARC_APP_NAME env var not found'))
+  if (!local && !app && !stack) {
+    return callback(ReferenceError('ARC_APP_NAME and ARC_STACK_NAME env vars not found'))
   }
   if (local && !app) {
     app = 'arc-app'
   }
-  let Path = '/' + toLogicalID(`${app}-${env}`)
+  let Path = `/${stack || toLogicalID(`${app}-${env}`)}`
   let Recursive = true
   let values = []
   let config
@@ -33,7 +31,6 @@ module.exports = function lookup (callback) {
     config = {
       endpoint: `http://localhost:${port}/_arc/ssm`,
       region: AWS_REGION || 'us-west-2',
-      httpOptions: { agent: new http.Agent() }
     }
   }
   let ssm = new SSM(config)
