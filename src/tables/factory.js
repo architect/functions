@@ -5,10 +5,9 @@ let parallel = require('run-parallel')
  * returns a data client
  */
 module.exports = function reflectFactory (tables, callback) {
-  let { db, doc } = dynamo
   let local = process.env.ARC_ENV === 'testing'
 
-  parallel({ db, doc }, function done (err, { db, doc }) {
+  parallel(dynamo, function done (err, { db, doc }) {
     if (err) return callback(err)
 
     let data = Object.keys(tables)

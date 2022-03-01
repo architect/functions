@@ -67,12 +67,13 @@ test('Local port + region configuration', t => {
   })
 
   // Doc x callback
+  // For whatever mysterious reason(s), docs configure their endpoint under doc.service.endpoint, not doc.endpoint
   dynamo.doc((err, doc) => {
     if (err) t.fail(err)
-    t.equal(doc.options.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-    t.equal(doc.options.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.options.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-    t.equal(doc.options.endpoint.port, defaultPort, `Doc configured 'port' property is ${defaultPort}`)
+    t.equal(doc.service.endpoint.host, host, `Doc configured 'host' property is ${host}`)
+    t.equal(doc.service.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
+    t.equal(doc.service.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
+    t.equal(doc.service.endpoint.port, defaultPort, `Doc configured 'port' property is ${defaultPort}`)
     t.equal(doc.service.config.region, defaultRegion, `Doc configured 'region' property is ${defaultRegion}`)
   })
 
@@ -102,12 +103,13 @@ test('Local port + region configuration', t => {
   })
 
   // Doc x callback
+  // For whatever mysterious reason(s), docs configure their endpoint under doc.service.endpoint, not doc.endpoint
   dynamo.doc((err, doc) => {
     if (err) t.fail(err)
-    t.equal(doc.options.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-    t.equal(doc.options.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.options.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-    t.equal(doc.options.endpoint.port, customPort, `Doc configured 'port' property is ${customPort}`)
+    t.equal(doc.service.endpoint.host, host, `Doc configured 'host' property is ${host}`)
+    t.equal(doc.service.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
+    t.equal(doc.service.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
+    t.equal(doc.service.endpoint.port, customPort, `Doc configured 'port' property is ${customPort}`)
     t.equal(doc.service.config.region, customRegion, `Doc configured 'region' property is ${customRegion}`)
   })
 

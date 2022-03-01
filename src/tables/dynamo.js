@@ -12,7 +12,7 @@ function getDynamo (type, callback) {
 
   // We really only want to load aws-sdk if absolutely necessary
   // eslint-disable-next-line
-  let aws = require('aws-sdk')
+  let dynamo = require('aws-sdk/clients/dynamodb')
 
   // We might normally like to throw if `local && !port`, but this is also a direct DynamoDB interface in global scope
   // Thus, this path instantiates even if the project doesn't have tables
@@ -22,8 +22,8 @@ function getDynamo (type, callback) {
     AWS_REGION,
   } = process.env
   let local = ARC_ENV === 'testing' || ARC_LOCAL
-  let DB = aws.DynamoDB
-  let Doc = aws.DynamoDB.DocumentClient
+  let DB = dynamo
+  let Doc = dynamo.DocumentClient
 
   if (db && type === 'db') {
     return callback(null, db)
@@ -45,17 +45,17 @@ function getDynamo (type, callback) {
       maxSockets: 50, // Node can set to Infinity; AWS maxes at 50; check back on this every once in a while
       rejectUnauthorized: true,
     })
-    aws.config.update({
+    let config = {
       httpOptions: { agent }
-    })
+    }
     // TODO? migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`?
 
     if (type === 'db') {
-      db = new DB
+      db = new DB(config)
       return callback(null, db)
     }
     if (type === 'doc') {
-      doc = new Doc
+      doc = new Doc(config)
       return callback(null, doc)
     }
   }
@@ -67,17 +67,16 @@ function getDynamo (type, callback) {
         if (!port) {
           return callback(ReferenceError('Sandbox tables port not found'))
         }
-        let localConfig = {
-          endpoint: new aws.Endpoint(`http://localhost:${port}`),
+        let config = {
+          endpoint: `http://localhost:${port}`,
           region: AWS_REGION || 'us-west-2' // Do not assume region is set!
         }
         if (type === 'db') {
-          db = new DB(localConfig)
+          db = new DB(config)
           return callback(null, db)
         }
-
         if (type === 'doc') {
-          doc = new Doc(localConfig)
+          doc = new Doc(config)
           return callback(null, doc)
         }
       }
