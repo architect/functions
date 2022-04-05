@@ -6,7 +6,7 @@ let qs = require('querystring')
  */
 module.exports = function parseBody (req) {
   let ctype = req.headers['content-type'] || req.headers['Content-Type']
-  let passthru = !req.body || !req.headers || !ctype || !Object.getOwnPropertyNames(req.body).length
+  let passthru = !req.body || !req.headers || !ctype || (typeof req.body !== 'string' && !Object.keys(req.body).length)
   if (passthru) {
     return req.body
   }

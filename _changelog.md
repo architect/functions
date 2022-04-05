@@ -4,6 +4,14 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
+## [5.0.5] 2022-04-05
+
+### Fixed
+
+- Fixed body parsing issue that impacts performance of large request body payloads
+
+---
+
 ## [5.0.4] 2022-02-24
 
 ### Changed
