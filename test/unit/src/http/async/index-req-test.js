@@ -171,6 +171,19 @@ test('Architect v7 (HTTP): get /:activities/{proxy+} (/nature/hiking/wilderness)
   check({ req, request: copy(request), t })
 })
 
+test('Architect v7 (HTTP): get / with brotli compression', async t => {
+  t.plan(22)
+  let request = reqs.arc7.getWithBrotli
+  let req
+  let fn = async event => {
+    req = event
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(copy(request))
+  check({ req, request: copy(request), t })
+})
+
 test('Architect v7 (HTTP): post /form (JSON)', async t => {
   t.plan(23)
   let request = reqs.arc7.postJson
