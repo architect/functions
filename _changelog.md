@@ -4,6 +4,18 @@
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 ---
 
+## [5.1.0] 2022-04-08
+
+### Added
+
+- Added automatic brotli (`br`) compression to HTTP API responses; compression will not be applied if any of the following cases are true:
+  - You specify a `content-encoding` header
+  - The requesting client does not request `br` encoding via the `accept-encoding` header
+  - You return anything other than a buffer or string as the body of your response
+  - You are using a legacy REST API
+
+---
+
 ## [5.0.5] 2022-04-05
 
 ### Fixed
