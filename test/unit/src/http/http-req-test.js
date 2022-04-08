@@ -152,6 +152,16 @@ test('Architect v7 (HTTP): get /:activities/{proxy+} (/nature/hiking/wilderness)
   handler(copy(request), {}, end)
 })
 
+test('Architect v7 (HTTP): get / with brotli compression', t => {
+  t.plan(24)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc7.getWithBrotli
+  let handler = http((req, res) => {
+    check({ req, request: copy(request), res, t })
+  })
+  handler(copy(request), {}, end)
+})
+
 test('Architect v7 (HTTP): post /form (JSON)', t => {
   t.plan(25)
   let end = () => t.pass('Final callback called')

@@ -1,5 +1,6 @@
 let httpError = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
+let { brotliCompressSync } = require('zlib')
 
 module.exports = function responseFormatter (req, params) {
   let isError = params instanceof Error
@@ -76,6 +77,17 @@ module.exports = function responseFormatter (req, params) {
   if (params.headers && params.headers['Content-Type']) {
     delete params.headers['Content-Type'] // Clean up improper casing
   }
+
+  // Headers: content-encoding
+  let encoding = params.headers && params.headers['content-encoding'] ||
+                 params.headers && params.headers['Content-Encoding']
+  if (params.headers && params.headers['Content-Encoding']) {
+    delete params.headers['Content-Encoding'] // Clean up improper casing
+  }
+  let acceptEncoding = (req.headers && req.headers['accept-encoding'] ||
+                        req.headers && req.headers['Accept-Encoding'])
+  // Legacy API Gateway (REST) has its own compression, so don't double-compress
+  let shouldCompress = !encoding && acceptEncoding && acceptEncoding.includes('br') && req.version
 
   // Cross-origin ritual sacrifice
   let cors = params.cors
@@ -160,12 +172,25 @@ module.exports = function responseFormatter (req, params) {
   let isBinary = binaryTypes.some(t => res.headers['content-type'].includes(t))
   let bodyIsString = typeof res.body === 'string'
   let b64enc = i => new Buffer.from(i).toString('base64')
-  // Encode (and flag) outbound buffers
+  function compress (body) {
+    res.headers['content-encoding'] = 'br'
+    return brotliCompressSync(body)
+  }
+
+  // Compress, encode, and flag buffer responses
   if (bodyIsBuffer) {
-    res.body = b64enc(res.body)
+    let body = shouldCompress ? compress(res.body) : res.body
+    res.body = b64enc(body)
     res.isBase64Encoded = true
   }
-  // Body is likely base64 & has binary MIME type, so flag it
-  if (bodyIsString && isBinary) res.isBase64Encoded = true
+  // Body is likely already base64 encoded & has binary MIME type, so just flag it
+  else if (bodyIsString && isBinary) {
+    res.isBase64Encoded = true
+  }
+  // Compress, encode, and flag string responses
+  else if (bodyIsString && shouldCompress) {
+    res.body = b64enc(compress(res.body))
+    res.isBase64Encoded = true
+  }
   return res
 }

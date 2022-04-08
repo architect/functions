@@ -1,4 +1,5 @@
 let { join } = require('path')
+let { brotliDecompressSync } = require('zlib')
 let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
 let test = require('tape')
@@ -34,7 +35,7 @@ test('Set up env', t => {
 })
 
 test('Architect v7 (HTTP)', t => {
-  t.plan(63)
+  t.plan(75)
   let request = requests.arc7.getIndex
   run(responses.arc7.noReturn, copy(request), (err, res) => {
     t.notOk(err, 'No error')
@@ -99,7 +100,15 @@ test('Architect v7 (HTTP)', t => {
   run(responses.arc7.encodedWithBinaryType, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(responses.arc7.encodedWithBinaryType.body, res.body, match('res.body', res.body))
-    t.match(res.headers['content-type'], /application\/pdf/, 'Unspecified content type defaults to JSON')
+    t.match(res.headers['content-type'], /application\/pdf/, 'Passed correct content-type')
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  run(responses.arc7.encodedWithCompression, copy(request), (err, res) => {
+    t.notOk(err, 'No error')
+    t.deepEqual(responses.arc7.encodedWithCompression.body, Buffer.from(res.body, 'base64'), match('res.body', res.body))
+    t.match(res.headers['content-type'], /application\/pdf/, 'Passed correct content-type')
+    t.match(res.headers['content-encoding'], /^br$/, 'Content encoding set to brotli')
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
@@ -128,6 +137,16 @@ test('Architect v7 (HTTP)', t => {
     t.notOk(err, 'No error')
     t.equal(res.body, '', 'Empty body passed')
     t.equal(responses.arc7.invalid.statusCode, res.statusCode, 'Responded with invalid status code')
+  })
+  // Compression / encoding
+  run(responses.arc7.bodyWithStatus, copy(requests.arc7.getWithBrotli), (err, res) => {
+    t.notOk(err, 'No error')
+    let buf = new Buffer.from(res.body, 'base64')
+    t.equal(responses.arc7.bodyWithStatus.body, brotliDecompressSync(buf).toString(), match('res.body', res.body))
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
+    t.match(res.headers['content-encoding'], /^br$/, 'Content encoding set to brotli')
+    t.equal(res.statusCode, 200, 'Responded with 200')
   })
 })
 

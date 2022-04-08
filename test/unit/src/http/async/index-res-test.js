@@ -1,5 +1,6 @@
 /* eslint-disable require-await */
 let { join } = require('path')
+let { brotliDecompressSync } = require('zlib')
 let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
 let test = require('tape')
@@ -36,7 +37,7 @@ test('Set up env', t => {
 })
 
 test('Architect v7 (HTTP)', async t => {
-  t.plan(48)
+  t.plan(58)
   let request = requests.arc7.getIndex
 
   let res = await run(responses.arc7.noReturn, copy(request))
@@ -95,6 +96,13 @@ test('Architect v7 (HTTP)', async t => {
   t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
   t.equal(res.statusCode, 200, 'Responded with 200')
 
+  res = await run(responses.arc7.encodedWithCompression, copy(request))
+  t.deepEqual(responses.arc7.encodedWithCompression.body, Buffer.from(res.body, 'base64'), match('res.body', res.body))
+  t.match(res.headers['content-type'], /application\/pdf/, 'Actual content type returned in header')
+  t.match(res.headers['content-encoding'], /^br$/, 'Content encoding set to brotli')
+  t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+  t.equal(res.statusCode, 200, 'Responded with 200')
+
   res = await run(responses.arc7.cookies, copy(request))
   t.equal(responses.arc7.cookies.body, res.body, match('res.body', res.body))
   t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
@@ -116,6 +124,15 @@ test('Architect v7 (HTTP)', async t => {
   res = await run(responses.arc7.invalid, copy(request))
   t.equal(res.body, '', 'Empty body passed')
   t.equal(responses.arc7.invalid.statusCode, res.statusCode, 'Responded with invalid status code')
+
+  // Compression / encoding
+  res = await run(responses.arc7.bodyWithStatus, copy(requests.arc7.getWithBrotli))
+  let buf = new Buffer.from(res.body, 'base64')
+  t.equal(responses.arc7.bodyWithStatus.body, brotliDecompressSync(buf).toString(), match('res.body', res.body))
+  t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+  t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
+  t.match(res.headers['content-encoding'], /^br$/, 'Content encoding set to brotli')
+  t.equal(res.statusCode, 200, 'Responded with 200')
 })
 
 test('Architect v6 (REST): dependency-free responses', async t => {
