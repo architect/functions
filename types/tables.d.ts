@@ -1,9 +1,17 @@
 import type { DynamoDB } from "aws-sdk";
 
+// Turns off automatic exporting
+export {};
+
 // TableName not needed as the library sets it
 type Params<InputType> = Omit<InputType, "TableName">;
 
-// Strip and then override the Items field
+// As above but also overriding the Key field
+type ParamsWithKey<InputType, Item> = Omit<Params<InputType>, "Key"> & {
+  Key: Key<Item>;
+};
+
+// Just overriding the Items field
 type ItemsOutput<OutputType, Item> = Omit<OutputType, "Items"> & {
   Items: Item[];
 };
@@ -14,7 +22,10 @@ type QueryOutput<Item> = ItemsOutput<DynamoDB.DocumentClient.QueryOutput, Item>;
 type ScanParams = Params<DynamoDB.DocumentClient.ScanInput>;
 type ScanOutput<Item> = ItemsOutput<DynamoDB.DocumentClient.ScanOutput, Item>;
 
-type UpdateParams = Params<DynamoDB.DocumentClient.UpdateItemInput>;
+type UpdateParams<Item> = ParamsWithKey<
+  DynamoDB.DocumentClient.UpdateItemInput,
+  Item
+>;
 type UpdateOutput = DynamoDB.DocumentClient.UpdateItemOutput;
 
 // Depending on the operation, the key attributes may be mandatory, but we don't
@@ -39,11 +50,11 @@ export interface ArcTable<Item = unknown> {
   scan(params: ScanParams): Promise<ScanOutput<Item>>;
   scan(params: ScanParams, callback: Callback<ScanOutput<Item>>): void;
 
-  update(params: UpdateParams): Promise<UpdateOutput>;
-  update(params: UpdateParams, callback: Callback<UpdateOutput>): void;
+  update(params: UpdateParams<Item>): Promise<UpdateOutput>;
+  update(params: UpdateParams<Item>, callback: Callback<UpdateOutput>): void;
 }
 
-type DB<Tables> = {
+export type ArcDB<Tables> = {
   [tableName in keyof Tables]: ArcTable<Tables[tableName]>;
 };
 
@@ -51,7 +62,7 @@ type DB<Tables> = {
 type AnyTables = Record<string, any>;
 
 export interface ArcTables {
-  <Tables = AnyTables>(): Promise<DB<Tables>>;
+  <Tables = AnyTables>(): Promise<ArcDB<Tables>>;
 
   // legacy methods
   insert: any;
