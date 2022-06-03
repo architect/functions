@@ -1,6 +1,6 @@
 import type { DynamoDB } from "aws-sdk";
 
-// Turns off automatic exporting
+// Turn off automatic exporting
 export {};
 
 // TableName not needed as the library sets it

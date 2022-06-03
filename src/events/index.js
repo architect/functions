@@ -11,7 +11,7 @@ module.exports = function eventsAndQueuesFactory (arc, type) {
      *
      * @param {Object} params
      * @param {String} params.name - the event name (required)
-     * @param {String} params.payload - a json event payload (required)
+     * @param {Object} params.payload - a json event payload (required)
      * @param {Function} callback - a node style errback (optional)
      * @returns {Promise} - returned if no callback is supplied
      */
