@@ -2,4 +2,4 @@ export interface StaticOptions {
   stagePath: boolean;
 }
 
-export type Static = (asset: string, options?: StaticOptions) => string;
+export type ArcStatic = (asset: string, options?: StaticOptions) => string;

@@ -27,5 +27,5 @@ interface EventsOrQueues<PublishResult> {
   ): LambdaFunction;
 }
 
-export type Events = EventsOrQueues<SNS.Types.PublishResponse>;
-export type Queues = EventsOrQueues<SQS.Types.SendMessageResult>;
+export type ArcEvents = EventsOrQueues<SNS.Types.PublishResponse>;
+export type ArcQueues = EventsOrQueues<SQS.Types.SendMessageResult>;
