@@ -1,9 +1,10 @@
 /// <reference types="node" />
 
+import { ArcHTTP } from "./http";
 import { Events, Queues } from "./events";
 import { ArcTables } from "./tables";
 
-export const http: any; // TODO
+export const http: ArcHTTP;
 export const static: any; // TODO
 export const ws: any; // TODO
 export const services: any; // TODO

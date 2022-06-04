@@ -1,4 +1,5 @@
 import { SNS, SQS } from "aws-sdk";
+import { Callback } from "./util";
 
 // Turn off automatic exporting
 export {};
@@ -7,8 +8,6 @@ interface Params<Payload> {
   name: string;
   payload: Payload;
 }
-
-type Callback<Res> = (err: Error, res: Res) => void;
 
 // Consumers of this library should not care exactly what this is. Just that
 // it's a lambda function which should be exported as a handler.

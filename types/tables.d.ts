@@ -1,4 +1,5 @@
 import type { DynamoDB } from "aws-sdk";
+import { Callback } from "./util";
 
 // Turn off automatic exporting
 export {};
@@ -31,8 +32,6 @@ type UpdateOutput = DynamoDB.DocumentClient.UpdateItemOutput;
 // Depending on the operation, the key attributes may be mandatory, but we don't
 // know what the key attributes are, so Partial is the best we can do.
 type Key<Item> = Partial<Item>;
-
-type Callback<Res> = (err: Error, res: Res) => void;
 
 export interface ArcTable<Item = unknown> {
   delete(key: Key<Item>): Promise<{}>;
