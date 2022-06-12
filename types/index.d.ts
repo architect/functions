@@ -6,7 +6,7 @@ import { ArcWebSocket } from "./ws";
 import { ArcEvents, ArcQueues } from "./events";
 import { ArcTables } from "./tables";
 
-type ArcServices = () => Promise<Record<string, any>>;
+export type ArcServices = () => Promise<Record<string, any>>;
 
 export const http: ArcHTTP;
 export const static: ArcStatic;
