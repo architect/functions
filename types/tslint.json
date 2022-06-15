@@ -1,0 +1,7 @@
+{
+  "extends": "@definitelytyped/dtslint/dtslint.json",
+  "rules": {
+    "no-unnecessary-generics": false,
+    "interface-over-type-literal": false
+  }
+}

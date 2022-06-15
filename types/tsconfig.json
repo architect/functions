@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "ES2020",
+    "lib": ["ES6"],
+    "moduleResolution": "node",
+    "types": [],
+    "strict": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@architect/functions": ["."]
+    }
+  }
+}
