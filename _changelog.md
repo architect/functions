@@ -1,7 +1,18 @@
 # Architect Functions changelog
 
 ---
+
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
+
+---
+
+## [Unreleased]
+
+### Added
+
+- Bundled typings for public API, thanks @camjackson
+  - tested with `dtslint` in a new GitHub workflow
+
 ---
 
 ## [5.1.0] 2022-04-08
