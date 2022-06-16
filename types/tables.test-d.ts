@@ -33,9 +33,9 @@ async function itIsPermissiveByDefault() {
   db.name('note');
   // $ExpectType object
   db.reflect();
-  // $ExpectType AWS.DynamoDB
+  // $ExpectType DynamoDB
   db._db;
-  // $ExpectType AWS.DynamoDB.DocumentClient
+  // $ExpectType DocumentClient
   db._doc;
 }
 
@@ -69,8 +69,9 @@ async function itHasTypesForAllMethods() {
   await db.note.put({ garbage: "trash" });
   // $ExpectError
   await db.note.put({ pk: "yay" });
-  // $ExpectType {}
+  // $ExpectType Record<string, any>
   const newNote = await db.note.put({ pk: "yay", title: "finally" });
+  // $ExpectType any
   newNote.title;
 
   // $ExpectError

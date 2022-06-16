@@ -40,7 +40,7 @@ export interface ArcTable<Item = unknown> {
   get(key: Key<Item>): Promise<Item>;
   get(key: Key<Item>, callback: Callback<Item>): void;
 
-  put(item: Item): Promise<{}>;
+  put(item: Item): Promise<Record<string, any>>;
   put(item: Item, callback: Callback<{}>): void;
 
   query(params: QueryParams): Promise<QueryOutput<Item>>;
@@ -53,8 +53,15 @@ export interface ArcTable<Item = unknown> {
   update(params: UpdateParams<Item>, callback: Callback<UpdateOutput>): void;
 }
 
-export type ArcDB<Tables> = {
+type ArcDBWith<Tables> = {
   [tableName in keyof Tables]: ArcTable<Tables[tableName]>;
+};
+
+export type ArcDB<Tables> = ArcDBWith<Tables> & {
+  name(name: string): string;
+  reflect(): object;
+  _db: DynamoDB;
+  _doc: DynamoDB.DocumentClient;
 };
 
 // Permissive by default: allows any table, any inputs, any outputs.
