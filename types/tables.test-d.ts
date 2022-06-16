@@ -28,6 +28,15 @@ async function itIsPermissiveByDefault() {
 
   // $ExpectType any
   await db.blah.get({ garbage: "trash" });
+
+  // $ExpectType string
+  db.name('note');
+  // $ExpectType object
+  db.reflect();
+  // $ExpectType AWS.DynamoDB
+  db._db;
+  // $ExpectType AWS.DynamoDB.DocumentClient
+  db._doc;
 }
 
 async function itEnforcesTableNames() {
@@ -61,7 +70,8 @@ async function itHasTypesForAllMethods() {
   // $ExpectError
   await db.note.put({ pk: "yay" });
   // $ExpectType {}
-  await db.note.put({ pk: "yay", title: "finally" });
+  const newNote = await db.note.put({ pk: "yay", title: "finally" });
+  newNote.title;
 
   // $ExpectError
   await db.note.query({ garbage: "trash" });
