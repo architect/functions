@@ -40,7 +40,7 @@ export interface ArcTable<Item = unknown> {
   get(key: Key<Item>): Promise<Item>;
   get(key: Key<Item>, callback: Callback<Item>): void;
 
-  put(item: Item): Promise<Record<string, any>>;
+  put(item: Item): Promise<{}>;
   put(item: Item, callback: Callback<{}>): void;
 
   query(params: QueryParams): Promise<QueryOutput<Item>>;

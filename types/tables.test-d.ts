@@ -69,10 +69,8 @@ async function itHasTypesForAllMethods() {
   await db.note.put({ garbage: "trash" });
   // $ExpectError
   await db.note.put({ pk: "yay" });
-  // $ExpectType Record<string, any>
-  const newNote = await db.note.put({ pk: "yay", title: "finally" });
-  // $ExpectType any
-  newNote.title;
+  // $ExpectType {}
+  await db.note.put({ pk: "yay", title: "finally" });
 
   // $ExpectError
   await db.note.query({ garbage: "trash" });
