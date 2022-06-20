@@ -58,8 +58,10 @@ type ArcDBWith<Tables> = {
 };
 
 export type ArcDB<Tables> = ArcDBWith<Tables> & {
-  name(name: string): string;
-  reflect(): object;
+  name(name: keyof Tables): string;
+  reflect(): {
+    [tableName in keyof Tables]: string;
+  };
   _db: DynamoDB;
   _doc: DynamoDB.DocumentClient;
 };
