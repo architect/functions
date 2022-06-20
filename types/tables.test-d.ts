@@ -28,6 +28,18 @@ async function itIsPermissiveByDefault() {
 
   // $ExpectType any
   await db.blah.get({ garbage: "trash" });
+
+  // $ExpectType string
+  db.name('note');
+
+  // $ExpectType { [x: string]: string; }
+  db.reflect();
+
+  // $ExpectType DynamoDB
+  db._db;
+
+  // $ExpectType DocumentClient
+  db._doc;
 }
 
 async function itEnforcesTableNames() {
@@ -35,12 +47,20 @@ async function itEnforcesTableNames() {
 
   // $ExpectError
   db.blah;
-
   // $ExpectType ArcTable<NoteTable>
   db.note;
-
   // $ExpectType ArcTable<UserTable>
   db.user;
+
+  // $ExpectError
+  db.name("wrong");
+  // $ExpectType string
+  db.name("note");
+
+  // $ExpectError
+  db.reflect().wrong;
+  // $ExpectType string
+  db.reflect().note;
 }
 
 async function itHasTypesForAllMethods() {

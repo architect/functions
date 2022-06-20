@@ -53,8 +53,17 @@ export interface ArcTable<Item = unknown> {
   update(params: UpdateParams<Item>, callback: Callback<UpdateOutput>): void;
 }
 
-export type ArcDB<Tables> = {
+type ArcDBWith<Tables> = {
   [tableName in keyof Tables]: ArcTable<Tables[tableName]>;
+};
+
+export type ArcDB<Tables> = ArcDBWith<Tables> & {
+  name(name: keyof Tables): string;
+  reflect(): {
+    [tableName in keyof Tables]: string;
+  };
+  _db: DynamoDB;
+  _doc: DynamoDB.DocumentClient;
 };
 
 // Permissive by default: allows any table, any inputs, any outputs.
