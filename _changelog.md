@@ -6,7 +6,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
-## [Unreleased]
+## [5.2.0] 2022-06-28
 
 ### Added
 
