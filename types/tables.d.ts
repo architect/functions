@@ -37,7 +37,7 @@ export interface ArcTable<Item = unknown> {
   delete(key: Key<Item>): Promise<{}>;
   delete(key: Key<Item>, callback: Callback<{}>): void;
 
-  get(key: Key<Item>): Promise<Item>;
+  get(key: Key<Item>): Promise<Item | undefined>;
   get(key: Key<Item>, callback: Callback<Item>): void;
 
   put(item: Item): Promise<Item>;

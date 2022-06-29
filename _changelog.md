@@ -6,7 +6,15 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
-## [5.2.0] 2022-06-28
+## [5.2.1] 2022-06-29
+
+### Fixed
+
+- Return type from ArcTable.get is Promise<Item | undefined>
+
+---
+
+## [5.2.0] 2022-06-29
 
 ### Added
 

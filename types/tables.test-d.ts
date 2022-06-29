@@ -73,7 +73,7 @@ async function itHasTypesForAllMethods() {
 
   // $ExpectError
   await db.note.get({ garbage: "trash" });
-  // $ExpectType NoteTable
+  // $ExpectType NoteTable | undefined
   await db.note.get({ pk: "yay" });
 
   // $ExpectError
