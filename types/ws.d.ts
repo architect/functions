@@ -10,7 +10,7 @@ type InfoParams = { id: string };
 type InfoResponse = ApiGatewayManagementApi.Types.GetConnectionResponse;
 
 export interface ArcWebSocket {
-  _api?: ApiGatewayManagementApi;
+  _api: ApiGatewayManagementApi;
 
   send(params: SendParams): Promise<void>;
   send(params: SendParams, callback: Callback<void>): void;

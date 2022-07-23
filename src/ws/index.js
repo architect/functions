@@ -96,8 +96,14 @@ function info ({ id }, callback) {
 }
 
 module.exports = {
-  _api,
   send,
   close,
   info,
 }
+
+Object.defineProperty(module.exports, '_api', {
+  get () {
+    instantiateAPI()
+    return _api
+  }
+})
