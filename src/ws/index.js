@@ -102,6 +102,7 @@ module.exports = {
 }
 
 Object.defineProperty(module.exports, '_api', {
+  enumerable: true,
   get () {
     instantiateAPI()
     return _api
