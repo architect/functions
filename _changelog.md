@@ -4,12 +4,18 @@
 
 Also see: [Architect changelog](https://github.com/architect/architect/blob/main/changelog.md)
 
+---
 
-## [x.x.x] 2022-07-23
+## [5.2.2] 2022-09-07
+
+### Changed
+
+- Updated dependencies
+
 
 ### Fixed
 
-- `ws._api` no longer needs to be initialized by running a websocket function
+- `ws._api` no longer needs to be initialized by running a WebSocket function
 
 ---
 
