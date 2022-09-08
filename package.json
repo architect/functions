@@ -38,7 +38,7 @@
     "@architect/eslint-config": "1.0.1",
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
     "@architect/sandbox": "^5.3.3",
-    "@definitelytyped/dtslint": "^0.0.127",
+    "@definitelytyped/dtslint": "0.0.115",
     "@types/aws-lambda": "^8.10.103",
     "@types/node": "^18.7.16",
     "aws-sdk": "2.1055.0",
