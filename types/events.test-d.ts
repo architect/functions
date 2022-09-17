@@ -1,4 +1,4 @@
-import arc from "@architect/functions";
+import arc from "../";
 
 interface Payload {
   some: string;
@@ -33,7 +33,7 @@ function eventSubscribing() {
   });
 
   // $ExpectError
-  arc.events.subscribe<Payload>(async (event: number) => {});
+  arc.events.subscribe<Payload>(async (event: number) => { });
 
   arc.events.subscribe<Payload>(async (event: Payload) => {
     // $ExpectType Payload
@@ -75,7 +75,7 @@ function queueSubscribing() {
   });
 
   // $ExpectError
-  arc.queues.subscribe<Payload>(async (event: number) => {});
+  arc.queues.subscribe<Payload>(async (event: number) => { });
 
   arc.queues.subscribe<Payload>(async (event: Payload) => {
     // $ExpectType Payload

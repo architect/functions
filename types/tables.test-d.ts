@@ -1,4 +1,4 @@
-import arc from "@architect/functions";
+import arc from "../";
 
 interface NoteTable {
   pk: string;

@@ -2,7 +2,7 @@ import { SNS, SQS } from "aws-sdk";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
-export {};
+export { };
 
 interface Params<Payload> {
   name: string;
@@ -17,13 +17,12 @@ interface EventsOrQueues<PublishResult> {
   publish<Payload = any>(params: Params<Payload>): Promise<PublishResult>;
   publish<Payload = any>(
     params: Params<Payload>,
-    callback: Callback<PublishResult>
+    callback: Callback<PublishResult>,
   ): void;
-
   subscribe<Event = any>(
     handler:
       | ((event: Event) => Promise<void>)
-      | ((event: Event, callback: Callback<void>) => void)
+      | ((event: Event, callback: Callback<void>) => void),
   ): LambdaFunction;
 }
 

@@ -2,7 +2,7 @@ import type { DynamoDB } from "aws-sdk";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
-export {};
+export { };
 
 // TableName not needed as the library sets it
 type Params<InputType> = Omit<InputType, "TableName">;

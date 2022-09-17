@@ -2,7 +2,7 @@ import { ApiGatewayManagementApi } from "aws-sdk";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
-export {};
+export { };
 
 type SendParams = { id: string; payload: any };
 type CloseParams = { id: string };
