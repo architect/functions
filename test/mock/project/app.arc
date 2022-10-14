@@ -6,6 +6,7 @@ get /http-session
 get /http-async-session
 get /incompatible-version
 post /publish-event/*
+get /*
 
 @events
 cb-event
