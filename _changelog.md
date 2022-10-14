@@ -6,6 +6,19 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [5.2.3] 2022-10-14
+
+### Changed
+
+- Updated dependencies
+
+
+### Fixed
+
+- Fixed double-encoding issue for `arc.http[async]` responses that are already base64-encoded
+
+---
+
 ## [5.2.2] 2022-09-07
 
 ### Changed

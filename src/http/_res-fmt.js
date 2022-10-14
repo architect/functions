@@ -86,8 +86,6 @@ module.exports = function responseFormatter (req, params) {
   }
   let acceptEncoding = (req.headers && req.headers['accept-encoding'] ||
                         req.headers && req.headers['Accept-Encoding'])
-  // Legacy API Gateway (REST) has its own compression, so don't double-compress
-  let shouldCompress = !encoding && acceptEncoding && acceptEncoding.includes('br') && req.version
 
   // Cross-origin ritual sacrifice
   let cors = params.cors
@@ -178,6 +176,9 @@ module.exports = function responseFormatter (req, params) {
   }
 
   // Compress, encode, and flag buffer responses
+  // Legacy API Gateway (REST, i.e. !req.version) and ASAP (which sets isBase64Encoded) handle their own compression, so don't double-compress / encode
+  let shouldCompress = !encoding && acceptEncoding && acceptEncoding.includes('br') &&
+                        req.version && !params.isBase64Encoded
   if (bodyIsBuffer) {
     let body = shouldCompress ? compress(res.body) : res.body
     res.body = b64enc(body)
