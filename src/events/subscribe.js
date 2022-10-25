@@ -27,7 +27,7 @@ module.exports = function _subscribe (type) {
         if (isEvents) {
           event = event && Object.keys(event).length ? event : fallback
         }
-        return await Promise.all(event.Records.map(async record => {
+        return Promise.all(event.Records.map(async record => {
           try {
             let payload = isEvents ? record.Sns.Message : record.body
             let result = JSON.parse(payload)
