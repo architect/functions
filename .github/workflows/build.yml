@@ -46,7 +46,7 @@ jobs:
         CI: true
 
     - name: Test types # this is kept out of "npm t" because it can be slow
-      run: npm test:types
+      run: npm run test:types
       env:
         CI: true
 
