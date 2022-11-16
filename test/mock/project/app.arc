@@ -8,6 +8,8 @@ get /incompatible-version
 post /publish-event/*
 get /*
 
+@ws
+
 @events
 cb-event
 async-event
