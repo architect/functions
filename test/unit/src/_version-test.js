@@ -1,6 +1,6 @@
 let { join } = require('path')
 let test = require('tape')
-let sut = join(process.cwd(), 'src', 'lib', 'version')
+let sut = join(process.cwd(), 'src', '_version')
 let { versionGTE } = require(sut)
 
 test('versionGTE', t => {

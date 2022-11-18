@@ -1,11 +1,13 @@
+const {
+  SSM
+} = require('@aws-sdk/client-ssm')
+
 /**
  * @param {string} type - events, queues, or tables
  * @returns {object} {name: value}
  */
 module.exports = function lookup (callback) {
-  // We really only want to load aws-sdk if absolutely necessary, and only the client we need
-  // eslint-disable-next-line
-  let SSM = require('aws-sdk/clients/ssm')
+
   let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, ARC_STACK_NAME: stack, AWS_REGION } = process.env
   let local = env === 'testing'
   if (!local && !app && !stack) {

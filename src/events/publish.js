@@ -1,5 +1,7 @@
+let { SQS } = require('@aws-sdk/client-sqs')
+let { SNS } = require('@aws-sdk/client-sns')
 let http = require('http')
-let getPorts = require('../lib/get-ports')
+let getPorts = require('../_get-ports')
 let ledger = { events: {}, queues: {} }
 let port
 
@@ -76,9 +78,6 @@ function _publishSandbox (type, params, callback) {
 
 function eventFactory (arc) {
   return function live ({ name, payload }, callback) {
-    // We really only want to load aws-sdk if absolutely necessary, and only the client we need
-    // eslint-disable-next-line
-    let SNS = require('aws-sdk/clients/sns')
 
     function publish (arn, payload, callback) {
       let sns = new SNS
@@ -107,9 +106,6 @@ function eventFactory (arc) {
 
 function queueFactory (arc) {
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
-    // We really only want to load aws-sdk if absolutely necessary, and only the client we need
-    // eslint-disable-next-line
-    let SQS = require('aws-sdk/clients/sqs')
 
     function publish (arn, payload, callback) {
       let sqs = new SQS

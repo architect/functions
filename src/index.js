@@ -1,4 +1,4 @@
-let { sandboxVersionAtLeast } = require('./lib/version')
+let sandboxVersionAtLeast = require('./_version')
 
 /**
  * Ensure env is one of: 'testing', 'staging', or 'production'
