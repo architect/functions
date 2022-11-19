@@ -1,15 +1,17 @@
 let dynamo = require('@aws-sdk/client-dynamodb')
 let docclient = require('@aws-sdk/lib-dynamodb')
-let https = require('https')
 let getPorts = require('../_get-ports')
-let db, doc
 
 /**
  * Instantiates Dynamo service interfaces
  */
+let db, doc
+
 function getDynamo (type, callback) {
+
   if (!type)
     throw ReferenceError('Must supply Dynamo service interface type')
+
   let { ARC_ENV, ARC_LOCAL, AWS_REGION } = process.env
   let local = ARC_ENV === 'testing' || ARC_LOCAL
   let DB = dynamo.DynamoDB
@@ -24,17 +26,7 @@ function getDynamo (type, callback) {
   }
 
   if (!local) {
-    let agent = new https.Agent({
-      keepAlive: true,
-      maxSockets: 50, // Node can set to Infinity; AWS maxes at 50; check back on this every once in a while
-      rejectUnauthorized: true,
-    })
-    // TODO? migrate to using `AWS_NODEJS_CONNECTION_REUSE_ENABLED`?
-    let config = {
-      httpOptions: { agent }
-    }
-
-    db = new DB(config)
+    db = new DB()
     doc = Doc.from(db)
     return callback(null, type === 'db' ? db : doc)
   }

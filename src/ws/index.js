@@ -1,7 +1,8 @@
-const { ApiGatewayManagementApi
+const { ApiGatewayManagementApi, PostToConnectionCommand, DeleteConnectionCommand, GetConnectionCommand
 } = require('@aws-sdk/client-apigatewaymanagementapi')
 
 let _api
+
 function instantiateAPI () {
   if (_api) return
   let {
@@ -43,16 +44,15 @@ function instantiateAPI () {
  */
 function send ({ id, payload }, callback) {
   instantiateAPI()
-  let params = {
+  const command = new PostToConnectionCommand({
     ConnectionId: id,
     Data: JSON.stringify(payload)
-  }
-
+  })
   if (callback) {
-    _api.postToConnection(params, callback)
+    _api.send(command, callback)
     return
   }
-  return _api.postToConnection(params).promise()
+  return _api.send(command)
 }
 
 /**
@@ -67,12 +67,14 @@ function send ({ id, payload }, callback) {
  */
 function close ({ id }, callback) {
   instantiateAPI()
-  let params = { ConnectionId: id }
+  const command = new DeleteConnectionCommand({
+    ConnectionId: id,
+  })
   if (callback) {
-    _api.deleteConnection(params, callback)
+    _api.send(command, callback)
     return
   }
-  return _api.deleteConnection(params).promise()
+  return _api.send(command)
 }
 
 /**
@@ -87,12 +89,14 @@ function close ({ id }, callback) {
  */
 function info ({ id }, callback) {
   instantiateAPI()
-  let params = { ConnectionId: id }
+  const command = new GetConnectionCommand({
+    ConnectionId: id,
+  })
   if (callback) {
-    _api.getConnection(params, callback)
+    _api.send(command, callback)
     return
   }
-  return _api.getConnection(params).promise()
+  return _api.send(command)
 }
 
 module.exports = {
