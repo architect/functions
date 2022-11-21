@@ -11,36 +11,40 @@ let mock = join(__dirname, '..', 'mock')
 let tmp = join(mock, 'tmp')
 let shared = join(tmp, 'node_modules', '@architect', 'shared')
 
-test('Set up mocked files', t => {
-  t.plan(3)
-  process.env.ARC_APP_NAME = 'test'
-  mkdir(shared, { recursive: true })
-  copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
-  copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
-  copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
-  t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
-  t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
-  t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
-  // eslint-disable-next-line
-  arc = require('../..') // module globally inspects arc file so need to require after chdir
-})
+test.only('based', t => {
 
-test('starts the db server', t => {
-  t.plan(1)
-  sandbox.start({ quiet: true, cwd: tmp }, err => {
-    if (err) t.fail(err)
-    else t.pass('Sandbox started')
+  t.test('Set up mocked files', t => {
+    t.plan(3)
+    process.env.ARC_APP_NAME = 'test'
+    mkdir(shared, { recursive: true })
+    copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
+    copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
+    copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
+    t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
+    t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
+    t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
+    // eslint-disable-next-line
+    arc = require('../..') // module globally inspects arc file so need to require after chdir
   })
-})
 
-test('tables() returns table object', async t => {
-  t.plan(3)
-  data = await arc.tables()
-  t.ok(data.accounts, 'accounts table object exists')
-  t.ok(data.messages, 'messages table object exists')
-  t.ok(data['accounts-messages'], 'accounts-messages table object exists')
-})
+  t.test('starts the db server', t => {
+    t.plan(1)
+    sandbox.start({ quiet: false, cwd: tmp }, err => {
+      if (err) t.fail(err)
+      else t.pass('Sandbox started')
+    })
+  })
 
+  t.test('tables() returns table object', async t => {
+    t.plan(3)
+    data = await arc.tables()
+    console.log(data)
+    t.ok(data.accounts, 'accounts table object exists')
+    t.ok(data.messages, 'messages table object exists')
+    t.ok(data['accounts-messages'], 'accounts-messages table object exists')
+  })
+
+  /*
 test('tables().name() returns the table\'s name', async t => {
   t.plan(3)
   const { name } = await arc.tables()
@@ -175,19 +179,20 @@ test('tables update()', async t => {
   t.ok(result, 'got result')
   t.equals(result.hits, 20, 'property updated')
 })
-
-test('server closes', t => {
-  t.plan(1)
-  sandbox.end(err => {
-    if (err) t.fail(err)
-    else t.pass('Sandbox ended')
+*/
+  t.test('server closes', t => {
+    t.plan(1)
+    sandbox.end(err => {
+      if (err) t.fail(err)
+      else t.pass('Sandbox ended')
+    })
   })
-})
 
-test('Clean up env', t => {
-  t.plan(1)
-  delete process.env.ARC_APP_NAME
-  delete process.env.ARC_ENV
-  exec(`rm -rf ${tmp}`)
-  t.ok(!exists(tmp), 'Mocks cleaned up')
+  t.test('Clean up env', t => {
+    t.plan(1)
+    delete process.env.ARC_APP_NAME
+    delete process.env.ARC_ENV
+    exec(`rm -rf ${tmp}`)
+    t.ok(!exists(tmp), 'Mocks cleaned up')
+  })
 })
