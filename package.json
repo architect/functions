@@ -37,7 +37,7 @@
     "@architect/asap": "^5.0.2",
     "@architect/eslint-config": "2.0.1",
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
-    "@architect/sandbox": "^5.3.4",
+    "@architect/sandbox": "^5.3.6-RC.0",
     "@aws-sdk/client-apigatewaymanagementapi": "^3.213.0",
     "@aws-sdk/client-dynamodb": "^3.213.0",
     "@aws-sdk/client-sns": "^3.213.0",
