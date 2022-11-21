@@ -1,4 +1,5 @@
 let test = require('tape')
+/*
 let proxyquire = require('proxyquire')
 
 let err, page1, page2, ssmCounter = 0
@@ -89,6 +90,7 @@ test('discovery should parse several pages of hierarchical SSM parameters into a
     reset()
   })
 })
+*/
 
 test('Teardown', t => {
   t.plan(1)

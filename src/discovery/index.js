@@ -23,7 +23,6 @@ module.exports = function lookup (callback) {
 
   if (local) {
     let port = 2222
-    console.log('wheee', process.env)
     if (ARC_SANDBOX) {
       let { ports } = JSON.parse(ARC_SANDBOX)
       if (!ports._arc) {
@@ -36,14 +35,10 @@ module.exports = function lookup (callback) {
       region: AWS_REGION || 'us-west-2',
     }
   }
-  console.log('TOTAL LOCAL', config)
   let ssm = new SSM(config)
 
   function getParams (params) {
     const command = new GetParametersByPathCommand(params)
-
-    console.log(command)
-
     ssm.send(command, function done (err, result) {
       if (err && local &&
           err.message.includes('Inaccessible host') &&
