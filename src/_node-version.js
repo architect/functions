@@ -1,1 +1,1 @@
-module.exports = Number(process.version.split('.')[1]) >= 18
+module.exports = Number(process.version.replace('v', '').split('.')[0]) >= 18
