@@ -37,7 +37,6 @@ test('starts the db server', t => {
 test('tables() returns table object', async t => {
   t.plan(3)
   data = await arc.tables()
-  console.log(data)
   t.ok(data.accounts, 'accounts table object exists')
   t.ok(data.messages, 'messages table object exists')
   t.ok(data['accounts-messages'], 'accounts-messages table object exists')
