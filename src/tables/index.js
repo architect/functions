@@ -37,11 +37,9 @@ module.exports = function tables (arc) {
         function (callback) {
           arc.services()
             .then(serviceMap => {
-              console.log('services ran!!', serviceMap)
               callback(null, serviceMap.tables)
             })
             .catch(err => {
-              console.log('services failed', err)
               callback(err)
             })
         },
