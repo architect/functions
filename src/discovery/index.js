@@ -1,6 +1,4 @@
-const {
-  SSMClient: SSM, GetParametersByPathCommand
-} = require('@aws-sdk/client-ssm')
+const isNode18 = require('../_node-version')
 
 /**
  * @param {string} type - events, queues, or tables
@@ -9,13 +7,17 @@ const {
 module.exports = function lookup (callback) {
 
   let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, ARC_STACK_NAME: stack, AWS_REGION } = process.env
+
   let local = env === 'testing'
+
   if (!local && !app && !stack) {
     return callback(ReferenceError('ARC_APP_NAME and ARC_STACK_NAME env vars not found'))
   }
+
   if (local && !app) {
     app = 'arc-app'
   }
+
   let Path = `/${stack || toLogicalID(`${app}-${env}`)}`
   let Recursive = true
   let values = []
@@ -35,11 +37,29 @@ module.exports = function lookup (callback) {
       region: AWS_REGION || 'us-west-2',
     }
   }
-  let ssm = new SSM(config)
+
+  // shim v2 and v3
+  let method
+  if (isNode18) {
+    const {
+      SSMClient: SSM, GetParametersByPathCommand
+    } = require('@aws-sdk/client-ssm')
+    const ssm = new SSM(config)
+    method = (params, callback) => {
+      const command = new GetParametersByPathCommand(params)
+      return ssm.send(command, callback)
+    }
+  }
+  else {
+    const SSM = require('aws-sdk/clients/ssm')
+    const ssm = new SSM(config)
+    method = (params, callback) => {
+      return ssm.getParametersByPath(params, callback)
+    }
+  }
 
   function getParams (params) {
-    const command = new GetParametersByPathCommand(params)
-    ssm.send(command, function done (err, result) {
+    method(params, function done (err, result) {
       if (err && local &&
           err.message.includes('Inaccessible host') &&
           err.message.includes('localhost')) {
