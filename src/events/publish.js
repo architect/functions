@@ -1,5 +1,4 @@
-let { SQS } = require('@aws-sdk/client-sqs')
-let { SNS } = require('@aws-sdk/client-sns')
+let isNode18 = require('../_node-version')
 let http = require('http')
 let getPorts = require('../_get-ports')
 let ledger = { events: {}, queues: {} }
@@ -77,11 +76,27 @@ function _publishSandbox (type, params, callback) {
 }
 
 function eventFactory (arc) {
+
+  let method
+  if (isNode18) {
+    let { SNS } = require('@aws-sdk/client-sns')
+    let sns = new SNS
+    method = (params, callback) => {
+      return sns.publish(params, callback)
+    }
+  }
+  else {
+    let SNS = require('aws-sdk/clients/sns')
+    let sns = new SNS
+    method = (params, callback) => {
+      return sns.publish(params, callback)
+    }
+  }
+
   return function live ({ name, payload }, callback) {
 
     function publish (arn, payload, callback) {
-      let sns = new SNS
-      sns.publish({
+      method({
         TopicArn: arn,
         Message: JSON.stringify(payload)
       }, callback)
@@ -105,10 +120,26 @@ function eventFactory (arc) {
 }
 
 function queueFactory (arc) {
+
+  let method
+  if (isNode18) {
+    let { SQS } = require('@aws-sdk/client-sqs')
+    let sqs = new SQS
+    method = (params, callback) => {
+      return sqs.sendMessage(params, callback)
+    }
+  }
+  else {
+    let SQS = require('aws-sdk/clients/sqs')
+    let sqs = new SQS
+    method = (params, callback) => {
+      return sqs.sendMessage(params, callback)
+    }
+  }
+
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
 
     function publish (arn, payload, callback) {
-      let sqs = new SQS
       let params = {
         QueueUrl: arn,
         DelaySeconds: delaySeconds || 0,
@@ -117,7 +148,7 @@ function queueFactory (arc) {
       if (arn.endsWith('.fifo')) {
         params.MessageGroupId = groupID || name
       }
-      sqs.sendMessage(params, callback)
+      method(params, callback)
     }
 
     function cacheLedgerAndPublish (serviceMap) {
