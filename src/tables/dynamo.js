@@ -1,5 +1,5 @@
-let dynamo = require('@aws-sdk/client-dynamodb')
-let docclient = require('@aws-sdk/lib-dynamodb')
+let https = require('https')
+let isNode18 = require('../_node-version')
 let getPorts = require('../_get-ports')
 
 /**
@@ -13,9 +13,6 @@ function getDynamo (type, callback) {
     throw ReferenceError('Must supply Dynamo service interface type')
 
   let { ARC_ENV, ARC_LOCAL, AWS_REGION } = process.env
-  let local = ARC_ENV === 'testing' || ARC_LOCAL
-  let DB = dynamo.DynamoDB
-  let Doc = docclient.DynamoDBDocument
 
   if (db && type === 'db') {
     return callback(null, db)
@@ -25,9 +22,32 @@ function getDynamo (type, callback) {
     return callback(null, doc)
   }
 
+  let DB, Doc
+  if (isNode18) {
+    let dynamo = require('@aws-sdk/client-dynamodb')
+    let docclient = require('@aws-sdk/lib-dynamodb')
+    DB = dynamo.DynamoDB
+    Doc = docclient.DynamoDBDocument
+  }
+  else {
+    let dynamo = require('aws-sdk/clients/dynamodb')
+    DB = dynamo
+    Doc = dynamo.DocumentClient
+  }
+
+  let local = ARC_ENV === 'testing' || ARC_LOCAL
   if (!local) {
-    db = new DB()
-    doc = Doc.from(db)
+    let config = {
+      httpOptions: {
+        agent: new https.Agent({
+          keepAlive: true,
+          maxSockets: 50, // Node can set to Infinity; AWS maxes at 50
+          rejectUnauthorized: true,
+        })
+      }
+    }
+    db = isNode18 ? new DB : new DB(config)
+    doc = isNode18 ? Doc.from(db) : new Doc(config)
     return callback(null, type === 'db' ? db : doc)
   }
   else {
@@ -43,7 +63,7 @@ function getDynamo (type, callback) {
           region: AWS_REGION || 'us-west-2' // Do not assume region is set!
         }
         db = new DB(config)
-        doc = Doc.from(db)
+        doc = isNode18 ? Doc.from(db) : new Doc
         return callback(null, type === 'db' ? db : doc)
       }
     })
