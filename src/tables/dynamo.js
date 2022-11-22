@@ -63,7 +63,7 @@ function getDynamo (type, callback) {
           region: AWS_REGION || 'us-west-2' // Do not assume region is set!
         }
         db = new DB(config)
-        doc = isNode18 ? Doc.from(db) : new Doc
+        doc = isNode18 ? Doc.from(db) : new Doc(config)
         return callback(null, type === 'db' ? db : doc)
       }
     })
