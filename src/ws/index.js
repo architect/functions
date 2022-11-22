@@ -1,10 +1,10 @@
-const { ApiGatewayManagementApi, PostToConnectionCommand, DeleteConnectionCommand, GetConnectionCommand
-} = require('@aws-sdk/client-apigatewaymanagementapi')
+const isNode18 = require('../_node-version')
 
-let _api
+let _api, _send, _close, _info
 
 function instantiateAPI () {
   if (_api) return
+
   let {
     ARC_ENV,
     ARC_LOCAL,
@@ -12,11 +12,25 @@ function instantiateAPI () {
     AWS_REGION,
     ARC_SANDBOX,
   } = process.env
+
+  if (isNode18) {
+    var {
+      ApiGatewayManagementApi,
+      PostToConnectionCommand,
+      DeleteConnectionCommand,
+      GetConnectionCommand
+    } = require('@aws-sdk/client-apigatewaymanagementapi')
+  }
+  else {
+    var ApiGatewayManagementApi = require('aws-sdk/clients/apigatewaymanagementapi')
+  }
+
   let local = ARC_ENV === 'testing' || ARC_LOCAL
   if (local) {
     let { ports } = JSON.parse(ARC_SANDBOX)
     let port = ports._arc
-    if (!port) throw ReferenceError('Architect internal port not found')
+    if (!port)
+      throw ReferenceError('Architect internal port not found')
     _api = new ApiGatewayManagementApi({
       apiVersion: '2018-11-29',
       endpoint: `http://localhost:${port}/_arc/ws`,
@@ -28,6 +42,39 @@ function instantiateAPI () {
       apiVersion: '2018-11-29',
       endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
     })
+  }
+
+  /** idk.. **/
+  _send = (params, callback) => {
+    if (isNode18) {
+      let cmd = new PostToConnectionCommand(params)
+      return _api.send(cmd, callback)
+    }
+    else {
+      return callback ? _api.postToConnection(params, callback) : _api.postToConnection(params).promise()
+    }
+  }
+
+  /** idk.. **/
+  _close = (params, callback) => {
+    if (isNode18) {
+      let cmd = new DeleteConnectionCommand(params)
+      return _api.send(cmd, callback)
+    }
+    else {
+      return callback ? _api.deleteConnection(params, callback) : _api.deleteConnection(params).promise()
+    }
+  }
+
+  /** idk.. **/
+  _info = (params, callback) => {
+    if (isNode18) {
+      let cmd = new GetConnectionCommand(params)
+      return _api.send(cmd, callback)
+    }
+    else {
+      return callback ? _api.getConnection(params, callback) : _api.getConnection(params).promise()
+    }
   }
 }
 
@@ -44,15 +91,10 @@ function instantiateAPI () {
  */
 function send ({ id, payload }, callback) {
   instantiateAPI()
-  const command = new PostToConnectionCommand({
+  return _send({
     ConnectionId: id,
     Data: JSON.stringify(payload)
-  })
-  if (callback) {
-    _api.send(command, callback)
-    return
-  }
-  return _api.send(command)
+  }, callback)
 }
 
 /**
@@ -67,14 +109,9 @@ function send ({ id, payload }, callback) {
  */
 function close ({ id }, callback) {
   instantiateAPI()
-  const command = new DeleteConnectionCommand({
+  return _close({
     ConnectionId: id,
-  })
-  if (callback) {
-    _api.send(command, callback)
-    return
-  }
-  return _api.send(command)
+  }, callback)
 }
 
 /**
@@ -89,14 +126,9 @@ function close ({ id }, callback) {
  */
 function info ({ id }, callback) {
   instantiateAPI()
-  const command = new GetConnectionCommand({
+  return _info({
     ConnectionId: id,
-  })
-  if (callback) {
-    _api.send(command, callback)
-    return
-  }
-  return _api.send(command)
+  }, callback)
 }
 
 module.exports = {
