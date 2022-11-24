@@ -47,7 +47,7 @@
     "@aws-sdk/lib-dynamodb": "^3.214.0",
     "@types/aws-lambda": "^8.10.108",
     "@types/node": "^18.11.9",
-    "aws-sdk": "^2.1259.0",
+    "aws-sdk": "2.1055.0",
     "cross-env": "~7.0.3",
     "eslint": "~8.27.0",
     "mock-fs": "~5.2.0",

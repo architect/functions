@@ -28,7 +28,7 @@ test('Set up mocked files', t => {
 
 test('starts the db server', t => {
   t.plan(1)
-  sandbox.start({ quiet: false, cwd: tmp }, err => {
+  sandbox.start({ quiet: true, cwd: tmp }, err => {
     if (err) t.fail(err)
     else t.pass('Sandbox started')
   })
