@@ -6,6 +6,28 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [5.3.0] 2022-11-24
+
+### Added
+
+- Added support for Lambda's new `nodejs18.x` runtime, and AWS SDK v3 (`@aws-sdk/*`)
+  - If your Lambdas make use of `@architect/functions` (and you otherwise do not directly rely on AWS SDK calls), you are now likely fully forward-compatible with `nodejs18.x` (see caveats below)
+  - However, if your Lambdas do NOT make use of `@architect/functions`, before opting into Lambda `nodejs18.x` + SDK v3 we strongly advise you read: https://arc.codes/aws-sdk-versions
+  - To opt in, simply upgrade `@architect/architect` to 10.8 and change your `@aws runtime` setting to `nodejs18.x` (learn more at http://arc.codes/docs/en/reference/project-manifest/aws#runtime)
+- Added Node.js 18.x to test coverage
+
+
+### Changed
+
+- Due to changes in AWS SDK v2 → v3, `arc.tables()._db` + `arc.tables()._doc` methods are now slightly different; unfortunately, this is not something `@architect/functions` can paper over; [see more here](https://arc.codes/docs/en/reference/runtime-helpers/node.js#client-methods)
+- In order to paper over breaking changes in AWS SDK v2 to v3, `@architect/functions` inspect the running Node.js version to follow different code paths to corresponding SDK versions; if your test / CI environment is not using the same Node.js version as your production environment, this may result in unexpected testing issues
+  - For example: your CI environment runs Node.js 18.x, but your Lambda uses `@architect/functions` >= 5.3 and is configured to use 16.x; some methods deep within the SDK may differ, and your tests may break
+  - Unless you are making use of `arc.tables()._db` + `arc.tables()._doc`, we think this scenario is pretty unlikely. That said, this is unfortunately not something Architect can control for or prevent, and ultimately falls to AWS to resolve for developers
+  - We can only **strongly advise your CI and production environments use the same version of Node.js**
+- Updated dependencies
+
+---
+
 ## [5.2.3] 2022-10-14
 
 ### Changed
