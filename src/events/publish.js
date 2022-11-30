@@ -76,24 +76,22 @@ function _publishSandbox (type, params, callback) {
 }
 
 function eventFactory (arc) {
-
-  let method
-  if (isNode18) {
-    let { SNS } = require('@aws-sdk/client-sns')
-    let sns = new SNS
-    method = (params, callback) => {
-      return sns.publish(params, callback)
-    }
-  }
-  else {
-    let SNS = require('aws-sdk/clients/sns')
-    let sns = new SNS
-    method = (params, callback) => {
-      return sns.publish(params, callback)
-    }
-  }
-
   return function live ({ name, payload }, callback) {
+    let method
+    if (isNode18) {
+      let { SNS } = require('@aws-sdk/client-sns')
+      let sns = new SNS
+      method = (params, callback) => {
+        return sns.publish(params, callback)
+      }
+    }
+    else {
+      let SNS = require('aws-sdk/clients/sns')
+      let sns = new SNS
+      method = (params, callback) => {
+        return sns.publish(params, callback)
+      }
+    }
 
     function publish (arn, payload, callback) {
       method({
@@ -120,24 +118,22 @@ function eventFactory (arc) {
 }
 
 function queueFactory (arc) {
-
-  let method
-  if (isNode18) {
-    let { SQS } = require('@aws-sdk/client-sqs')
-    let sqs = new SQS
-    method = (params, callback) => {
-      return sqs.sendMessage(params, callback)
-    }
-  }
-  else {
-    let SQS = require('aws-sdk/clients/sqs')
-    let sqs = new SQS
-    method = (params, callback) => {
-      return sqs.sendMessage(params, callback)
-    }
-  }
-
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
+    let method
+    if (isNode18) {
+      let { SQS } = require('@aws-sdk/client-sqs')
+      let sqs = new SQS
+      method = (params, callback) => {
+        return sqs.sendMessage(params, callback)
+      }
+    }
+    else {
+      let SQS = require('aws-sdk/clients/sqs')
+      let sqs = new SQS
+      method = (params, callback) => {
+        return sqs.sendMessage(params, callback)
+      }
+    }
 
     function publish (arn, payload, callback) {
       let params = {
