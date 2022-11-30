@@ -6,6 +6,14 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [5.3.1] 2022-11-30
+
+### Fixed
+
+- Fixed issue where users without the AWS-SDK installed locally or globally would error if `@architect/functions` is required or imported
+
+---
+
 ## [5.3.0] 2022-11-24
 
 ### Added
