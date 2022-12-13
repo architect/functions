@@ -6,6 +6,14 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [5.3.2] 2022-12-12
+
+### Changed
+
+- Updated `binaryTypes` array, thanks @MichaelDeBoey!
+
+---
+
 ## [5.3.1] 2022-11-30
 
 ### Fixed
