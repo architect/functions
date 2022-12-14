@@ -2,6 +2,8 @@ let httpError = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
 let { brotliCompressSync } = require('zlib')
 
+let binaryTypesSet = new Set(binaryTypes)
+
 module.exports = function responseFormatter (req, params) {
   let isError = params instanceof Error
 
@@ -167,7 +169,8 @@ module.exports = function responseFormatter (req, params) {
   }
 
   // Handle body encoding (if necessary)
-  let isBinary = binaryTypes.some(t => res.headers['content-type'].includes(t))
+  let [ cTest ] = (res.headers['content-type'] || '').split(';')
+  let isBinary = binaryTypesSet.has(cTest)
   let bodyIsString = typeof res.body === 'string'
   let b64enc = i => new Buffer.from(i).toString('base64')
   function compress (body) {
