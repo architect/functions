@@ -6,6 +6,14 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [5.3.3] 2022-12-14
+
+### Changed
+
+- Minor performance improvement to `arc.http` binary content type checks; thanks @gyx1000!
+
+---
+
 ## [5.3.2] 2022-12-12
 
 ### Changed

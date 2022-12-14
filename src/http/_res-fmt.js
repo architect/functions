@@ -167,8 +167,8 @@ module.exports = function responseFormatter (req, params) {
   }
 
   // Handle body encoding (if necessary)
-  let [ cTest ] = (res.headers['content-type'] || '').split(';')
-  let isBinary = binaryTypes.includes(cTest)
+  let [ contentType ] = (res.headers['content-type'] || '').split(';')
+  let isBinary = binaryTypes.includes(contentType)
   let bodyIsString = typeof res.body === 'string'
   let b64enc = i => new Buffer.from(i).toString('base64')
   function compress (body) {
