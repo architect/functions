@@ -1,4 +1,5 @@
-import type { DynamoDB } from "aws-sdk";
+import type { DynamoDB } from "@aws-sdk/client-dynamodb";
+import type { DynamoDBDocument, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput, UpdateCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
@@ -17,17 +18,17 @@ type ItemsOutput<OutputType, Item> = Omit<OutputType, "Items"> & {
   Items: Item[];
 };
 
-type QueryParams = Params<DynamoDB.DocumentClient.QueryInput>;
-type QueryOutput<Item> = ItemsOutput<DynamoDB.DocumentClient.QueryOutput, Item>;
+type QueryParams = Params<QueryCommandInput>;
+type QueryOutput<Item> = ItemsOutput<QueryCommandOutput, Item>;
 
-type ScanParams = Params<DynamoDB.DocumentClient.ScanInput>;
-type ScanOutput<Item> = ItemsOutput<DynamoDB.DocumentClient.ScanOutput, Item>;
+type ScanParams = Params<ScanCommandInput>;
+type ScanOutput<Item> = ItemsOutput<ScanCommandOutput, Item>;
 
 type UpdateParams<Item> = ParamsWithKey<
-  DynamoDB.DocumentClient.UpdateItemInput,
+  UpdateCommandInput,
   Item
 >;
-type UpdateOutput = DynamoDB.DocumentClient.UpdateItemOutput;
+type UpdateOutput = UpdateCommandOutput;
 
 // Depending on the operation, the key attributes may be mandatory, but we don't
 // know what the key attributes are, so Partial is the best we can do.
@@ -63,7 +64,7 @@ export type ArcDB<Tables> = ArcDBWith<Tables> & {
     [tableName in keyof Tables]: string;
   };
   _db: DynamoDB;
-  _doc: DynamoDB.DocumentClient;
+  _doc: DynamoDBDocument;
 };
 
 // Permissive by default: allows any table, any inputs, any outputs.

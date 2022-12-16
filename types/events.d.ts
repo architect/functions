@@ -1,4 +1,5 @@
-import { SNS, SQS } from "aws-sdk";
+import type { PublishResponse } from "@aws-sdk/client-sns";
+import type { SendMessageResult } from "@aws-sdk/client-sqs";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
@@ -26,5 +27,5 @@ interface EventsOrQueues<PublishResult> {
   ): LambdaFunction;
 }
 
-export type ArcEvents = EventsOrQueues<SNS.Types.PublishResponse>;
-export type ArcQueues = EventsOrQueues<SQS.Types.SendMessageResult>;
+export type ArcEvents = EventsOrQueues<PublishResponse>;
+export type ArcQueues = EventsOrQueues<SendMessageResult>;

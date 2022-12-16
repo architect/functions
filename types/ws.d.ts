@@ -1,4 +1,4 @@
-import { ApiGatewayManagementApi } from "aws-sdk";
+import type { ApiGatewayManagementApi, GetConnectionResponse } from "@aws-sdk/client-apigatewaymanagementapi";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
@@ -7,7 +7,7 @@ export { };
 type SendParams = { id: string; payload: any };
 type CloseParams = { id: string };
 type InfoParams = { id: string };
-type InfoResponse = ApiGatewayManagementApi.Types.GetConnectionResponse;
+type InfoResponse = GetConnectionResponse;
 
 export interface ArcWebSocket {
   _api: ApiGatewayManagementApi;
