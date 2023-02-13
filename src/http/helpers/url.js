@@ -1,11 +1,10 @@
 /**
- * no magic url helper
+ * No magic url helper for legacy REST APIs
+ * Given path `/`, it returns:
  *
- * given a path / returns
- *
- * - / if ARC_ENV === testing
- * - /staging if ARC_ENV === staging
- * - /production if ARC_ENV === production
+ * - `/` if ARC_ENV === testing
+ * - `/staging` if ARC_ENV === staging
+ * - `/production` if ARC_ENV === production
  */
 module.exports = function url (url) {
   let { ARC_ENV, ARC_LOCAL } = process.env

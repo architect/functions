@@ -1,6 +1,6 @@
 let https = require('https')
 let isNode18 = require('../_node-version')
-let getPorts = require('../_get-ports')
+let { getPorts, useAWS } = require('../lib')
 
 /**
  * Instantiates Dynamo service interfaces
@@ -12,7 +12,7 @@ function getDynamo (type, callback) {
   if (!type)
     throw ReferenceError('Must supply Dynamo service interface type')
 
-  let { ARC_ENV, ARC_LOCAL, AWS_REGION } = process.env
+  let { AWS_REGION } = process.env
 
   if (db && type === 'db') {
     return callback(null, db)
@@ -35,7 +35,7 @@ function getDynamo (type, callback) {
     Doc = dynamo.DocumentClient
   }
 
-  let local = ARC_ENV === 'testing' || ARC_LOCAL
+  let local = !useAWS()
   if (!local) {
     let config = {
       httpOptions: {

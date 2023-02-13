@@ -12,6 +12,11 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 - Updated dependencies
 
+
+### Fixed
+
+- Fixed broken predicates for using `useAWS` preference or `ARC_LOCAL` env var to connect to DynamoDB, SNS, and SQS; thanks @w5mix!
+
 ---
 
 ## [5.3.3] 2022-12-14
