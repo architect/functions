@@ -1,5 +1,4 @@
 function sandboxVersionAtLeast (version) {
-
   if (!process.env.ARC_SANDBOX) return false
   try {
     var sandboxData = JSON.parse(process.env.ARC_SANDBOX)

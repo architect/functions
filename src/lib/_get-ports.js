@@ -1,4 +1,4 @@
-let discovery = require('./discovery')
+let discovery = require('../discovery')
 
 module.exports = function getPorts (callback) {
   let { ARC_SANDBOX } = process.env

@@ -1,6 +1,6 @@
 let isNode18 = require('../_node-version')
 let http = require('http')
-let getPorts = require('../_get-ports')
+let { getPorts, useAWS } = require('../lib')
 let ledger = { events: {}, queues: {} }
 let port
 
@@ -28,9 +28,8 @@ module.exports = function publishFactory (arc, type) {
         }
       })
     }
-    let { ARC_ENV, ARC_LOCAL } = process.env
-    let local = ARC_ENV === 'testing' || ARC_LOCAL
 
+    let local = !useAWS()
     if (local && port) {
       _publishSandbox(type, params, callback)
     }

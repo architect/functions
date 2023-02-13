@@ -1,17 +1,10 @@
-const isNode18 = require('../_node-version')
-
+let { isNode18, useAWS } = require('../lib')
 let _api, _send, _close, _info
 
 function instantiateAPI () {
   if (_api) return
 
-  let {
-    ARC_ENV,
-    ARC_LOCAL,
-    ARC_WSS_URL,
-    AWS_REGION,
-    ARC_SANDBOX,
-  } = process.env
+  let { ARC_WSS_URL, AWS_REGION, ARC_SANDBOX } = process.env
 
   if (isNode18) {
     var {
@@ -25,7 +18,7 @@ function instantiateAPI () {
     var ApiGatewayManagementApi = require('aws-sdk/clients/apigatewaymanagementapi')
   }
 
-  let local = ARC_ENV === 'testing' || ARC_LOCAL
+  let local = !useAWS()
   if (local) {
     let { ports } = JSON.parse(ARC_SANDBOX)
     let port = ports._arc
