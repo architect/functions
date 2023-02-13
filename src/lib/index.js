@@ -1,6 +1,8 @@
 let getPorts = require('./_get-ports')
 let sandboxVersionAtLeast = require('./_sandbox-version')
 
+let isNode18 = Number(process.version.replace('v', '').split('.')[0]) >= 18
+
 let nonLocalEnvs = [ 'staging', 'production' ]
 function useAWS () {
   let { ARC_ENV, ARC_LOCAL } = process.env
@@ -9,11 +11,9 @@ function useAWS () {
   return false
 }
 
-let nodeVersion = Number(process.version.replace('v', '').split('.')[0]) >= 18
-
 module.exports = {
-  nodeVersion,
   getPorts,
+  isNode18,
   sandboxVersionAtLeast,
   useAWS,
 }

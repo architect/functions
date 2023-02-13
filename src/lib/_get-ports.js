@@ -1,5 +1,3 @@
-let discovery = require('../discovery')
-
 module.exports = function getPorts (callback) {
   let { ARC_SANDBOX } = process.env
   let notFound = ReferenceError('Sandbox internal port not found')
@@ -13,6 +11,9 @@ module.exports = function getPorts (callback) {
   }
   // Fall back to an internal SSM query in case Functions is running as a bare module
   else {
+    // Require in here or circular dep warnings may occur
+    // eslint-disable-next-line
+    let discovery = require('../discovery')
     discovery((err, services) => {
       if (err) callback(err)
       else {

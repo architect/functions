@@ -1,4 +1,4 @@
-let isNode18 = require('../../../../src/_node-version')
+let { isNode18 } = require('../../../../src/lib')
 let test = require('tape')
 let file = '../../../../src/tables/dynamo'
 let dynamo
