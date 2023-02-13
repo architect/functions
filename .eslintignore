@@ -1,5 +1,6 @@
 .nyc_output/
 arc-proxy-*
 coverage/
-src/http/get-index
 dist.js
+scratch/
+src/http/get-index
