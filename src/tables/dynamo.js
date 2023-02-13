@@ -34,8 +34,7 @@ function getDynamo (type, callback) {
     Doc = dynamo.DocumentClient
   }
 
-  let local = !useAWS()
-  if (!local) {
+  if (useAWS()) {
     let config = {
       httpOptions: {
         agent: new https.Agent({
