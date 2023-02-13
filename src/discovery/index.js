@@ -1,4 +1,4 @@
-const isNode18 = require('../_node-version')
+let { isNode18 } = require('../lib')
 
 /**
  * @param {string} type - events, queues, or tables
@@ -6,9 +6,9 @@ const isNode18 = require('../_node-version')
  */
 module.exports = function lookup (callback) {
 
-  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, ARC_STACK_NAME: stack, AWS_REGION } = process.env
+  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_LOCAL, ARC_SANDBOX, ARC_STACK_NAME: stack, AWS_REGION } = process.env
 
-  let local = env === 'testing'
+  let local = env === 'testing' || ARC_LOCAL || ARC_SANDBOX
 
   if (!local && !app && !stack) {
     return callback(ReferenceError('ARC_APP_NAME and ARC_STACK_NAME env vars not found'))

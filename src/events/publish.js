@@ -1,6 +1,5 @@
-let isNode18 = require('../_node-version')
 let http = require('http')
-let { getPorts, useAWS } = require('../lib')
+let { getPorts, isNode18, useAWS } = require('../lib')
 let ledger = { events: {}, queues: {} }
 let port
 

@@ -1,6 +1,5 @@
 let https = require('https')
-let isNode18 = require('../_node-version')
-let { getPorts, useAWS } = require('../lib')
+let { getPorts, isNode18, useAWS } = require('../lib')
 
 /**
  * Instantiates Dynamo service interfaces
