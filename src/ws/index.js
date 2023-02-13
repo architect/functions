@@ -18,8 +18,13 @@ function instantiateAPI () {
     var ApiGatewayManagementApi = require('aws-sdk/clients/apigatewaymanagementapi')
   }
 
-  let local = !useAWS()
-  if (local) {
+  if (useAWS()) {
+    _api = new ApiGatewayManagementApi({
+      apiVersion: '2018-11-29',
+      endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
+    })
+  }
+  else {
     let { ports } = JSON.parse(ARC_SANDBOX)
     let port = ports._arc
     if (!port)
@@ -30,12 +35,7 @@ function instantiateAPI () {
       region: AWS_REGION || 'us-west-2',
     })
   }
-  else {
-    _api = new ApiGatewayManagementApi({
-      apiVersion: '2018-11-29',
-      endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
-    })
-  }
+
 
   /** idk.. **/
   _send = (params, callback) => {
