@@ -1,6 +1,7 @@
 let httpError = require('./errors')
 let binaryTypes = require('./helpers/binary-types')
-let { brotliCompressSync } = require('zlib')
+let { brotliCompressSync: br, gzipSync: gzip } = require('zlib')
+let compressionTypes = { br, gzip }
 
 module.exports = function responseFormatter (req, params) {
   let isError = params instanceof Error
@@ -171,15 +172,14 @@ module.exports = function responseFormatter (req, params) {
   let isBinary = binaryTypes.includes(contentType)
   let bodyIsString = typeof res.body === 'string'
   let b64enc = i => new Buffer.from(i).toString('base64')
-  function compress (body) {
-    res.headers['content-encoding'] = 'br'
-    return brotliCompressSync(body)
+  function compress (body, type) {
+    res.headers['content-encoding'] = type
+    return compressionTypes[type](body)
   }
 
   // Compress, encode, and flag buffer responses
   // Legacy API Gateway (REST, i.e. !req.version) and ASAP (which sets isBase64Encoded) handle their own compression, so don't double-compress / encode
-  let shouldCompress = !encoding && acceptEncoding && acceptEncoding.includes('br') &&
-                        req.version && !params.isBase64Encoded
+  let shouldCompress = req.version && !params.isBase64Encoded && !encoding && acceptEncoding && params.compression !== false
   if (bodyIsBuffer) {
     let body = shouldCompress ? compress(res.body) : res.body
     res.body = b64enc(body)
@@ -191,7 +191,15 @@ module.exports = function responseFormatter (req, params) {
   }
   // Compress, encode, and flag string responses
   else if (bodyIsString && shouldCompress) {
-    res.body = b64enc(compress(res.body))
+    let accepted = acceptEncoding.split(', ')
+    let compression
+    /**/ if (accepted.includes('br')) compression = 'br'
+    else if (accepted.includes('gzip')) compression = 'gzip'
+    else return res
+    if (compressionTypes[params.compression] && accepted.includes(params.compression)) {
+      compression = params.compression
+    }
+    res.body = b64enc(compress(res.body, compression))
     res.isBase64Encoded = true
   }
   return res

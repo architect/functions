@@ -162,6 +162,16 @@ test('Architect v7 (HTTP): get / with brotli compression', t => {
   handler(copy(request), {}, end)
 })
 
+test('Architect v7 (HTTP): get / with gzip compression', t => {
+  t.plan(24)
+  let end = () => t.pass('Final callback called')
+  let request = reqs.arc7.getWithGzip
+  let handler = http((req, res) => {
+    check({ req, request: copy(request), res, t })
+  })
+  handler(copy(request), {}, end)
+})
+
 test('Architect v7 (HTTP): post /form (JSON)', t => {
   t.plan(25)
   let end = () => t.pass('Final callback called')
