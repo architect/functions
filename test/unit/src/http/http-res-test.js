@@ -1,5 +1,5 @@
 let { join } = require('path')
-let { brotliDecompressSync } = require('zlib')
+let { brotliDecompressSync, gunzipSync } = require('zlib')
 let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
 let test = require('tape')
@@ -35,7 +35,7 @@ test('Set up env', t => {
 })
 
 test('Architect v7 (HTTP)', t => {
-  t.plan(75)
+  t.plan(103)
   let request = requests.arc7.getIndex
   run(responses.arc7.noReturn, copy(request), (err, res) => {
     t.notOk(err, 'No error')
@@ -139,6 +139,7 @@ test('Architect v7 (HTTP)', t => {
     t.equal(responses.arc7.invalid.statusCode, res.statusCode, 'Responded with invalid status code')
   })
   // Compression / encoding
+  // br by default
   run(responses.arc7.bodyWithStatus, copy(requests.arc7.getWithBrotli), (err, res) => {
     t.notOk(err, 'No error')
     let buf = new Buffer.from(res.body, 'base64')
@@ -146,6 +147,52 @@ test('Architect v7 (HTTP)', t => {
     t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
     t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
     t.match(res.headers['content-encoding'], /^br$/, 'Content encoding set to brotli')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  // Allow manual preference of br
+  run(responses.arc7.preferBrCompression, copy(requests.arc7.getWithBrotli), (err, res) => {
+    t.notOk(err, 'No error')
+    let buf = new Buffer.from(res.body, 'base64')
+    t.equal(responses.arc7.bodyWithStatus.body, brotliDecompressSync(buf).toString(), match('res.body', res.body))
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
+    t.match(res.headers['content-encoding'], /^br$/, 'Content encoding set to brotli')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  // Allow preference of gzip over br
+  run(responses.arc7.preferGzipCompression, copy(requests.arc7.getWithBrotli), (err, res) => {
+    t.notOk(err, 'No error')
+    let buf = new Buffer.from(res.body, 'base64')
+    t.equal(responses.arc7.preferGzipCompression.body, gunzipSync(buf).toString(), match('res.body', res.body))
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
+    t.match(res.headers['content-encoding'], /^gzip$/, 'Content encoding set to gzip')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  // Explicit preference is ignored if agent does not support compression type
+  run(responses.arc7.preferGzipCompression, copy(request), (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc7.preferGzipCompression.body, res.body, match('res.body', res.body))
+    t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  // Client only supports gzip
+  run(responses.arc7.bodyWithStatus, copy(requests.arc7.getWithGzip), (err, res) => {
+    t.notOk(err, 'No error')
+    let buf = new Buffer.from(res.body, 'base64')
+    t.equal(responses.arc7.bodyWithStatus.body, gunzipSync(buf).toString(), match('res.body', res.body))
+    t.ok(res.isBase64Encoded, 'isBase64Encoded param passed through')
+    t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
+    t.match(res.headers['content-encoding'], /^gzip$/, 'Content encoding set to gzip')
+    t.equal(res.statusCode, 200, 'Responded with 200')
+  })
+  // Compression manually disabled
+  run(responses.arc7.disableCompression, copy(requests.arc7.getWithBrotli), (err, res) => {
+    t.notOk(err, 'No error')
+    t.equal(responses.arc7.disableCompression.body, res.body, match('res.body', res.body))
+    t.notOk(res.isBase64Encoded, 'isBase64Encoded param not set')
+    t.match(res.headers['content-type'], /application\/json/, 'Unspecified content type defaults to JSON')
+    t.notOk(res.headers['content-encoding'], 'Content encoding not set')
     t.equal(res.statusCode, 200, 'Responded with 200')
   })
 })
@@ -490,7 +537,7 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) + legacy response fixtures were t
         return true
       }
       catch (err) { /* noop */ }
-    }), `Tested req: ${name}`)
+    }), `Tested res: ${name}`)
   }
   console.log(`Arc 7 responses`)
   Object.entries(responses.arc7).forEach(tester)

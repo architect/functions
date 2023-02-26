@@ -6,6 +6,21 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [5.5.0] 2023-02-26
+
+### Added
+
+- Added `compression` response property for unencoded, non-binary responses; fixes #543
+  - Default is (still) `br`, and it can be set to `gzip` or disabled with `false`
+  - Compression is still best-effort; if the client does not support the default or specified compression, no compression is used
+
+
+### Changed
+
+- Updated dependencies
+
+---
+
 ## [5.3.4] 2023-02-13
 
 ### Changed
