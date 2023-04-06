@@ -54,12 +54,12 @@ function response (req, callback, params) {
   let res = responseFormatter(req, params)
 
   // Legacy 'cookie' parameter, used after direct session writes
-  if (params && params.cookie) {
+  if (params?.cookie) {
     res.headers['set-cookie'] = params.cookie
   }
 
   // Save the passed session
-  if (params && params.session) {
+  if (params?.session) {
     // Tag the session data with _idx, secret, ttl, from req.session
     let { _idx, _secret, _ttl } = req.session
     let session = { _idx, _secret, _ttl, ...params.session }

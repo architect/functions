@@ -7,9 +7,9 @@ module.exports = function interpolateParams (req) {
   if (req.body) req.rawBody = req.body
 
   // Handle HTTP API v2.0 payload scenarios, which omit params instead of passing them as null
-  if (req.version && req.version === '2.0') {
+  if (req?.version === '2.0') {
     let { requestContext: context } = req
-    if (context && context.http && context.http.method) {
+    if (context?.http?.method) {
       req.httpMethod = context.http.method
     }
     unUndefined.forEach(i => {

@@ -7,7 +7,7 @@ module.exports = function responseFormatter (req, params) {
   let isError = params instanceof Error
 
   // Handle HTTP API v2.0 payload scenarios, which have some very strange edges
-  if (req.version && req.version === '2.0') {
+  if (req?.version === '2.0') {
     // New school AWS
     let knownParams = [ 'statusCode', 'body', 'headers', 'isBase64Encoded', 'cookies' ]
     let hasKnownParams = p => knownParams.some(k => k === p)
@@ -50,7 +50,7 @@ module.exports = function responseFormatter (req, params) {
   }
 
   let buffer
-  let bodyIsBuffer = params.body && params.body instanceof Buffer
+  let bodyIsBuffer = params?.body instanceof Buffer
   if (bodyIsBuffer) buffer = params.body // Back up buffer
   if (!isError) params = JSON.parse(JSON.stringify(params)) // Deep copy to aid testing mutation
   if (bodyIsBuffer) params.body = buffer // Restore non-JSON-encoded buffer
@@ -64,29 +64,29 @@ module.exports = function responseFormatter (req, params) {
 
   // Headers: cache-control
   let cacheControl = params.cacheControl ||
-                     params.headers && params.headers['cache-control'] ||
-                     params.headers && params.headers['Cache-Control'] || ''
-  if (params.headers && params.headers['Cache-Control']) {
+                     params.headers?.['cache-control'] ||
+                     params.headers?.['Cache-Control'] || ''
+  if (params.headers?.['Cache-Control']) {
     delete params.headers['Cache-Control'] // Clean up improper casing
   }
 
   // Headers: content-type
   let type = params.type ||
-             params.headers && params.headers['content-type'] ||
-             params.headers && params.headers['Content-Type'] ||
+             params.headers?.['content-type'] ||
+             params.headers?.['Content-Type'] ||
              'application/json; charset=utf8'
-  if (params.headers && params.headers['Content-Type']) {
+  if (params.headers?.['Content-Type']) {
     delete params.headers['Content-Type'] // Clean up improper casing
   }
 
   // Headers: content-encoding
-  let encoding = params.headers && params.headers['content-encoding'] ||
-                 params.headers && params.headers['Content-Encoding']
-  if (params.headers && params.headers['Content-Encoding']) {
+  let encoding = params.headers?.['content-encoding'] ||
+                 params.headers?.['Content-Encoding']
+  if (params.headers?.['Content-Encoding']) {
     delete params.headers['Content-Encoding'] // Clean up improper casing
   }
-  let acceptEncoding = (req.headers && req.headers['accept-encoding'] ||
-                        req.headers && req.headers['Accept-Encoding'])
+  let acceptEncoding = (req.headers?.['accept-encoding'] ||
+                        req.headers?.['Accept-Encoding'])
 
   // Cross-origin ritual sacrifice
   let cors = params.cors

@@ -33,7 +33,7 @@ function read (req, callback) {
       }
     })
   }
-  let rawCookie = req.headers && (req.headers.cookie || req.headers.Cookie)
+  let rawCookie = req.headers?.cookie || req.headers?.Cookie
   // Lambda payload version 2 puts the cookies in an array on the request
   if (!rawCookie && req.cookies) {
     rawCookie = req.cookies.join(';')

@@ -34,7 +34,7 @@ module.exports = function httpAsync (...fns) {
       }
       // Run the function
       let result = await fn(request, context)
-      let isRequest = result && result.httpMethod
+      let isRequest = result?.httpMethod
       if (isRequest) {
         // Function returned a modified request, continuing...
         request = result
@@ -48,7 +48,7 @@ module.exports = function httpAsync (...fns) {
         // Did not get a result from, continuing...
       }
     }
-    let isHTTPv2 = request.version && request.version === '2.0'
+    let isHTTPv2 = request?.version === '2.0'
     // Finished combined function!
     if (!params && !isHTTPv2) {
       throw new Error(`Finished all functions without returning a response.`)

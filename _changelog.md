@@ -6,6 +6,14 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [6.0.0] 2023-04-05
+
+### Changed
+
+- AWS has deprecated Lambda `nodejs12.x`; `@architect/functions` 6.0 now assumes `nodejs14.x` or higher
+
+---
+
 ## [5.4.0] 2023-02-26
 
 ### Added

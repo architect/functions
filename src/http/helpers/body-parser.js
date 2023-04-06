@@ -14,7 +14,7 @@ module.exports = function parseBody (req) {
     // Paranoid deep copy
     let request = JSON.parse(JSON.stringify(req))
     let headers = request.headers
-    let contentType = type => headers && headers['content-type'] && headers['content-type'].includes(type) || headers && headers['Content-Type'] && headers['Content-Type'].includes(type)
+    let contentType = type => headers?.['content-type']?.includes(type) || headers?.['Content-Type']?.includes(type)
 
     let isString = typeof request.body === 'string'
     let isBase64 = request.isBase64Encoded

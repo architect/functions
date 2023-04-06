@@ -321,7 +321,7 @@ test('Architect v5 (REST) + Functions', async t => {
  * Ensure the legacy res.type (Arc v5 VTL) param doesn't get set
  * Conditions were:
  * - `!process.env.ARC_CLOUDFORMATION && (!process.env.ARC_HTTP || process.env.ARC_HTTP === 'aws')`
- * - And also not a proxy request: `!req.resource || req.resource && req.resource !== '/{proxy+}'`
+ * - And also not a proxy request: `!req.resource || req?.resource !== '/{proxy+}'`
  */
 test('Architect v5 (REST) + Functions do not send res.type', async t => {
   t.plan(4)
