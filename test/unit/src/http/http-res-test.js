@@ -452,7 +452,7 @@ test('Architect <6 + Functions old school response params (HTTP)', t => {
   run(legacyResponses.arc.location, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
-    t.equal(legacyResponses.arc.location.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
+    t.equal(legacyResponses.arc.location.location, res.headers.location, match('res.headers.location', res.headers.location))
   })
   run(legacyResponses.arc.status, copy(request), (err, res) => {
     t.notOk(err, 'No error')
@@ -479,7 +479,7 @@ test('Architect <6 + Functions old school response params (REST)', t => {
   run(legacyResponses.arc.location, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
-    t.equal(legacyResponses.arc.location.location, res.headers.Location, match('res.headers.Location', res.headers.Location))
+    t.equal(legacyResponses.arc.location.location, res.headers.location, match('res.headers.location', res.headers.location))
   })
   run(legacyResponses.arc.status, copy(request), (err, res) => {
     t.notOk(err, 'No error')

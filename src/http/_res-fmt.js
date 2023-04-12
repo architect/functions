@@ -164,7 +164,7 @@ module.exports = function responseFormatter (req, params) {
   if (params.isBase64Encoded) res.isBase64Encoded = true
   if (params.location) {
     res.statusCode = providedStatus || 302
-    res.headers.Location = params.location
+    res.headers.location = params.location
   }
 
   // Handle body encoding (if necessary)

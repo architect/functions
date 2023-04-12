@@ -390,7 +390,7 @@ test('Architect <6 + Functions old school response params (HTTP)', async t => {
   let request = requests.arc7.getIndex
 
   let res = await run(legacyResponses.arc.location, copy(request))
-  t.equal(legacyResponses.arc.location.location, res.headers.Location, match('location', res.headers.Location))
+  t.equal(legacyResponses.arc.location.location, res.headers.location, match('location', res.headers.location))
 
   res = await run(legacyResponses.arc.status, copy(request))
   t.equal(legacyResponses.arc.status.status, res.statusCode, match('status', res.statusCode))
@@ -410,7 +410,7 @@ test('Architect <6 + Functions old school response params (REST)', async t => {
   let request = requests.arc6.getIndex
 
   let res = await run(legacyResponses.arc.location, copy(request))
-  t.equal(legacyResponses.arc.location.location, res.headers.Location, match('location', res.headers.Location))
+  t.equal(legacyResponses.arc.location.location, res.headers.location, match('location', res.headers.location))
 
   res = await run(legacyResponses.arc.status, copy(request))
   t.equal(legacyResponses.arc.status.status, res.statusCode, match('status', res.statusCode))
