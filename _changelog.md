@@ -6,7 +6,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
-## [5.4.0] 2023-02-26
+## [5.4.0 - 5.4.1] 2023-02-26
 
 ### Added
 
