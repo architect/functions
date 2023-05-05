@@ -8,6 +8,11 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ## [6.0.0] 2023-04-05
 
+### Added
+
+- Added anti-caching to `{ location }` responses
+
+
 ### Changed
 
 - AWS has deprecated Lambda `nodejs12.x`; `@architect/functions` 6.0 now assumes `nodejs14.x` or higher

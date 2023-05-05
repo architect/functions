@@ -9,6 +9,7 @@ let { http: httpFixtures } = require('@architect/req-res-fixtures')
 let requests = httpFixtures.req
 let responses = httpFixtures.res
 let legacyResponses = httpFixtures.legacy.res
+let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
 
 let b64dec = i => new Buffer.from(i, 'base64').toString()
 let str = i => JSON.stringify(i)
@@ -321,7 +322,6 @@ test('Architect v5 (REST): dependency-free responses', t => {
 test('Architect v5 (REST) + Functions', t => {
   t.plan(23)
   let request = requests.arc7.getIndex
-  let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
 
   run(legacyResponses.arc5.body, copy(request), (err, res) => {
     t.notOk(err, 'No error')
@@ -446,13 +446,14 @@ test('Architect v4 + Functions statically-bound content type responses (REST)', 
 })
 
 test('Architect <6 + Functions old school response params (HTTP)', t => {
-  t.plan(11)
+  t.plan(12)
   let request = requests.arc7.getIndex
 
   run(legacyResponses.arc.location, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
     t.equal(legacyResponses.arc.location.location, res.headers.location, match('res.headers.location', res.headers.location))
+    t.equal(res.headers['cache-control'], antiCache, match('cache-control', res.headers['cache-control']))
   })
   run(legacyResponses.arc.status, copy(request), (err, res) => {
     t.notOk(err, 'No error')
@@ -473,13 +474,14 @@ test('Architect <6 + Functions old school response params (HTTP)', t => {
 })
 
 test('Architect <6 + Functions old school response params (REST)', t => {
-  t.plan(11)
+  t.plan(12)
   let request = requests.arc6.getIndex
 
   run(legacyResponses.arc.location, copy(request), (err, res) => {
     t.notOk(err, 'No error')
     t.equal(res.statusCode, 302, match('res.statusCode', res.statusCode))
     t.equal(legacyResponses.arc.location.location, res.headers.location, match('res.headers.location', res.headers.location))
+    t.equal(res.headers['cache-control'], antiCache, match('cache-control', res.headers['cache-control']))
   })
   run(legacyResponses.arc.status, copy(request), (err, res) => {
     t.notOk(err, 'No error')

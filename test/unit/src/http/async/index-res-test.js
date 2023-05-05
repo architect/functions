@@ -11,6 +11,7 @@ let { http: httpFixtures } = require('@architect/req-res-fixtures')
 let requests = httpFixtures.req
 let responses = httpFixtures.res
 let legacyResponses = httpFixtures.legacy.res
+let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
 
 let b64dec = i => new Buffer.from(i, 'base64').toString()
 let str = i => JSON.stringify(i)
@@ -284,7 +285,6 @@ test('Architect v5 (REST) + Functions', async t => {
   t.plan(15)
   let request = requests.arc7.getIndex
 
-  let antiCache = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   let res = await run(legacyResponses.arc5.body, copy(request))
   t.equal(str(legacyResponses.arc5.body.body), str(res.body), match('res.body', res.body))
   t.equal(res.statusCode, 200, 'Responded with 200')
@@ -386,11 +386,12 @@ test('Architect v4 + Functions statically-bound content type responses (REST)', 
 })
 
 test('Architect <6 + Functions old school response params (HTTP)', async t => {
-  t.plan(5)
+  t.plan(6)
   let request = requests.arc7.getIndex
 
   let res = await run(legacyResponses.arc.location, copy(request))
   t.equal(legacyResponses.arc.location.location, res.headers.location, match('location', res.headers.location))
+  t.equal(res.headers['cache-control'], antiCache, match('cache-control', res.headers['cache-control']))
 
   res = await run(legacyResponses.arc.status, copy(request))
   t.equal(legacyResponses.arc.status.status, res.statusCode, match('status', res.statusCode))
@@ -406,11 +407,12 @@ test('Architect <6 + Functions old school response params (HTTP)', async t => {
 })
 
 test('Architect <6 + Functions old school response params (REST)', async t => {
-  t.plan(5)
+  t.plan(6)
   let request = requests.arc6.getIndex
 
   let res = await run(legacyResponses.arc.location, copy(request))
   t.equal(legacyResponses.arc.location.location, res.headers.location, match('location', res.headers.location))
+  t.equal(res.headers['cache-control'], antiCache, match('cache-control', res.headers['cache-control']))
 
   res = await run(legacyResponses.arc.status, copy(request))
   t.equal(legacyResponses.arc.status.status, res.statusCode, match('status', res.statusCode))

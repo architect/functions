@@ -153,7 +153,8 @@ module.exports = function responseFormatter (req, params) {
   if (cacheControl) headers['cache-control'] = cacheControl
   let antiCache = type.includes('text/html') ||
                   type.includes('application/json') ||
-                  type.includes('application/vnd.api+json')
+                  type.includes('application/vnd.api+json') ||
+                  params.location // Ensure CDNs don't cache location responses
   if (headers && !headers['cache-control'] && antiCache) {
     headers['cache-control'] = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
   }
