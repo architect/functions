@@ -17,6 +17,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 - AWS has deprecated Lambda `nodejs12.x`; `@architect/functions` 6.0 now assumes `nodejs14.x` or higher
 - The `location` property now sets an HTTP 2 compliant lowcase `location` header, instead of the previous `Location` header
+- Updated AWS SDK versions to sync up with the rest of Architect following v10.12
 
 ---
 
