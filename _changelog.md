@@ -6,6 +6,19 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [6.0.1] 2023-06-06
+
+### Changed
+
+- Updated deps
+
+
+### Fixed
+
+- Fixed issue where `arc.tables` on Node.js 18+ (i.e. AWS SDK v3) would keep Sandbox Dynamo connections open for 5s
+
+---
+
 ## [6.0.0] 2023-04-05
 
 ### Added
