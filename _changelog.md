@@ -8,6 +8,20 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ## [7.0.0] 2023-07-10
 
+### Added
+
+- Added support for JWE session encryption customization
+  - Configure by adding an env var named `ARC_APP_SECRET_ALGO` with a value of `A256GCM` (default if not specified), `A192GCM`, or `A128GCM`
+
+
+### Changed
+
+- Breaking change: default JWE session encryption algorithm is now `A256GCM`
+  - This algorithm offers greater entropy with as good or greater performance in session token encryption / decryption
+  - Backwards compatible JWE session encryption is available by adding a truthy env var named `ARC_FORCE_LEGACY_JWE_SECRET`
+- Invalid session secrets now error loudly
+
+
 ### Fixed
 
 - Fixed http session issue where custom JWE secrets were not properly encoded when encrypting the web token
