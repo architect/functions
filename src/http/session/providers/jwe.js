@@ -1,14 +1,20 @@
 let getIdx = require('./_get-idx')
 let cookie = require('cookie')
 let jwt = require('node-webtokens')
+let { ARC_APP_SECRET, ARC_FORCE_LEGACY_JWE_SECRET } = process.env
 let alg = 'dir'
 let enc = 'A128GCM'
 
-// 128bit key size
-let fallback = Buffer.from('1234567890123456').toString('base64')
+// 128 bit (16 octet) key size
+let secret = ARC_APP_SECRET ? ARC_APP_SECRET.substring(0, 16) : '1234567890123456'
 
-// need to STRONGLY encourage setting ARC_APP_SECRET in the docs
-let key = process.env.ARC_APP_SECRET || fallback
+// STRONGLY encourage setting ARC_APP_SECRET!
+let key = Buffer.from(secret).toString('base64')
+
+// Backward compat for legacy code path with a boog
+if (ARC_FORCE_LEGACY_JWE_SECRET) {
+  key = ARC_APP_SECRET
+}
 
 // wrapper for jwe.create/jwe.parse
 let jwe = {

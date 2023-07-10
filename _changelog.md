@@ -6,6 +6,16 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [7.0.0] 2023-07-10
+
+### Fixed
+
+- Fixed http session issue where custom JWE secrets were not properly encoded when encrypting the web token
+  - This is not a CVE or security issue, just a simple compatibility bug
+  - However, this bug fix effectively invalidates any outstanding Arc-issued JWE session cookies; if you want to postpone this token fix until a later time, add a truthy env var named `ARC_FORCE_LEGACY_JWE_SECRET`
+
+---
+
 ## [6.0.1] 2023-06-06
 
 ### Changed
