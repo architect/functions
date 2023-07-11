@@ -42,7 +42,7 @@ module.exports = function _subscribe (type) {
     }
     else {
       // Callback interface
-      return function _lambdaSignature (event, context, callback) {
+      return function lambda (event, context, callback) {
         if (isEvents) {
           event = event && Object.keys(event).length ? event : fallback
         }

@@ -23,7 +23,7 @@ let copy = obj => JSON.parse(JSON.stringify(obj))
 
 let run = async (response, request) => {
   responsesTested.push(response)
-  let fn = () => response
+  let fn = async () => response
   let handler = arc.http.async(fn)
   return handler(request)
 }
@@ -448,7 +448,7 @@ test('Return an error (REST)', async t => {
 test('Prevent further middleware from running when a response is returned', t => {
   t.plan(1)
   let request = requests.arc7.getIndex
-  function one () { return { statusCode: 200 } }
+  async function one () { return { statusCode: 200 } }
   let two = sinon.fake()
   let handler = arc.http.async(one, two)
   handler(copy(request))
@@ -458,8 +458,8 @@ test('Prevent further middleware from running when a response is returned', t =>
 test('Do not throw if middleware does not return a response (HTTP)', async t => {
   t.plan(1)
   let request = requests.arc7.getIndex
-  function one (req) { return req }
-  function two (req) { return req }
+  async function one (req) { return req }
+  async function two (req) { return req }
   let handler = arc.http.async(one, two)
   try {
     await handler(copy(request))

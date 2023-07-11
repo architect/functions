@@ -479,12 +479,12 @@ test('arc.http.async should allow the mutation of request object between middlew
   t.plan(1)
   let request = reqs.arc7.getIndex
   let req = copy(request)
-  function one (req) {
+  async function one (req) {
     req.body = req.body || {}
     req.body.munge = true
     return req
   }
-  function two (req) {
+  async function two (req) {
     t.ok(req.body.munge, 'request object was mutated in middleware')
     return { statusCode: 200, body: req.body }
   }

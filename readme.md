@@ -40,8 +40,6 @@ let {
 
 **`@http` methods**
 - [`http()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http)
-- [`http.async()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.async)
-- [`http.express()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.express)
 - [`http.session()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.session)
 
 **`@queues` methods**
