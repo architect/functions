@@ -24,6 +24,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
   - This algorithm offers greater entropy with as good or greater performance in session token encryption / decryption
   - Backwards compatible JWE session encryption is available by adding a truthy env var named `ARC_FORCE_LEGACY_JWE_SECRET`
 - Invalid session secrets now error loudly
+- Updated deps
 
 
 ### Fixed
