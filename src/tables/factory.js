@@ -67,6 +67,26 @@ module.exports = function reflectFactory (tables, callback) {
           params.TableName = TableName
           doc.scan(params, callback)
         },
+        scanAll (params = {}, callback) {
+          let records = []
+          params.TableName = TableName
+          function getRecords () {
+            db.scan(params, (err, data) => {
+              if (err) callback(err)
+              else {
+                data.Items.forEach(d => records.push(d))
+                if (data.LastEvaluatedKey) {
+                  params.ExclusiveStartKey = data.LastEvaluatedKey
+                  getRecords()
+                }
+                else {
+                  callback(null, records)
+                }
+              }
+            })
+          }
+          getRecords()
+        },
         update (params, callback) {
           params.TableName = TableName
           doc.update(params, callback)

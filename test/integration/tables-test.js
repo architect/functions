@@ -152,6 +152,13 @@ test('tables scan()', async t => {
   t.ok(result, 'got a result')
 })
 
+test('tables scanAll()', async t => {
+  t.plan(2)
+  let result = await data.accounts.scanAll({ Limit: 1 })
+  t.ok(result, 'got a result')
+  t.equal(result.length, 3, 'Got back all rows')
+})
+
 test('tables update()', async t => {
   t.plan(3)
   await data.accounts.update({

@@ -59,6 +59,7 @@ let {
   - [`table.put()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
   - [`table.query()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
   - [`table.scan()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+  - [`table.scanAll()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
   - [`table.update()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
   - [`table.reflect()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
   - [`table.name`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
