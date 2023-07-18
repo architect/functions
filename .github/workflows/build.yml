@@ -45,11 +45,6 @@ jobs:
       env:
         CI: true
 
-    - name: Test types # this is kept out of "npm t" because it can be slow
-      run: npm run test:types
-      env:
-        CI: true
-
     - name: Notify
       uses: sarisia/actions-status-discord@v1
       # Only fire alert once

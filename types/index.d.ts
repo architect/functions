@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 import { ArcHTTP } from "./http";
 import { ArcStatic } from "./static";
 import { ArcWebSocket } from "./ws";

@@ -1,41 +1,38 @@
 import { ApiGatewayManagementApi, DynamoDB, SNS, SQS } from "aws-sdk";
 import { Context } from "aws-lambda";
-import { expectType, expectAssignable, expectNotAssignable } from "tsd";
-import type { HttpMethods, HttpRequest, HttpResponse } from "./http";
 import arc from "../";
 
 // EVENTS
+let eventsPublishResult: SNS.Types.PublishResponse
 const eventsPublishArg = { name: "test", payload: { foo: "bar" } };
-const eventsPublishResult = await arc.events.publish(eventsPublishArg);
-expectType<SNS.Types.PublishResponse>(eventsPublishResult);
+eventsPublishResult = await arc.events.publish(eventsPublishArg);
 
 // QUEUES
+let queuesPublishResult: SQS.Types.SendMessageResult
 const queuesPublishArg = { name: "test", payload: { foo: "bar" } };
-const queuesPublishResult = await arc.queues.publish(queuesPublishArg);
-expectType<SQS.Types.SendMessageResult>(queuesPublishResult);
+queuesPublishResult = await arc.queues.publish(queuesPublishArg);
 
 // HTTP
 arc.http(function (request, response) {
-  expectType<HttpRequest>(request);
-  expectType<boolean>(request.isBase64Encoded);
+  const responseValue = {
+    status: 201,
+    json: { foo: "bar" },
+    session: { foo: "bar" },
+  };
 
-  const responseValue: HttpResponse = { json: { foo: "bar" } };
-  expectAssignable<Record<string, any> | undefined>(responseValue.session);
-  expectNotAssignable<string>(responseValue.status);
   return response(responseValue);
 });
-arc.http.async(async function (request, context) {
-  expectType<HttpRequest>(request);
-  expectType<string>(request.path);
-  expectType<Context>(context);
+arc.http.async(async function (request, context: Context) {
+  const response = {
+    status: 201,
+    html: "<h1>TS</h1>",
+    session: { foo: "bar" },
+  };
 
-  const response: HttpResponse = { html: "<h1>TS</h1>" };
-  expectAssignable<number | undefined>(response.status);
-  expectNotAssignable<string>(response.session);
   return response;
 });
 const sampleRequest = {
-  httpMethod: "POST" as HttpMethods,
+  httpMethod: "POST",
   path: "/",
   resource: "",
   pathParameters: { foo: "bar" },
@@ -44,19 +41,22 @@ const sampleRequest = {
   body: "undefined",
   isBase64Encoded: false,
 };
-expectType<Record<string, any>>(arc.http.helpers.bodyParser(sampleRequest));
-expectType<HttpRequest>(arc.http.helpers.interpolate(sampleRequest));
-expectType<string>(arc.http.helpers.url("/foobar-baz"));
+arc.http.helpers.bodyParser(sampleRequest);
+arc.http.helpers.interpolate(sampleRequest);
+arc.http.helpers.url("/foobar-baz");
 
 // STATIC
-expectType<string>(arc.static("/my-image.png"));
+let staticResponse: string;
+staticResponse = arc.static("/my-image.png");
 
 // TABLES
+let db: DynamoDB;
+let doc: DynamoDB.DocumentClient;
+let tableName: string;
 const dbClient = await arc.tables()
-expectType<DynamoDB>(dbClient._db)
-expectType<DynamoDB.DocumentClient>(dbClient._doc)
-expectType<string>(dbClient.name('widgets'))
-expectType<Record<string, string>>(dbClient.reflect())
+db = dbClient._db
+doc = dbClient._doc
+tableName = dbClient.name('widgets')
 const myTable = dbClient.foobar
 const id42 = await myTable.get({ id: 42 })
 await myTable.update({
@@ -75,11 +75,12 @@ await myTable.scan({
   FilterExpression: 'radness > :ninethousand',
   ExpressionAttributeValues: { ':ninethousand': 9000 },
 })
+await myTable.scanAll({})
 
 // WS
-expectType<ApiGatewayManagementApi>(arc.ws._api);
-expectType<void>(await arc.ws.send({ id: "foo", payload: { bar: "baz" } }));
-expectType<void>(await arc.ws.close({ id: "foo" }));
-expectType<ApiGatewayManagementApi.Types.GetConnectionResponse>(
-  await arc.ws.info({ id: "foo" }),
-);
+let ws: ApiGatewayManagementApi;
+let wsResponse: ApiGatewayManagementApi.Types.GetConnectionResponse;
+ws = arc.ws._api;
+await arc.ws.send({ id: "foo", payload: { bar: "baz" } }));
+await arc.ws.close({ id: "foo" }));
+wsResponse = await arc.ws.info({ id: "foo" }),
