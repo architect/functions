@@ -59,12 +59,13 @@ function check ({ req, request, t }) {
 }
 
 test('Set up env', t => {
-  t.plan(1)
+  t.plan(2)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   arc = require(sut)
   t.ok(arc.http, 'Loaded HTTP')
+  t.ok(arc.http.async, 'Loaded legacy async method')
 })
 
 test('Architect v7 (HTTP): get /', async t => {
@@ -528,6 +529,20 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t 
   console.log(`Arc 6 requests`)
   Object.entries(reqs.arc6).forEach(tester)
 })
+
+test('Verify legacy arc.http.async method still works', async t => {
+  t.plan(22)
+  let request = reqs.arc7.getIndex
+  let req
+  let fn = async event => {
+    req = event
+    return basicResponse
+  }
+  let handler = arc.http.async(fn)
+  await handler(copy(request))
+  check({ req, request: copy(request), t })
+})
+
 
 test('Teardown', t => {
   t.plan(1)
