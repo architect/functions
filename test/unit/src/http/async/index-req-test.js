@@ -64,7 +64,7 @@ test('Set up env', t => {
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   arc = require(sut)
-  t.ok(arc.http.async, 'Loaded HTTP async')
+  t.ok(arc.http, 'Loaded HTTP')
 })
 
 test('Architect v7 (HTTP): get /', async t => {
@@ -75,7 +75,7 @@ test('Architect v7 (HTTP): get /', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -88,7 +88,7 @@ test('Architect v7 (HTTP): get /?whats=up', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -101,7 +101,7 @@ test('Architect v7 (HTTP): get /?whats=up&whats=there', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -114,7 +114,7 @@ test('Architect v7 (HTTP): get /nature/hiking', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -127,7 +127,7 @@ test('Architect v7 (HTTP): get /{proxy+} (/nature/hiking)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -140,7 +140,7 @@ test('Architect v7 (HTTP): get /$default', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -153,7 +153,7 @@ test('Architect v7 (HTTP): get /path/* (/path/hi/there)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -166,7 +166,7 @@ test('Architect v7 (HTTP): get /:activities/{proxy+} (/nature/hiking/wilderness)
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -179,7 +179,7 @@ test('Architect v7 (HTTP): get / with brotli compression', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -192,7 +192,7 @@ test('Architect v7 (HTTP): get / with gzip compression', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -205,7 +205,7 @@ test('Architect v7 (HTTP): post /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -218,7 +218,7 @@ test('Architect v7 (HTTP): post /form (form URL encoded)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -231,7 +231,7 @@ test('Architect v7 (HTTP): post /form (multipart form data)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -244,7 +244,7 @@ test('Architect v7 (HTTP): post /form (octet stream)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -257,7 +257,7 @@ test('Architect v7 (HTTP): put /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -270,7 +270,7 @@ test('Architect v7 (HTTP): patch /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -283,7 +283,7 @@ test('Architect v7 (HTTP): delete /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -301,7 +301,7 @@ test('Architect v6 (REST): get /', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -314,7 +314,7 @@ test('Architect v6 (REST): get /?whats=up', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -327,7 +327,7 @@ test('Architect v6 (REST): get /?whats=up&whats=there', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -340,7 +340,7 @@ test('Architect v6 (REST): get /nature/hiking', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -353,7 +353,7 @@ test('Architect v6 (REST): get /{proxy+}', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -366,7 +366,7 @@ test('Architect v6 (REST): get /path/* (/path/hi/there)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -379,7 +379,7 @@ test('Architect v6 (REST): get /:activities/{proxy+} (/nature/hiking/wilderness)
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -392,7 +392,7 @@ test('Architect v6 (REST): post /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -405,7 +405,7 @@ test('Architect v6 (REST): post /form (form URL encoded)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -418,7 +418,7 @@ test('Architect v6 (REST): post /form (multipart form data)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -431,7 +431,7 @@ test('Architect v6 (REST): post /form (octet stream)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -444,7 +444,7 @@ test('Architect v6 (REST): put /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -457,7 +457,7 @@ test('Architect v6 (REST): patch /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
@@ -470,12 +470,12 @@ test('Architect v6 (REST): delete /form (JSON)', async t => {
     req = event
     return basicResponse
   }
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   await handler(copy(request))
   check({ req, request: copy(request), t })
 })
 
-test('arc.http.async should allow the mutation of request object between middleware functions', t => {
+test('arc.http should allow the mutation of request object between middleware functions', t => {
   t.plan(1)
   let request = reqs.arc7.getIndex
   let req = copy(request)
@@ -488,11 +488,11 @@ test('arc.http.async should allow the mutation of request object between middlew
     t.ok(req.body.munge, 'request object was mutated in middleware')
     return { statusCode: 200, body: req.body }
   }
-  let handler = arc.http.async(one, two)
+  let handler = arc.http(one, two)
   handler(req)
 })
 
-test('arc.http.async should pass along original request if function does not return', async t => {
+test('arc.http should pass along original request if function does not return', async t => {
   t.plan(1)
   let request = reqs.arc7.getIndex
   let gotOne
@@ -506,7 +506,7 @@ test('arc.http.async should pass along original request if function does not ret
     return { statusCode: 200 }
   }
   let req = copy(request)
-  let handler = arc.http.async(one, two)
+  let handler = arc.http(one, two)
   await handler(req)
   t.equal(str(gotOne), str(gotTwo), match('second function request', `${str(gotTwo).substr(0, 50)}...`))
 })

@@ -113,7 +113,7 @@ test('Architect v6+ requests', t => {
     isBase64Encoded: true
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
-  // Not test faulty encoding on form URL-encoded posts; you'll always get something back
+  // Not testing faulty encoding on form URL-encoded posts; you'll always get something back
 
   // Pass through multipart / base64
   req = {

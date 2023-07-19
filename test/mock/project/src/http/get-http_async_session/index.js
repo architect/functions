@@ -18,4 +18,4 @@ async function handler (req) {
   }
 }
 
-exports.handler = arc.http.async(handler)
+exports.handler = arc.http(handler)

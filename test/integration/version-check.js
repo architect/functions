@@ -14,7 +14,7 @@ test('Set up env', async t => {
   t.equal(result, 'Sandbox successfully started', result)
 })
 
-test('Create an initial session', async t => {
+test('Check for incompatible versions', async t => {
   t.plan(1)
   let dest = url('/incompatible-version')
   try {

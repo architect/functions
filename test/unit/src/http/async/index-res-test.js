@@ -24,7 +24,7 @@ let copy = obj => JSON.parse(JSON.stringify(obj))
 let run = async (response, request) => {
   responsesTested.push(response)
   let fn = async () => response
-  let handler = arc.http.async(fn)
+  let handler = arc.http(fn)
   return handler(request)
 }
 
@@ -34,7 +34,7 @@ test('Set up env', t => {
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
   // eslint-disable-next-line
   arc = require(sut)
-  t.ok(arc.http.async, 'Loaded HTTP async')
+  t.ok(arc.http, 'Loaded HTTP')
 })
 
 test('Architect v7 (HTTP)', async t => {
@@ -281,7 +281,7 @@ test('Architect v5 (REST): dependency-free responses', async t => {
 })
 
 test('Architect v5 (REST) + Functions', async t => {
-  // Arc 5 `arc.http()` functionality backported to `arc.http.async()`
+  // Arc 5 `arc.http()` functionality backported to `arc.http()`
   t.plan(15)
   let request = requests.arc7.getIndex
 
@@ -450,7 +450,7 @@ test('Prevent further middleware from running when a response is returned', t =>
   let request = requests.arc7.getIndex
   async function one () { return { statusCode: 200 } }
   let two = sinon.fake()
-  let handler = arc.http.async(one, two)
+  let handler = arc.http(one, two)
   handler(copy(request))
   t.notOk(two.callCount, 'second middleware not called')
 })
@@ -460,7 +460,7 @@ test('Do not throw if middleware does not return a response (HTTP)', async t => 
   let request = requests.arc7.getIndex
   async function one (req) { return req }
   async function two (req) { return req }
-  let handler = arc.http.async(one, two)
+  let handler = arc.http(one, two)
   try {
     await handler(copy(request))
     t.ok('No exception thrown')
@@ -473,9 +473,9 @@ test('Do not throw if middleware does not return a response (HTTP)', async t => 
 test('Throw if middleware does not return a response (REST)', async t => {
   t.plan(1)
   let request = requests.arc6.getIndex
-  function one (req) { return req }
-  function two (req) { return req }
-  let handler = arc.http.async(one, two)
+  async function one (req) { return req }
+  async function two (req) { return req }
+  let handler = arc.http(one, two)
   try {
     await handler(copy(request))
   }
