@@ -14,6 +14,9 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
   - This is not a breaking change, and `arc.http.async` will remain as a legacy code path
   - Moving forward we suggest passing all middleware through `arc.http`, which will figure out whether to run in async or callback mode
   - Note: pass only callback or async middleware, but not both. Don't drink and drive, and don't mix async primitives.
+- Added service discovery for DynamoDB-backed sessions
+  - Now you can set your `ARC_SESSION_TABLE_NAME` env var with the logical name of your sessions table found in your `app.arc` file
+  - However, the physical DynamoDB table name will work as well
 - Added support for JWE session encryption customization
   - Configure by adding an env var named `ARC_APP_SECRET_ALGO` with a value of `A256GCM` (default if not specified), `A192GCM`, or `A128GCM`
 - Added `tables.scanAll` method for retrieving the entire contents of a table

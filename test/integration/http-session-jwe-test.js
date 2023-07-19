@@ -37,7 +37,7 @@ test('Create an initial session', async t => {
   t.ok(cookie, `Got cookie to use in sessions: ${cookie.substr(0, 50)}...`)
 })
 
-test('Do session stuff (arc.http)', async t => {
+test('Do session stuff (continuation passing)', async t => {
   t.plan(14)
   let session
 
@@ -75,7 +75,7 @@ test('Do session stuff (arc.http)', async t => {
   checkKeys(session, t)
 })
 
-test('Do session stuff (arc.http.async)', async t => {
+test('Do session stuff (async)', async t => {
   t.plan(14)
   let session
 

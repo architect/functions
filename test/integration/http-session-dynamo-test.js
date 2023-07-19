@@ -21,9 +21,9 @@ function checkKeys (session, t) {
 let cookie // Assigned at setup
 let mock = join(__dirname, '..', 'mock', 'project')
 
-test('Set up env', async t => {
+test('Set up env to test physical table name', async t => {
   t.plan(1)
-  process.env.ARC_SESSION_TABLE_NAME = 'test-only-staging-arc-sessions'
+  process.env.ARC_SESSION_TABLE_NAME = 'test-only-staging-arc-sessions' // Use logical, not physical name
   let result = await sandbox.start({ quiet: true, cwd: mock })
   t.equal(result, 'Sandbox successfully started', result)
 })
@@ -36,7 +36,29 @@ test('Create an initial session', async t => {
   t.ok(cookie, `Got cookie to use in sessions: ${cookie.substr(0, 50)}...`)
 })
 
-test('Do session stuff (arc.http)', async t => {
+test('Teardown', async t => {
+  t.plan(1)
+  delete process.env.ARC_SESSION_TABLE_NAME
+  let result = await sandbox.end()
+  t.equal(result, 'Sandbox successfully shut down', result)
+})
+
+test('Set up env to test logical table name', async t => {
+  t.plan(1)
+  process.env.ARC_SESSION_TABLE_NAME = 'arc-sessions' // Use logical, not physical name
+  let result = await sandbox.start({ quiet: true, cwd: mock })
+  t.equal(result, 'Sandbox successfully started', result)
+})
+
+test('Create an initial session', async t => {
+  t.plan(1)
+  let dest = url('/http-session')
+  let result = await tiny.get({ url: dest })
+  cookie = result.headers['set-cookie'][0]
+  t.ok(cookie, `Got cookie to use in sessions: ${cookie.substr(0, 50)}...`)
+})
+
+test('Do session stuff (continuation passing)', async t => {
   t.plan(14)
   let session
 
@@ -74,7 +96,7 @@ test('Do session stuff (arc.http)', async t => {
   checkKeys(session, t)
 })
 
-test('Do session stuff (arc.http.async)', async t => {
+test('Do session stuff (async)', async t => {
   t.plan(14)
   let session
 
@@ -118,4 +140,3 @@ test('Teardown', async t => {
   let result = await sandbox.end()
   t.equal(result, 'Sandbox successfully shut down', result)
 })
-
