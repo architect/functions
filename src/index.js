@@ -27,6 +27,7 @@ let arc = {
   http,
   static: _static,
   ws,
+  /** @returns {Promise<Record<String, any>>} service map */
   services: function () {
     return new Promise(function (resolve, reject) {
       if (services) resolve(services)
