@@ -78,9 +78,9 @@ function instantiateAPI () {
  *
  * @param {Object} params
  * @param {String} params.id - the ws connection id (required)
- * @param {Object} params.payload - an event payload (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
+ * @param {Record<String, any>} params.payload - an event payload (required)
+ * @param {(error: any, data: any) => void} [callback] - a node style errback (optional)
+ * @returns {Promise<void> | void} - returned if no callback is supplied
  */
 function send ({ id, payload }, callback) {
   instantiateAPI()
@@ -97,8 +97,8 @@ function send ({ id, payload }, callback) {
  *
  * @param {Object} params
  * @param {String} params.id - the ws connection id (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
+ * @param {(error: any, data: any) => void} [callback] - a node style errback (optional)
+ * @returns {Promise<void> | void} - returned if no callback is supplied
  */
 function close ({ id }, callback) {
   instantiateAPI()
@@ -114,8 +114,8 @@ function close ({ id }, callback) {
  *
  * @param {Object} params
  * @param {String} params.id - the ws connection id (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
+ * @param {(error: any, data: any) => void} [callback] - a node style errback (optional)
+ * @returns {Promise<void> | void} - returned if no callback is supplied
  */
 function info ({ id }, callback) {
   instantiateAPI()
