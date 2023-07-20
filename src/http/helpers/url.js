@@ -5,6 +5,8 @@
  * - `/` if ARC_ENV === testing
  * - `/staging` if ARC_ENV === staging
  * - `/production` if ARC_ENV === production
+ * @param {String} url - The url
+ * @returns {String} The modified url
  */
 module.exports = function url (url) {
   let { ARC_ENV, ARC_LOCAL } = process.env

@@ -86,13 +86,11 @@ function httpHandler (isAsync, ...fns) {
     }
   }
 }
+
+/** @type {ArcHttp} */
 let http = httpHandler.bind({}, false)
 http.async = httpHandler.bind({}, true)
-
-// Helpers
 http.helpers = { bodyParser, interpolate, url }
-
-// Session
 http.session = { read, write }
 
 module.exports = http
@@ -147,3 +145,60 @@ function response (req, callback, params) {
     callback(null, res)
   }
 }
+
+/**
+ * @typedef {_ArcHttp & {
+ *  async: ArcHttp,
+ *  helpers: {
+ *    bodyParser: typeof bodyParser,
+ *    interpolate: typeof interpolate,
+ *    url: typeof url,
+ *  },
+ *  session: {
+ *    read: typeof read,
+ *    write: typeof write,
+ *  },
+ * }} ArcHttp
+ *
+ * @callback _ArcHttp
+ * @param {ArcHttpHandlerCallback} handler
+ * @returns {void}
+ *
+ * @callback ArcHttpHandlerCallback
+ * @param {ArcHttpRequest} request
+ * @param {import("aws-lambda").Context} context
+ * @param {Function} next
+ * @returns {Promise<ArcHttpResponse | void>}
+ *
+ * @typedef {Object} ArcHttpRequest
+ * @property {HttpMethod} httpMethod - HTTP method
+ * @property {Record<String, String>} pathParameters - Any URL params as an object, if defined in your HTTP Function's path (e.g. foo in GET /:foo/bar)
+ * @property {Record<String, String>} queryStringParameters - Any query params if present in the client request
+ * @property {Record<String, String>} headers - All client request headers
+ * @property {String | Record<String, any>} body - The body of the request
+ * @property {Boolean} isBase64Encoded - Whether the body is base64 encoded
+ * @property {String} version - The version of the request payload
+ * @property {String} rawBody - The unparsed, raw body of the request
+ * @property {String} resource - The absolute path of the request, with resources substituted for actual path parts (e.g. /{foo}/bar)
+ * @property {String} path - The absolute path of the request
+ * @property {HttpMethod} method - HTTP method
+ * @property {Record<String, String>} params - The path parameters of the request
+ * @property {Record<String, String>} query - The query string parameters of the request
+ * @property {Record<String, any>} [session] - The decoded session object
+ *
+ * @typedef {Object} ArcHttpResponse
+ * @property {Number} [statusCode] - The HTTP status code
+ * @property {Number} [status] - The HTTP status code
+ * @property {Record<String, String>} [headers] - The HTTP response headers
+ * @property {String} [body] - The HTTP response body
+ * @property {Boolean} [isBase64Encoded] - Whether the response is base64 encoded - should be true if returning binary data
+ * @property {Record<String, any>} [session] - The session object to be persisted
+ * @property {any} [json] - The JSON response body - omit status, headers, and body
+ * @property {String} [css] - The CSS response body - omit status, headers, and body
+ * @property {String} [html] - The HTML response body - omit status, headers, and body
+ * @property {String} [js] - The Javascript response body - omit status, headers, and body
+ * @property {String} [text] - The text response body - omit status, headers, and body
+ * @property {String} [xml] - The XML response body - omit status, headers, and body
+ *
+ * @typedef {"GET" | "POST" | "PATCH" | "PUT" | "DELETE" | "OPTIONS" | "HEAD"} HttpMethod
+ */

@@ -2,6 +2,10 @@ let unUndefined = [ 'body', 'pathParameters', 'queryStringParameters' ]
 let unNulled = [ 'body', 'pathParameters', 'queryStringParameters', 'multiValueQueryStringParameters' ]
 let pathParams = /\{\w+\}/g
 
+/**
+ * @param {Object} req - the request object
+ * @returns {import("../index").ArcHttpRequest} the updated request object
+ */
 module.exports = function interpolateParams (req) {
   // Make the raw body accessible, handy for use with external libraries
   if (req.body) req.rawBody = req.body

@@ -1,8 +1,10 @@
 let qs = require('querystring')
 
+// Arc 6 bodies are always base64 encoded strings with req.isBase64Encoded = true (or null, which we interpolate into `{}`)
+// <Arc 6 bodies are always objects
 /**
- * Arc 6 bodies are always base64 encoded strings with req.isBase64Encoded = true (or null, which we interpolate into `{}`)
- * <Arc 6 bodies are always objects
+ * @param {object} req - the request object
+ * @returns {Record<string, any>} req.body
  */
 module.exports = function parseBody (req) {
   let ctype = req.headers['content-type'] || req.headers['Content-Type']
