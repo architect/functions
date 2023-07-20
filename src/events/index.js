@@ -7,13 +7,11 @@ module.exports = function eventsAndQueuesFactory (arc, type) {
   return {
     /**
      * `arc.events|queues.publish`
-     * publish events and queues
+     * publish to events and queues
      *
-     * @param {Object} params
-     * @param {String} params.name - the event name (required)
-     * @param {Object} params.payload - a json event payload (required)
-     * @param {Function} callback - a node style errback (optional)
-     * @returns {Promise} - returned if no callback is supplied
+     * @param {{name: String, payload: Object}} params an object with the event name and payload
+     * @param {(error: Error, result: any) => void} [callback] a node style errback (optional)
+     * @returns {Promise<void> | void} returned if no callback is supplied
      */
     publish,
 
@@ -21,8 +19,8 @@ module.exports = function eventsAndQueuesFactory (arc, type) {
      * `arc.events|queues.subscribe`
      * listen for events and queues
      *
-     * @param {Function} handler - a single event handler function
-     * @returns {Lambda} - a Lambda function sig
+     * @param {(event: any) => void} handler an event handler function
+     * @returns {Function} a Lambda handler function
      */
     subscribe
   }

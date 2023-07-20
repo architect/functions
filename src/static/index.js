@@ -2,17 +2,14 @@ let { readFileSync, existsSync } = require('fs')
 let { join } = require('path')
 
 /**
- * Architect static asset helper
- * - Returns the live asset path and filename
- *
- * In order to keep this method sync, it does not use reflection to get fingerprint status
- * - Not checking @static fingerprint true (which we used to read from the .arc file) is possibly dangerous, so ensure asset path is valid
- * - ? TODO: add fingerprint state to env vars in Arc 6 to restore config safety?
  * @param {string} asset - the path to the asset (eg. /index.js)
- * @param {{stagePath: string}} options - options to pass to the helper
+ * @param {{stagePath?: string}} [options] - options to pass to the helper
  * @returns {string} path - the resolved asset path (eg. /_static/index-xxx.js)
- */
+*/
 module.exports = function _static (asset, options = {}) {
+  // In order to keep this method sync, it does not use reflection to get fingerprint status
+  // - Not checking `@static` fingerprint true (which we used to read from the .arc file) is possibly dangerous, so ensure asset path is valid
+  // - ? TODO: add fingerprint state to env vars in Arc 6 to restore config safety?
   let { ARC_ENV, ARC_LOCAL } = process.env
   let key = asset[0] === '/' ? asset.substring(1) : asset
   let isIndex = asset === '/'

@@ -17,32 +17,44 @@ if (ARC_SANDBOX && !sandboxVersionAtLeast('5.0.0')) {
   throw ReferenceError('Incompatible version: please upgrade to Sandbox >=5.x or Architect >=10.x')
 }
 
-let http = require('./http')
 let _static = require('./static')
+let events = require('./events')
+let http = require('./http')
 let serviceDiscovery = require('./discovery')
+let tables = require('./tables')
 let ws = require('./ws')
 
-let services
-let arc = {
-  http,
-  static: _static,
-  ws,
-  /** @returns {Promise<Record<String, any>>} service map */
-  services: function () {
-    return new Promise(function (resolve, reject) {
-      if (services) resolve(services)
-      else serviceDiscovery(function (err, serviceMap) {
-        if (err) reject(err)
-        else {
-          services = serviceMap
-          resolve(services)
-        }
-      })
+let servicesMap
+/** @returns {Promise<Record<String, any>>} Architect services map */
+function services () {
+  return new Promise(function (resolve, reject) {
+    if (servicesMap) resolve(servicesMap)
+    else serviceDiscovery(function (err, map) {
+      if (err) reject(err)
+      else {
+        servicesMap = map
+        resolve(servicesMap)
+      }
     })
-  }
+  })
 }
-arc.events = require('./events')(arc, 'events')
-arc.queues = require('./events')(arc, 'queues')
-arc.tables = require('./tables')(arc)
+
+/** Architect Node.js runtime helpers. */
+let arc = {
+  /** Middleware and request/response normalization for `@http` functions. */
+  http,
+  /** Retrieve the Architect service map: an object mapping plugins and Arc infrastructure. */
+  services,
+  /** Helper to get the fingerprinted path of a given static asset. */
+  static: _static,
+  /** Interact with WebSocket services. Declare endpoints with the `@ws` pragma. */
+  ws,
+  /** Publish and subscribe helpers for `@events` functions. */
+  events: events({ services }, 'events'),
+  /** Publish and subscribe helpers for `@queues` functions. */
+  queues: events({ services }, 'queues'),
+  /** Create a DynamoDB client for your application's `@tables`. */
+  tables: tables({ services }),
+}
 
 module.exports = arc
