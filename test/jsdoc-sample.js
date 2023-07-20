@@ -100,7 +100,9 @@ arc.http.helpers.url('/foobar-baz')
 // STATIC
 let staticResponse
 staticResponse = arc.static('/my-image.png')
-staticResponse = arc.static('/my-image.png', { stagePath: '/staging' })
+staticResponse = arc.static('/my-image.png', { stagePath: true })
+// @ts-expect-error
+staticResponse = arc.static('/my-image.png', { stagePath: 'foobar' }) // ← not a string
 console.log(staticResponse)
 
 // TABLES

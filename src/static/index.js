@@ -3,7 +3,7 @@ let { join } = require('path')
 
 /**
  * @param {string} asset - the path to the asset (eg. /index.js)
- * @param {{stagePath?: string}} [options] - options to pass to the helper
+ * @param {{stagePath?: boolean}} [options] - options to pass to the helper
  * @returns {string} path - the resolved asset path (eg. /_static/index-xxx.js)
 */
 module.exports = function _static (asset, options = {}) {
