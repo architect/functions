@@ -1,5 +1,5 @@
 let { isNode18, useAWS } = require('../lib')
-let ssmClient
+let ssm, ssmClient
 
 /**
  * @param {string} type - events, queues, or tables
@@ -44,7 +44,7 @@ module.exports = function lookup (callback) {
     if (isNode18) {
       let { SSMClient: SSM, GetParametersByPathCommand: cmd } = require('@aws-sdk/client-ssm')
       let GetParametersByPathCommand = cmd
-      let ssm = new SSM(config)
+      ssm = new SSM(config)
       ssmClient = (params, callback) => {
         let command = new GetParametersByPathCommand(params)
         return ssm.send(command, callback)
@@ -52,7 +52,7 @@ module.exports = function lookup (callback) {
     }
     else {
       let SSM = require('aws-sdk/clients/ssm')
-      let ssm = new SSM(config)
+      ssm = new SSM(config)
       ssmClient = (params, callback) => {
         return ssm.getParametersByPath(params, callback)
       }

@@ -1,7 +1,7 @@
 let http = require('http')
 let { getPorts, isNode18, useAWS } = require('../lib')
 let ledger = { events: {}, queues: {} }
-let snsClient, sqsClient, port
+let sns, snsClient, sqs, sqsClient, port
 
 /**
  * Invoke
@@ -75,7 +75,6 @@ function _publishSandbox (type, params, callback) {
 
 function eventFactory (arc) {
   return function live ({ name, payload }, callback) {
-    let sns
     if (!snsClient) {
       if (isNode18) {
         let { SNS } = require('@aws-sdk/client-sns')
@@ -116,7 +115,6 @@ function eventFactory (arc) {
 
 function queueFactory (arc) {
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
-    let sqs
     if (!sqsClient) {
       if (isNode18) {
         let { SQS } = require('@aws-sdk/client-sqs')
