@@ -49,6 +49,8 @@ export interface ArcTable<Item = unknown> {
   scan(params: ScanParams): Promise<ScanOutput<Item>>;
   scan(params: ScanParams, callback: Callback<ScanOutput<Item>>): void;
 
+  scanAll(params: ScanParams): Promise<Item[]>;
+
   update(params: UpdateParams<Item>): Promise<UpdateOutput>;
   update(params: UpdateParams<Item>, callback: Callback<UpdateOutput>): void;
 }
