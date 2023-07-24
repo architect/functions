@@ -72,13 +72,13 @@ export interface HttpResponse {
   xml?: string | undefined;
 }
 
-type Handler = (
+export type HttpHandler = (
   req: HttpRequest,
   res: (resOrError: HttpResponse | Error) => void,
   next: () => void,
 ) => void;
 
-type AsyncHandler = (
+export type HttpAsyncHandler = (
   req: HttpRequest,
   context: Context,
 ) => Promise<HttpResponse | void>;
@@ -89,8 +89,9 @@ type LambdaHandler = (
 ) => Promise<APIGatewayProxyResult>;
 
 export interface ArcHTTP {
-  (...handlers: Handler[]): LambdaHandler;
-  async: (...handlers: AsyncHandler[]) => LambdaHandler;
+  (...handlers: HttpHandler[]): LambdaHandler;      // these method signatures are the same
+  (...handlers: HttpAsyncHandler[]): LambdaHandler; // unable to overload gracefully
+  async: (...handlers: HttpAsyncHandler[]) => LambdaHandler;
   helpers: {
     bodyParser: (req: HttpRequest) => Record<string, any>;
     interpolate: (req: HttpRequest) => HttpRequest;

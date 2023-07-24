@@ -1,7 +1,7 @@
 import { ApiGatewayManagementApi, DynamoDB, SNS, SQS } from "aws-sdk";
 import { Context } from "aws-lambda";
 import { expectType, expectAssignable, expectNotAssignable } from "tsd";
-import type { HttpMethods, HttpRequest, HttpResponse } from "./http";
+import type { HttpMethods, HttpRequest, HttpResponse, HttpHandler, HttpAsyncHandler } from "./http";
 import arc from "../";
 
 // EVENTS
@@ -15,47 +15,53 @@ const queuesPublishResult = await arc.queues.publish(queuesPublishArg);
 expectType<SQS.Types.SendMessageResult>(queuesPublishResult);
 
 // HTTP
-function middleware(req, res, next) {
+const middleware: HttpHandler = (req, res, next) => {
+  expectType<HttpRequest>(req);
+  expectType<(p: HttpResponse | Error) => void>(res);
+  expectType<() => void>(next);
+
   // doing nothing is valid middleware
   next();
 };
-async function asyncMiddleware(req, context) {
+const asyncMiddleware: HttpAsyncHandler = async (req, ctx) => {
+  expectType<HttpRequest>(req);
+  expectType<Context>(ctx);
+
   // doing nothing is valid middleware
   await (new Promise((resolve) => resolve('foo')));
 }
-// callback pattern
-arc.http(function (request, response, next) {
-  expectType<HttpRequest>(request);
-  expectType<boolean>(request.isBase64Encoded);
-
-  expectType<() => void>(next);
+// default callback pattern
+arc.http(function (req, res) {
+  expectType<HttpRequest>(req);
+  expectType<boolean>(req.isBase64Encoded);
+  expectType<(p: HttpResponse | Error) => void>(res);
 
   const responseValue: HttpResponse = { json: { foo: "bar" } };
   expectAssignable<Record<string, any> | undefined>(responseValue.session);
   expectNotAssignable<string>(responseValue.status);
-  return response(responseValue);
+  return res(responseValue);
 });
 // with middleware
-arc.http(middleware, function (request, response, next) {
-  return response({ json: { foo: "bar" } });
+arc.http(middleware, function (req, res) {
+  return res({ json: { foo: "bar" } });
 });
 // async pattern
-arc.http(async function (request, context) {
-  expectType<HttpRequest>(request);
-  expectType<Context>(context);
+arc.http(async function (req, ctx) {
+  expectType<HttpRequest>(req);
+  expectType<Context>(ctx);
 
   const response: HttpResponse = { html: "<h1>types</h1>" };
   return response;
-});
+} as HttpAsyncHandler);
 // with async middleware
-arc.http(asyncMiddleware, async function (request, context) {
+arc.http(asyncMiddleware, <HttpAsyncHandler>async function (req, ctx) {
   return { text: "types" };
 });
 // legacy async
-arc.http.async(asyncMiddleware, async function (request, context) {
-  expectType<HttpRequest>(request);
-  expectType<string>(request.path);
-  expectType<Context>(context);
+arc.http.async(asyncMiddleware, async function (req, ctx) {
+  expectType<HttpRequest>(req);
+  expectType<string>(req.path);
+  expectType<Context>(ctx);
 
   const response: HttpResponse = { html: "<h1>types</h1>" };
   expectAssignable<number | undefined>(response.status);
