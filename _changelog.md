@@ -24,6 +24,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ### Changed
 
+- Improved SNS (`@events`), SQS (`@queues`), and SSM (`arc.discovery`) performance by caching clients, thereby enabling more efficient usage, especially in large workloads; thanks @w5mix & @CameronSima!
 - Breaking change: default JWE session encryption algorithm is now `A256GCM`
   - This algorithm offers greater entropy with as good or greater performance in session token encryption / decryption
   - Backwards compatible JWE session encryption is available by adding a truthy env var named `ARC_FORCE_LEGACY_JWE_SECRET`
