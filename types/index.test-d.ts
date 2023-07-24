@@ -1,8 +1,9 @@
 import { ApiGatewayManagementApi, DynamoDB, SNS, SQS } from "aws-sdk";
 import { Context } from "aws-lambda";
 import { expectType, expectAssignable, expectNotAssignable } from "tsd";
-import type { HttpMethods, HttpRequest, HttpResponse, HttpHandler, HttpAsyncHandler } from "./http";
 import arc from "../";
+import type { HttpHandler, HttpAsyncHandler } from "../"
+import type { HttpMethods, HttpRequest, HttpResponse } from "./http";
 
 // EVENTS
 const eventsPublishArg = { name: "test", payload: { foo: "bar" } };

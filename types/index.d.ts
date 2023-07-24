@@ -1,11 +1,12 @@
 /// <reference types="node" />
 
-import { ArcHTTP } from "./http";
+import { ArcHTTP, HttpHandler, HttpAsyncHandler } from "./http";
 import { ArcStatic } from "./static";
 import { ArcWebSocket } from "./ws";
 import { ArcEvents, ArcQueues } from "./events";
 import { ArcTables } from "./tables";
 
+export type { HttpHandler, HttpAsyncHandler };
 export type ArcServices = () => Promise<Record<string, any>>;
 
 export const http: ArcHTTP;
