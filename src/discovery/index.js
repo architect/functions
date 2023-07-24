@@ -1,4 +1,5 @@
 let { isNode18, useAWS } = require('../lib')
+let ssmClient
 
 /**
  * @param {string} type - events, queues, or tables
@@ -39,27 +40,27 @@ module.exports = function lookup (callback) {
   }
 
   // shim v2 and v3
-  let method
-  if (isNode18) {
-    const {
-      SSMClient: SSM, GetParametersByPathCommand
-    } = require('@aws-sdk/client-ssm')
-    const ssm = new SSM(config)
-    method = (params, callback) => {
-      const command = new GetParametersByPathCommand(params)
-      return ssm.send(command, callback)
+  if (!ssmClient) {
+    if (isNode18) {
+      let { SSMClient: SSM, GetParametersByPathCommand: cmd } = require('@aws-sdk/client-ssm')
+      let GetParametersByPathCommand = cmd
+      let ssm = new SSM(config)
+      ssmClient = (params, callback) => {
+        let command = new GetParametersByPathCommand(params)
+        return ssm.send(command, callback)
+      }
     }
-  }
-  else {
-    const SSM = require('aws-sdk/clients/ssm')
-    const ssm = new SSM(config)
-    method = (params, callback) => {
-      return ssm.getParametersByPath(params, callback)
+    else {
+      let SSM = require('aws-sdk/clients/ssm')
+      let ssm = new SSM(config)
+      ssmClient = (params, callback) => {
+        return ssm.getParametersByPath(params, callback)
+      }
     }
   }
 
   function getParams (params) {
-    method(params, function done (err, result) {
+    ssmClient(params, function done (err, result) {
       if (err && local &&
           err.message.includes('Inaccessible host') &&
           err.message.includes('localhost')) {

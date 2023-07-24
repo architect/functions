@@ -1,7 +1,7 @@
 let http = require('http')
 let { getPorts, isNode18, useAWS } = require('../lib')
 let ledger = { events: {}, queues: {} }
-let port
+let snsClient, sqsClient, port
 
 /**
  * Invoke
@@ -75,24 +75,23 @@ function _publishSandbox (type, params, callback) {
 
 function eventFactory (arc) {
   return function live ({ name, payload }, callback) {
-    let method
-    if (isNode18) {
-      let { SNS } = require('@aws-sdk/client-sns')
-      let sns = new SNS
-      method = (params, callback) => {
-        return sns.publish(params, callback)
+    let sns
+    if (!snsClient) {
+      if (isNode18) {
+        let { SNS } = require('@aws-sdk/client-sns')
+        sns = new SNS
+      }
+      else {
+        let SNS = require('aws-sdk/clients/sns')
+        sns = new SNS
       }
     }
-    else {
-      let SNS = require('aws-sdk/clients/sns')
-      let sns = new SNS
-      method = (params, callback) => {
-        return sns.publish(params, callback)
-      }
+    snsClient = (params, callback) => {
+      return sns.publish(params, callback)
     }
 
     function publish (arn, payload, callback) {
-      method({
+      snsClient({
         TopicArn: arn,
         Message: JSON.stringify(payload)
       }, callback)
@@ -117,20 +116,19 @@ function eventFactory (arc) {
 
 function queueFactory (arc) {
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
-    let method
-    if (isNode18) {
-      let { SQS } = require('@aws-sdk/client-sqs')
-      let sqs = new SQS
-      method = (params, callback) => {
-        return sqs.sendMessage(params, callback)
+    let sqs
+    if (!sqsClient) {
+      if (isNode18) {
+        let { SQS } = require('@aws-sdk/client-sqs')
+        sqs = new SQS
+      }
+      else {
+        let SQS = require('aws-sdk/clients/sqs')
+        sqs = new SQS
       }
     }
-    else {
-      let SQS = require('aws-sdk/clients/sqs')
-      let sqs = new SQS
-      method = (params, callback) => {
-        return sqs.sendMessage(params, callback)
-      }
+    sqsClient = (params, callback) => {
+      return sqs.sendMessage(params, callback)
     }
 
     function publish (arn, payload, callback) {
@@ -142,7 +140,7 @@ function queueFactory (arc) {
       if (arn.endsWith('.fifo')) {
         params.MessageGroupId = groupID || name
       }
-      method(params, callback)
+      sqsClient(params, callback)
     }
 
     function cacheLedgerAndPublish (serviceMap) {
