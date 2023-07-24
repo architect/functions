@@ -9,11 +9,8 @@ import { Callback } from "./util";
 export { };
 
 export type HttpMethods = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
-
+export type ApiGatewayRequestVersion = "1.0" | "2.0" | string;
 export type SessionData = Record<string, any>;
-export type JsonBody = any;
-export type HtmlBody = string;
-export type RequestBody = any;
 
 export interface HttpRequest {
   httpMethod: HttpMethods;
@@ -28,11 +25,16 @@ export interface HttpRequest {
   /** All client request headers */
   headers: Record<string, string>;
   /** The request body in a base64-encoded buffer. You'll need to parse request.body before you can use it, but Architect provides tools to do this - see parsing request bodies. */
-  body: RequestBody;
+  body: any;
   /** Indicates whether body is base64-encoded binary payload (will always be true if body has not null) */
   isBase64Encoded: boolean;
   /** When the request/response is run through arc.http.async (https://arc.codes/docs/en/reference/runtime/node#arc.http.async) then it will have session added. */
   session?: SessionData | undefined;
+  version: ApiGatewayRequestVersion;
+  rawBody: string;
+  method: HttpMethods;
+  params: Record<string, string>;
+  query: Record<string, string>;
 }
 
 export interface HttpResponse {
@@ -58,12 +60,16 @@ export interface HttpResponse {
    * When used with https://arc.codes/docs/en/reference/runtime/node#arc.http.async
    * json sets the Content-Type header to application/json
    */
-  json?: JsonBody | undefined;
+  json?: any | undefined;
   /**
    * When used with https://arc.codes/docs/en/reference/runtime/node#arc.http.async
    * json sets the Content-Type header to application/json
    */
-  html?: HtmlBody | undefined;
+  html?: string | undefined;
+  css?: string | undefined;
+  js?: string | undefined;
+  text?: string | undefined;
+  xml?: string | undefined;
 }
 
 type Handler = (

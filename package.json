@@ -46,7 +46,7 @@
     "@aws-sdk/lib-dynamodb": "^3.319.0",
     "@aws-sdk/node-http-handler": "^3.347.0",
     "@types/aws-lambda": "^8.10.119",
-    "@types/node": "^20.4.1",
+    "@types/node": "18",
     "aws-sdk": "^2.1364.0",
     "cross-env": "~7.0.3",
     "eslint": "^8.44.0",

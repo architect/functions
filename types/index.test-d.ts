@@ -36,13 +36,18 @@ arc.http.async(async function (request, context) {
 });
 const sampleRequest = {
   httpMethod: "POST" as HttpMethods,
+  method: "POST" as HttpMethods,
   path: "/",
   resource: "",
   pathParameters: { foo: "bar" },
+  params: { foo: "bar" },
   queryStringParameters: { bar: "baz" },
+  query: { bar: "baz" },
   headers: { accept: "any" },
   body: "undefined",
+  rawBody: "undefined",
   isBase64Encoded: false,
+  version: "42",
 };
 expectType<Record<string, any>>(arc.http.helpers.bodyParser(sampleRequest));
 expectType<HttpRequest>(arc.http.helpers.interpolate(sampleRequest));
@@ -72,6 +77,10 @@ await myTable.query({
   ExpressionAttributeValues: { ':bar': 'baz' },
 })
 await myTable.scan({
+  FilterExpression: 'radness > :ninethousand',
+  ExpressionAttributeValues: { ':ninethousand': 9000 },
+})
+await myTable.scanAll({
   FilterExpression: 'radness > :ninethousand',
   ExpressionAttributeValues: { ':ninethousand': 9000 },
 })
