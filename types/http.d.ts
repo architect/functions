@@ -81,7 +81,7 @@ type Handler = (
 type AsyncHandler = (
   req: HttpRequest,
   context: Context,
-) => Promise<HttpResponse>;
+) => Promise<HttpResponse | void>;
 
 type LambdaHandler = (
   event: APIGatewayProxyEvent,

@@ -15,21 +15,49 @@ const queuesPublishResult = await arc.queues.publish(queuesPublishArg);
 expectType<SQS.Types.SendMessageResult>(queuesPublishResult);
 
 // HTTP
-arc.http(function (request, response) {
+function middleware(req, res, next) {
+  // doing nothing is valid middleware
+  next();
+};
+async function asyncMiddleware(req, context) {
+  // doing nothing is valid middleware
+  await (new Promise((resolve) => resolve('foo')));
+}
+// callback pattern
+arc.http(function (request, response, next) {
   expectType<HttpRequest>(request);
   expectType<boolean>(request.isBase64Encoded);
+
+  expectType<() => void>(next);
 
   const responseValue: HttpResponse = { json: { foo: "bar" } };
   expectAssignable<Record<string, any> | undefined>(responseValue.session);
   expectNotAssignable<string>(responseValue.status);
   return response(responseValue);
 });
-arc.http.async(async function (request, context) {
+// with middleware
+arc.http(middleware, function (request, response, next) {
+  return response({ json: { foo: "bar" } });
+});
+// async pattern
+arc.http(async function (request, context) {
+  expectType<HttpRequest>(request);
+  expectType<Context>(context);
+
+  const response: HttpResponse = { html: "<h1>types</h1>" };
+  return response;
+});
+// with async middleware
+arc.http(asyncMiddleware, async function (request, context) {
+  return { text: "types" };
+});
+// legacy async
+arc.http.async(asyncMiddleware, async function (request, context) {
   expectType<HttpRequest>(request);
   expectType<string>(request.path);
   expectType<Context>(context);
 
-  const response: HttpResponse = { html: "<h1>TS</h1>" };
+  const response: HttpResponse = { html: "<h1>types</h1>" };
   expectAssignable<number | undefined>(response.status);
   expectNotAssignable<string>(response.session);
   return response;
@@ -55,6 +83,7 @@ expectType<string>(arc.http.helpers.url("/foobar-baz"));
 
 // STATIC
 expectType<string>(arc.static("/my-image.png"));
+arc.static("/", { stagePath: false });
 
 // TABLES
 const dbClient = await arc.tables()
