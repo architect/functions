@@ -98,7 +98,8 @@ function write (params, callback) {
       update(sessionTable, params, function _update (err) {
         if (err) return callback(err)
 
-        let maxAge = ARC_SESSION_TTL || SESSION_TTL || 7.884e+8
+        let twentyFiveYears = 7.884e+8
+        let maxAge = ARC_SESSION_TTL || SESSION_TTL || twentyFiveYears
         let options = {
           maxAge,
           expires: new Date(Date.now() + maxAge * 1000),
