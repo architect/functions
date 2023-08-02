@@ -119,7 +119,7 @@ function write (params, callback) {
     }
 
     if (sessionTable) updateSession()
-    else updateSession(name, updateSession)
+    else getSessionTable(name, updateSession)
   }
   else callback()
 
