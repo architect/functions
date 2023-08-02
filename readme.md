@@ -5,7 +5,7 @@
 
 ## [`@architect/functions`](https://www.npmjs.com/package/@architect/functions)
 
-> Runtime helper library for serverless apps built with [Architect][npm]
+> Runtime utility library for [Functional Web Apps (FWAs)](https://fwa.dev/) built with [Architect][https://arc.codes]
 
 [![GitHub CI status](https://github.com/architect/functions/workflows/Node%20CI/badge.svg)](https://github.com/architect/functions/actions?query=workflow%3A%22Node+CI%22)
 
