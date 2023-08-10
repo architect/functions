@@ -34,40 +34,41 @@ let {
 
 # API
 
-**`@events` methods**
-- [`events.subscribe()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.events.subscribe)
-- [`events.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.events.publish)
+**[`@events` methods](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.events)**
+- [`events.subscribe()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.events.subscribe())
+- [`events.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.events.publish())
 
-**`@http` methods**
+**[`@http` methods](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http)**
 - [`http()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http)
-- [`http.session()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.session)
+- [`http` middleware](https://arc.codes/docs/en/reference/runtime-helpers/node.js#middleware)
+- [`http.session`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.session)
 
-**`@queues` methods**
-- [`queues.subscribe()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues.subscribe)
-- [`queues.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues.publish)
+**[`@queues` methods](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues)**
+- [`queues.subscribe()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues.subscribe())
+- [`queues.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues.publish())
 
 **Service discovery**
-- [`services()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.services)
+- [`services()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.services())
 
-**`@static` methods**
-- [`static()`]([#static](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.static))
+**[`@static`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.static())**
+- [`static()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.static())
 
-**`@tables` methods**
-- [`tables()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.delete()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.get()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.put()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.query()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.scan()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.scanAll()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.update()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.reflect()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table.name`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table._db`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
-  - [`table._doc`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables)
+**[`@tables` methods](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables())**
+- [`tables()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.tables())
+  - [`table.delete()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#instance-methods)
+  - [`table.get()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#instance-methods)
+  - [`table.put()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#instance-methods)
+  - [`table.query()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#instance-methods)
+  - [`table.scan()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#instance-methods)
+  - [`table.scanAll()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#instance-methods)
+  - [`table.update()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#instance-methods)
+  - [`table._db`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#client-methods)
+  - [`table._doc`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#client-methods)
+  - [`table.name`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#client-methods)
+  - [`table.reflect()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#client-methods)
 
-**`@ws` methods**
-- [`ws.send()`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.send)
-- [`ws.close()`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.close)
-- [`ws.info()`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.info)
-- [`ws._api`](#https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.api)
+**[`@ws` methods](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws)**
+- [`ws.send()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.send())
+- [`ws.close()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.close())
+- [`ws.info()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws.info())
+- [`ws._api`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.ws._api())
