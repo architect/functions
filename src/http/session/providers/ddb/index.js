@@ -72,8 +72,9 @@ function write (params, callback) {
     ARC_APP_SECRET,
     ARC_ENV,
     ARC_SESSION_TABLE_NAME, SESSION_TABLE_NAME,
-    ARC_SESSION_TTL, SESSION_TTL,
     ARC_SESSION_DOMAIN, SESSION_DOMAIN,
+    ARC_SESSION_SAME_SITE,
+    ARC_SESSION_TTL, SESSION_TTL,
   } = process.env
 
   // be async/await friendly
@@ -86,8 +87,7 @@ function write (params, callback) {
     })
   }
 
-  // read dynamo session table
-  // TODO / FIXME I think this no longer works?
+  // Read DynamoDB session table
   let name = ARC_SESSION_TABLE_NAME || SESSION_TABLE_NAME
   if (name) {
     let secret = ARC_APP_SECRET || ARC_APP_NAME || 'fallback'
@@ -100,13 +100,14 @@ function write (params, callback) {
 
         let twentyFiveYears = 7.884e+8
         let maxAge = ARC_SESSION_TTL || SESSION_TTL || twentyFiveYears
+        let sameSite = ARC_SESSION_SAME_SITE || 'lax'
         let options = {
           maxAge,
           expires: new Date(Date.now() + maxAge * 1000),
           secure: true,
           httpOnly: true,
           path: '/',
-          sameSite: 'lax',
+          sameSite,
         }
         if (ARC_SESSION_DOMAIN || SESSION_DOMAIN) {
           options.domain = ARC_SESSION_DOMAIN || SESSION_DOMAIN
