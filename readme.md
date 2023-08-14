@@ -14,7 +14,11 @@ Check out the full docs for [this library](https://arc.codes/docs/en/reference/r
 
 ## Install
 
+Within your Architect project directory, add `@architect/function` to its root `package.json`:
+
 `npm i @architect/functions`
+
+> You may also add `@architect/function` to individual Lambda `package.json` files, but we suggest making use of Architect's automated Lambda treeshaking. See the [Architect dependency management guide](https://staging.arc.codes/docs/en/guides/developer-experience/dependency-management#node.js) for more details.
 
 
 ## Usage
