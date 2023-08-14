@@ -9,7 +9,7 @@
 
 [![GitHub CI status](https://github.com/architect/functions/workflows/Node%20CI/badge.svg)](https://github.com/architect/functions/actions?query=workflow%3A%22Node+CI%22)
 
-Check out the full docs: [arc.codes](https://arc.codes)
+Check out the full docs for [this library](https://arc.codes/docs/en/reference/runtime-helpers/node.js) and [Architect](https://arc.codes)
 
 
 ## Install
