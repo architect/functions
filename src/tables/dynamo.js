@@ -67,7 +67,7 @@ function getDynamo (type, callback) {
         if (isNode18) {
           // Disable keep-alive locally (or wait Node's default 5s for sockets to time out)
           let http = require('http')
-          let { NodeHttpHandler } = require('@aws-sdk/node-http-handler')
+          let { NodeHttpHandler } = require('@smithy/node-http-handler')
           config.requestHandler = new NodeHttpHandler({
             httpAgent: new http.Agent({ keepAlive: false })
           })
