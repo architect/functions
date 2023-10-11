@@ -4,6 +4,14 @@ let sandboxVersionAtLeast = require('./_sandbox-version')
 let isNode18 = Number(process.version.replace('v', '').split('.')[0]) >= 18
 
 let nonLocalEnvs = [ 'staging', 'production' ]
+
+function getAwsClient (params, callback) {
+  let { callbackify } = require('util')
+  let _awsLite = require('@aws-lite/client')
+  let awsLite = callbackify(_awsLite)
+  awsLite(params, callback)
+}
+
 function useAWS () {
   let { ARC_ENV, ARC_LOCAL, ARC_SANDBOX } = process.env
   // Testing is always local
@@ -15,6 +23,7 @@ function useAWS () {
 }
 
 module.exports = {
+  getAwsClient,
   getPorts,
   isNode18,
   sandboxVersionAtLeast,

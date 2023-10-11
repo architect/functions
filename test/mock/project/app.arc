@@ -1,6 +1,9 @@
 @app
 test-only
 
+@plugins
+services
+
 @http
 get /http-session
 get /http-async-session
@@ -22,3 +25,5 @@ async-queue
 arc-sessions
   _idx *String
   _ttl TTL
+things
+  thing *String

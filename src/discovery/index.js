@@ -1,5 +1,5 @@
-let { isNode18, useAWS } = require('../lib')
-let ssm, ssmClient
+let { callbackify } = require('util')
+let { getAwsClient, useAWS } = require('../lib')
 
 /**
  * @param {string} type - events, queues, or tables
@@ -19,11 +19,7 @@ module.exports = function lookup (callback) {
     app = 'arc-app'
   }
 
-  let Path = `/${stack || toLogicalID(`${app}-${env}`)}`
-  let Recursive = true
-  let values = []
-  let config
-
+  let config = {}
   if (local) {
     let port = 2222
     if (ARC_SANDBOX) {
@@ -34,71 +30,53 @@ module.exports = function lookup (callback) {
       port = ports._arc
     }
     config = {
-      endpoint: `http://localhost:${port}/_arc/ssm`,
+      endpointPrefix: '/_arc/ssm',
+      host: `localhost`,
+      port,
+      protocol: 'http',
       region: AWS_REGION || 'us-west-2',
     }
   }
 
-  // shim v2 and v3
-  if (!ssmClient) {
-    if (isNode18) {
-      let { SSMClient: SSM, GetParametersByPathCommand: cmd } = require('@aws-sdk/client-ssm')
-      let GetParametersByPathCommand = cmd
-      ssm = new SSM(config)
-      ssmClient = (params, callback) => {
-        let command = new GetParametersByPathCommand(params)
-        return ssm.send(command, callback)
-      }
-    }
+  getAwsClient(config, (err, client) => {
+    if (err) callback(err)
     else {
-      let SSM = require('aws-sdk/clients/ssm')
-      ssm = new SSM(config)
-      ssmClient = (params, callback) => {
-        return ssm.getParametersByPath(params, callback)
-      }
+      let Path = `/${stack || toLogicalID(`${app}-${env}`)}`
+      let GetParametersByPath = callbackify(client.ssm.GetParametersByPath)
+      GetParametersByPath({ Path, paginate: true }, function done (err, result) {
+        if (err && local &&
+            err.message.includes('Inaccessible host') &&
+            err.message.includes('localhost')) {
+          let msg = 'Sandbox internal services are unavailable, please ensure Sandbox is running'
+          callback(ReferenceError(msg))
+        }
+        else if (err) {
+          callback(err)
+        }
+        else {
+          let services = result.Parameters.reduce((a, b) => {
+            let hierarchy = b.Name.split('/')
+            hierarchy.shift() // leading slash
+            hierarchy.shift() // stack name
+            let type = hierarchy.shift() // i.e. tables, events, queues, plugins
+            if (!a[type]) a[type] = {}
+            let parent = a[type]
+            let child, lastChild, lastParent
+            /* eslint-disable-next-line */
+            while (child = hierarchy.shift()) {
+              if (!parent[child]) parent[child] = {}
+              lastParent = parent
+              parent = parent[child]
+              lastChild = child
+            }
+            lastParent[lastChild] = b.Value
+            return a
+          }, {})
+          callback(null, services)
+        }
+      })
     }
-  }
-
-  function getParams (params) {
-    ssmClient(params, function done (err, result) {
-      if (err && local &&
-          err.message.includes('Inaccessible host') &&
-          err.message.includes('localhost')) {
-        let msg = 'Sandbox internal services are unavailable, please ensure Sandbox is running'
-        callback(ReferenceError(msg))
-      }
-      else if (err) {
-        callback(err)
-      }
-      else if (result.NextToken) {
-        values = values.concat(result.Parameters)
-        getParams({ Path, Recursive, NextToken: result.NextToken })
-      }
-      else {
-        values = values.concat(result.Parameters)
-        let services = values.reduce((a, b) => {
-          let hierarchy = b.Name.split('/')
-          hierarchy.shift() // leading slash
-          hierarchy.shift() // stack name
-          let type = hierarchy.shift() // i.e. tables, events, queues, plugins
-          if (!a[type]) a[type] = {}
-          let parent = a[type]
-          let child, lastChild, lastParent
-          /* eslint-disable-next-line */
-          while (child = hierarchy.shift()) {
-            if (!parent[child]) parent[child] = {}
-            lastParent = parent
-            parent = parent[child]
-            lastChild = child
-          }
-          lastParent[lastChild] = b.Value
-          return a
-        }, {})
-        callback(null, services)
-      }
-    })
-  }
-  getParams({ Path, Recursive })
+  })
 }
 
 function toLogicalID (str) {
