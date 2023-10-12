@@ -1,124 +1,111 @@
-let dynamo = require('./dynamo')
-let parallel = require('run-parallel')
+let { getAwsClient, getPorts } = require('../lib')
+let paginate = true
 
 /**
  * returns a data client
  */
 module.exports = function reflectFactory (tables, callback) {
-  let local = process.env.ARC_ENV === 'testing'
+  let { ARC_ENV, AWS_REGION } = process.env
+  let local = ARC_ENV === 'testing'
 
-  parallel(dynamo, function done (err, { db, doc }) {
-    if (err) return callback(err)
-
-    let data = Object.keys(tables)
-      .filter(name => {
-        if (local && !name.includes('-production-')) return name
-        return name
-      })
-      .reduce((client, fullName) => {
-        let name = local ? fullName.replace(/.+-staging-/, '') : fullName
-        client[name] = factory(tables[name])
-        return client
-      }, {})
-
-    let enumerable = false
-    Object.defineProperty(data, '_db',  { enumerable, value: db })
-    Object.defineProperty(data, '_doc', { enumerable, value: doc })
-
-    // async jic for later
-    // eslint-disable-next-line
-    data.reflect = async () => tables
-
-    let _name = name => tables[name]
-    data.name = _name
-    data._name = _name
-
-    function factory (TableName) {
-      return promisify({
-        delete (key, callback) {
-          let params = {}
-          params.TableName = TableName
-          params.Key = key
-          doc.delete(params, callback)
-        },
-        get (key, callback) {
-          let params = {}
-          params.TableName = TableName
-          params.Key = key
-          doc.get(params, function _get (err, result) {
-            if (err) callback(err)
-            else callback(null, result.Item)
-          })
-        },
-        put (item, callback) {
-          let params = {}
-          params.TableName = TableName
-          params.Item = item
-          doc.put(params, function _put (err) {
-            if (err) callback(err)
-            else callback(null, item)
-          })
-        },
-        query (params, callback) {
-          params.TableName = TableName
-          doc.query(params, callback)
-        },
-        scan (params = {}, callback) {
-          params.TableName = TableName
-          doc.scan(params, callback)
-        },
-        scanAll (params = {}, callback) {
-          let records = []
-          params.TableName = TableName
-          function getRecords () {
-            db.scan(params, (err, data) => {
-              if (err) callback(err)
-              else {
-                data.Items.forEach(d => records.push(d))
-                if (data.LastEvaluatedKey) {
-                  params.ExclusiveStartKey = data.LastEvaluatedKey
-                  getRecords()
-                }
-                else {
-                  callback(null, records)
-                }
-              }
+  getPorts((err, ports) => {
+    if (err) callback(err)
+    else {
+      let port = ports.tables
+      if (!port) {
+        return callback(ReferenceError('Sandbox tables port not found'))
+      }
+      let config = {
+        host: `localhost`,
+        port,
+        protocol: 'http',
+        region: AWS_REGION || 'us-west-2',
+        plugins: [ '@aws-lite/dynamodb' ],
+      }
+      getAwsClient(config, (err, aws) => {
+        if (err) callback(err)
+        else {
+          let data = Object.keys(tables)
+            .filter(name => {
+              if (local && !name.includes('-production-')) return name
+              return name
             })
+            .reduce((client, fullName) => {
+              let name = local ? fullName.replace(/.+-staging-/, '') : fullName
+              client[name] = factory(tables[name])
+              return client
+            }, {})
+
+          data.reflect = async () => tables
+          let _name = name => tables[name]
+          data.name = _name
+          data._name = _name
+
+          function go (method, params, callback) {
+            if (callback) method(params)
+              .then(result => callback(null, result))
+              .catch(err => callback(err))
+            else return method(params)
           }
-          getRecords()
-        },
-        update (params, callback) {
-          params.TableName = TableName
-          doc.update(params, callback)
+
+          function factory (TableName) {
+            return {
+              delete (Key, callback) {
+                if (callback) aws.dynamodb.DeleteItem({ TableName, Key })
+                  .then(result => callback(null, result))
+                  .catch(err => callback(err))
+
+                else return new Promise((res, rej) => {
+                  aws.dynamodb.DeleteItem({ TableName, Key })
+                    .then(result => res(result))
+                    .catch(rej)
+                })
+              },
+
+              get (Key, callback) {
+                if (callback) aws.dynamodb.GetItem({ TableName, Key })
+                  .then(({ Item }) => callback(null, Item))
+                  .catch(err => callback(err))
+
+                else return new Promise((res, rej) => {
+                  aws.dynamodb.GetItem({ TableName, Key })
+                    .then(({ Item }) => res(Item))
+                    .catch(rej)
+                })
+              },
+
+              put (Item, callback) {
+                return go(aws.dynamodb.PutItem, { TableName, Item }, callback)
+              },
+
+              query (params = {}, callback) {
+                return go(aws.dynamodb.Query, { ...params, TableName }, callback)
+              },
+
+              scan (params = {}, callback) {
+                return go(aws.dynamodb.Scan, { ...params, TableName }, callback)
+              },
+
+              scanAll (params = {}, callback) {
+                if (callback) aws.dynamodb.Scan({ ...params, TableName, paginate })
+                  .then(({ Items }) => callback(null, Items))
+                  .catch(err => callback(err))
+
+                else return new Promise((res, rej) => {
+                  aws.dynamodb.Scan({ ...params, TableName, paginate })
+                    .then(({ Items }) => res(Items))
+                    .catch(rej)
+                })
+              },
+
+              update (params, callback) {
+                return go(aws.dynamodb.UpdateItem, { ...params, TableName }, callback)
+              }
+            }
+          }
+          callback(null, data)
         }
       })
     }
-
-    callback(null, data)
   })
-}
-
-// accepts an object and promisifies all keys
-function promisify (obj) {
-  let copy = {}
-  Object.keys(obj).forEach(k => {
-    copy[k] = promised(obj[k])
-  })
-  return copy
-}
-
-// Accepts an errback style fn and returns a promisified fn
-function promised (fn) {
-  return function _promisified (params, callback) {
-    if (!callback) {
-      return new Promise(function (res, rej) {
-        fn(params, function (err, result) {
-          err ? rej(err) : res(result)
-        })
-      })
-    }
-    else {
-      fn(params, callback)
-    }
-  }
 }

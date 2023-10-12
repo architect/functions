@@ -35,6 +35,7 @@ module.exports = function lookup (callback) {
       port,
       protocol: 'http',
       region: AWS_REGION || 'us-west-2',
+      plugins: [ '@aws-lite/ssm' ],
     }
   }
 

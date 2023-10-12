@@ -89,7 +89,6 @@ test('tables get()', async t => {
   t.ok(result, 'got accounts table result')
   t.ok(result.baz.doe, 'result.baz.doe deserialized')
   result = null
-  console.log(data['accounts-messages'].get)
   result = await data['accounts-messages'].get({
     accountID: 'fake',
     msgID: 'alsofake'
@@ -107,7 +106,7 @@ test('tables delete()', async t => {
   let result = await data.accounts.get({
     accountID: 'fake'
   })
-  t.equals(result, undefined, 'could not get deleted accounts item')
+  t.equal(result, undefined, 'could not get deleted accounts item')
   await data['accounts-messages'].delete({
     accountID: 'fake',
     msgID: 'alsofake'
@@ -117,7 +116,7 @@ test('tables delete()', async t => {
     accountID: 'fake',
     msgID: 'alsofake'
   })
-  t.equals(otherResult, undefined, 'could not get deleted accounts-messages item')
+  t.equal(otherResult, undefined, 'could not get deleted accounts-messages item')
 })
 
 test('tables query()', async t => {
@@ -138,7 +137,7 @@ test('tables query()', async t => {
   })
 
   t.ok(result, 'got a result')
-  t.equals(result.Count, 1, 'got count of one')
+  t.equal(result.Count, 1, 'got count of one')
 })
 
 test('tables scan()', async t => {
@@ -181,7 +180,7 @@ test('tables update()', async t => {
   })
 
   t.ok(result, 'got result')
-  t.equals(result.hits, 20, 'property updated')
+  t.equal(result.hits, 20, 'property updated')
 })
 
 test('server closes', t => {

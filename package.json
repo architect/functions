@@ -26,6 +26,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-lite/client": "^0.8.1",
+    "@aws-lite/dynamodb": "^0.2.1",
     "@aws-lite/ssm": "^0.1.0",
     "cookie": "^0.5.0",
     "cookie-signature": "^1.2.1",

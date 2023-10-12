@@ -1,3 +1,5 @@
+// TODO: figure out what to do with instantiating DDB + DocumentClients
+
 let { getPorts, isNode18, useAWS } = require('../lib')
 
 /**

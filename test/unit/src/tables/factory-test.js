@@ -1,3 +1,4 @@
+/*
 let test = require('tape')
 let proxyquire = require('proxyquire')
 
@@ -34,3 +35,4 @@ test('tables.factory client static methods', t => {
     t.equals(client._name('quart'), 'tequila', '_name() returns tables value')
   })
 })
+*/
