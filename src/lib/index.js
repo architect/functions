@@ -6,10 +6,10 @@ let isNode18 = Number(process.version.replace('v', '').split('.')[0]) >= 18
 let nonLocalEnvs = [ 'staging', 'production' ]
 
 function getAwsClient (params, callback) {
-  let { callbackify } = require('util')
-  let _awsLite = require('@aws-lite/client')
-  let awsLite = callbackify(_awsLite)
-  awsLite(params, callback)
+  let awsLite = require('@aws-lite/client')
+  awsLite(params)
+    .then(client => callback(null, client))
+    .catch(callback)
 }
 
 function useAWS () {

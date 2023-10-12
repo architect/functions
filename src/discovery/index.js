@@ -1,4 +1,3 @@
-let { callbackify } = require('util')
 let { getAwsClient, useAWS } = require('../lib')
 
 /**
@@ -43,18 +42,8 @@ module.exports = function lookup (callback) {
     if (err) callback(err)
     else {
       let Path = `/${stack || toLogicalID(`${app}-${env}`)}`
-      let GetParametersByPath = callbackify(client.ssm.GetParametersByPath)
-      GetParametersByPath({ Path, paginate: true }, function done (err, result) {
-        if (err && local &&
-            err.message.includes('Inaccessible host') &&
-            err.message.includes('localhost')) {
-          let msg = 'Sandbox internal services are unavailable, please ensure Sandbox is running'
-          callback(ReferenceError(msg))
-        }
-        else if (err) {
-          callback(err)
-        }
-        else {
+      client.ssm.GetParametersByPath({ Path, paginate: true })
+        .then(result => {
           let services = result.Parameters.reduce((a, b) => {
             let hierarchy = b.Name.split('/')
             hierarchy.shift() // leading slash
@@ -74,8 +63,18 @@ module.exports = function lookup (callback) {
             return a
           }, {})
           callback(null, services)
-        }
-      })
+        })
+        .catch(err => {
+          if (err && local &&
+              err.message.includes('Inaccessible host') &&
+              err.message.includes('localhost')) {
+            let msg = 'Sandbox internal services are unavailable, please ensure Sandbox is running'
+            callback(ReferenceError(msg))
+          }
+          else {
+            callback(err)
+          }
+        })
     }
   })
 }
