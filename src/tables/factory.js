@@ -1,4 +1,4 @@
-let { getAwsClient, getPorts } = require('../lib')
+let { getAwsClient, getPorts, useAWS } = require('../lib')
 let getAwsSdkClient = require('./dynamo')
 let enumerable = false
 let paginate = true
@@ -10,27 +10,36 @@ module.exports = function factory ({ tables, options = {} }, callback) {
   let { ARC_ENV, AWS_REGION } = process.env
   let local = ARC_ENV === 'testing'
   let region = AWS_REGION || 'us-west-2'
+  let plugins = [ '@aws-lite/dynamodb' ]
 
-  getPorts((err, ports) => {
-    if (err) callback(err)
-    else {
-      let port = ports.tables
-      if (!port) {
-        return callback(ReferenceError('Sandbox tables port not found'))
+  if (useAWS()) {
+    getAwsClient({ region, plugins }, (err, aws) => {
+      if (err) callback(err)
+      else dynamoConstructor({ aws, local, options, tables }, callback)
+    })
+  }
+  else {
+    getPorts((err, ports) => {
+      if (err) callback(err)
+      else {
+        let port = ports.tables
+        if (!port) {
+          return callback(ReferenceError('Sandbox tables port not found'))
+        }
+        let config = {
+          host: `localhost`,
+          port,
+          protocol: 'http',
+          region,
+          plugins,
+        }
+        getAwsClient(config, (err, aws) => {
+          if (err) callback(err)
+          else dynamoConstructor({ aws, local, options, tables }, callback)
+        })
       }
-      let config = {
-        host: `localhost`,
-        port,
-        protocol: 'http',
-        region,
-        plugins: [ '@aws-lite/dynamodb' ],
-      }
-      getAwsClient(config, (err, aws) => {
-        if (err) callback(err)
-        else dynamoConstructor({ aws, local, options, port, region, tables }, callback)
-      })
-    }
-  })
+    })
+  }
 }
 
 function dynamoConstructor (params, callback) {
