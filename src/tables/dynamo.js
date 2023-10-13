@@ -1,28 +1,16 @@
-// TODO: figure out what to do with instantiating DDB + DocumentClients
+let { isNode18, useAWS } = require('../lib')
 
-let { getPorts, isNode18, useAWS } = require('../lib')
+let client = {}
 
 /**
- * Instantiates Dynamo service interfaces
+ * Instantiates legacy AWS SDK DynamoDB service interfaces
  */
-let db, doc
+module.exports = function getDynamo ({ port, region }) {
 
-function getDynamo (type, callback) {
-
-  if (!type)
-    throw ReferenceError('Must supply Dynamo service interface type')
-
-  let { AWS_REGION } = process.env
-
-  if (db && type === 'db') {
-    return callback(null, db)
-  }
-
-  if (doc && type === 'doc') {
-    return callback(null, doc)
-  }
+  if (client.db && client.doc) return client
 
   let DB, Doc
+
   if (isNode18) {
     let dynamo = require('@aws-sdk/client-dynamodb')
     let docclient = require('@aws-sdk/lib-dynamodb')
@@ -50,39 +38,25 @@ function getDynamo (type, callback) {
         }
       }
     }
-    db = new DB(config)
-    doc = isNode18 ? Doc.from(db) : new Doc(config)
-    return callback(null, type === 'db' ? db : doc)
+    client.db = new DB(config)
+    client.doc = isNode18 ? Doc.from(client.db) : new Doc(config)
+    return client
   }
   else {
-    getPorts((err, ports) => {
-      if (err) callback(err)
-      else {
-        let port = ports.tables
-        if (!port) {
-          return callback(ReferenceError('Sandbox tables port not found'))
-        }
-        let config = {
-          endpoint: `http://localhost:${port}`,
-          region: AWS_REGION || 'us-west-2' // Do not assume region is set!
-        }
-        if (isNode18) {
-          // Disable keep-alive locally (or wait Node's default 5s for sockets to time out)
-          let http = require('http')
-          let { NodeHttpHandler } = require('@smithy/node-http-handler')
-          config.requestHandler = new NodeHttpHandler({
-            httpAgent: new http.Agent({ keepAlive: false })
-          })
-        }
-        db = new DB(config)
-        doc = isNode18 ? Doc.from(db) : new Doc(config)
-        return callback(null, type === 'db' ? db : doc)
-      }
-    })
+    let config = {
+      endpoint: `http://localhost:${port}`,
+      region,
+    }
+    if (isNode18) {
+      // Disable keep-alive locally (or wait Node's default 5s for sockets to time out)
+      let http = require('http')
+      let { NodeHttpHandler } = require('@smithy/node-http-handler')
+      config.requestHandler = new NodeHttpHandler({
+        httpAgent: new http.Agent({ keepAlive: false })
+      })
+    }
+    client.db = new DB(config)
+    client.doc = isNode18 ? Doc.from(client.db) : new Doc(config)
+    return client
   }
-}
-
-module.exports = {
-  doc: getDynamo.bind({}, 'doc'),
-  db: getDynamo.bind({}, 'db'),
 }

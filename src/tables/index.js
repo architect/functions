@@ -18,7 +18,7 @@ let client = false
  */
 module.exports = function tables (arc) {
 
-  function api (callback) {
+  function api (options = {}, callback) {
     let promise
     if (!callback) {
       promise = new Promise(function ugh (res, rej) {
@@ -37,7 +37,7 @@ module.exports = function tables (arc) {
         function (callback) {
           arc.services()
             .then(serviceMap => {
-              callback(null, serviceMap.tables)
+              callback(null, { tables: serviceMap.tables, options })
             })
             .catch(err => {
               callback(err)

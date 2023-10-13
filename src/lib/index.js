@@ -7,6 +7,7 @@ let nonLocalEnvs = [ 'staging', 'production' ]
 
 function getAwsClient (params, callback) {
   let awsLite = require('@aws-lite/client')
+  params.autoloadPlugins = false
   awsLite(params)
     .then(client => callback(null, client))
     .catch(callback)
