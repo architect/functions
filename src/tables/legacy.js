@@ -5,7 +5,7 @@ let client = {}
 /**
  * Instantiates legacy AWS SDK DynamoDB service interfaces
  */
-module.exports = function getDynamo ({ port, region }) {
+module.exports = function getLegacyDynamoClients ({ port, region }) {
 
   if (client.db && client.doc) return client
 

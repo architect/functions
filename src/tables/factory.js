@@ -1,5 +1,5 @@
 let { getAwsClient, getPorts, useAWS } = require('../lib')
-let getAwsSdkClient = require('./dynamo')
+let getAwsSdkClient = require('./legacy')
 let enumerable = false
 let paginate = true
 
