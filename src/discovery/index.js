@@ -18,7 +18,8 @@ module.exports = function lookup (callback) {
     app = 'arc-app'
   }
 
-  let config = {}
+  let plugins = [ '@aws-lite/ssm' ]
+  let config = { plugins }
   if (local) {
     let port = 2222
     if (ARC_SANDBOX) {
@@ -34,7 +35,7 @@ module.exports = function lookup (callback) {
       port,
       protocol: 'http',
       region: AWS_REGION || 'us-west-2',
-      plugins: [ '@aws-lite/ssm' ],
+      plugins,
     }
   }
 
@@ -42,7 +43,7 @@ module.exports = function lookup (callback) {
     if (err) callback(err)
     else {
       let Path = `/${stack || toLogicalID(`${app}-${env}`)}`
-      client.ssm.GetParametersByPath({ Path, paginate: true })
+      client.ssm.GetParametersByPath({ Path, Recursive: true, paginate: true })
         .then(result => {
           let services = result.Parameters.reduce((a, b) => {
             let hierarchy = b.Name.split('/')

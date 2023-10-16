@@ -1,7 +1,7 @@
 let http = require('http')
-let { getPorts, isNode18, useAWS } = require('../lib')
+let { getAwsClient, getPorts, useAWS } = require('../lib')
 let ledger = { events: {}, queues: {} }
-let sns, snsClient, sqs, sqsClient, port
+let client, port
 
 /**
  * Invoke
@@ -10,7 +10,6 @@ let sns, snsClient, sqs, sqsClient, port
  */
 module.exports = function publishFactory (arc, type) {
   let factory = type === 'events' ? eventFactory : queueFactory
-  let publishAWS = factory(arc)
   return function publish (params, callback) {
     if (!params.name) {
       throw ReferenceError('missing params.name')
@@ -44,8 +43,23 @@ module.exports = function publishFactory (arc, type) {
         }
       })
     }
-    else {
+    else if (client) {
+      let publishAWS = factory(arc)
       publishAWS(params, callback)
+    }
+    else {
+      let { AWS_REGION } = process.env
+      getAwsClient({
+        region: AWS_REGION || 'us-west-2',
+        plugins: [ '@aws-lite/sns', '@aws-lite/sqs' ],
+      }, (err, _client) => {
+        if (err) callback(err)
+        else {
+          client = _client
+          let publishAWS = factory(arc)
+          publishAWS(params, callback)
+        }
+      })
     }
 
     return promise
@@ -75,25 +89,14 @@ function _publishSandbox (type, params, callback) {
 
 function eventFactory (arc) {
   return function live ({ name, payload }, callback) {
-    if (!snsClient) {
-      if (isNode18) {
-        let { SNS } = require('@aws-sdk/client-sns')
-        sns = new SNS
-      }
-      else {
-        let SNS = require('aws-sdk/clients/sns')
-        sns = new SNS
-      }
-    }
-    snsClient = (params, callback) => {
-      return sns.publish(params, callback)
-    }
 
     function publish (arn, payload, callback) {
-      snsClient({
+      client.sns.Publish({
         TopicArn: arn,
         Message: JSON.stringify(payload)
-      }, callback)
+      })
+        .then(result => callback(null, result))
+        .catch(callback)
     }
 
     function cacheLedgerAndPublish (serviceMap) {
@@ -115,42 +118,31 @@ function eventFactory (arc) {
 
 function queueFactory (arc) {
   return function live ({ name, payload, delaySeconds, groupID }, callback) {
-    if (!sqsClient) {
-      if (isNode18) {
-        let { SQS } = require('@aws-sdk/client-sqs')
-        sqs = new SQS
-      }
-      else {
-        let SQS = require('aws-sdk/clients/sqs')
-        sqs = new SQS
-      }
-    }
-    sqsClient = (params, callback) => {
-      return sqs.sendMessage(params, callback)
-    }
 
-    function publish (arn, payload, callback) {
+    function publish (url, payload, callback) {
       let params = {
-        QueueUrl: arn,
+        QueueUrl: url,
         DelaySeconds: delaySeconds || 0,
         MessageBody: JSON.stringify(payload)
       }
-      if (arn.endsWith('.fifo')) {
+      if (url.endsWith('.fifo')) {
         params.MessageGroupId = groupID || name
       }
-      sqsClient(params, callback)
+      client.sqs.SendMessage(params)
+        .then(result => callback(null, result))
+        .catch(callback)
     }
 
     function cacheLedgerAndPublish (serviceMap) {
       ledger.queues = serviceMap.queues
-      arn = ledger.queues[name]
-      if (!arn) callback(ReferenceError(`${name} queue not found`))
-      else publish(arn, payload, callback)
+      url = ledger.queues[name]
+      if (!url) callback(ReferenceError(`${name} queue not found`))
+      else publish(url, payload, callback)
     }
 
-    let arn = ledger.queues[name]
-    if (arn) {
-      publish(arn, payload, callback)
+    let url = ledger.queues[name]
+    if (url) {
+      publish(url, payload, callback)
     }
     else {
       arc.services().then(cacheLedgerAndPublish).catch(callback)

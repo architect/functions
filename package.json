@@ -27,6 +27,8 @@
   "dependencies": {
     "@aws-lite/client": "^0.8.1",
     "@aws-lite/dynamodb": "^0.2.1",
+    "@aws-lite/sns": "^0.0.0",
+    "@aws-lite/sqs": "^0.0.0",
     "@aws-lite/ssm": "^0.1.0",
     "cookie": "^0.5.0",
     "cookie-signature": "^1.2.1",
@@ -43,8 +45,6 @@
     "@architect/sandbox": "^5.8.2",
     "@aws-sdk/client-apigatewaymanagementapi": "^3.319.0",
     "@aws-sdk/client-dynamodb": "^3.319.0",
-    "@aws-sdk/client-sns": "^3.319.0",
-    "@aws-sdk/client-sqs": "^3.319.0",
     "@aws-sdk/lib-dynamodb": "^3.319.0",
     "@smithy/node-http-handler": "^2.1.7",
     "@types/aws-lambda": "^8.10.119",
