@@ -6,7 +6,8 @@ let paginate = true
 /**
  * returns a data client
  */
-module.exports = function factory ({ tables, options = {} }, callback) {
+module.exports = function factory ({ services, options = {} }, callback) {
+  let { tables } = services
   let { ARC_ENV, AWS_REGION } = process.env
   let local = ARC_ENV === 'testing'
   let region = AWS_REGION || 'us-west-2'

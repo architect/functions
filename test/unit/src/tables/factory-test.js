@@ -5,7 +5,7 @@ let sandbox = require('@architect/sandbox')
 let cwd = process.cwd()
 let mock = join(cwd, 'test', 'mock', 'project')
 
-let tables = { hi: 'there' }
+let services = { tables: { hi: 'there' } }
 
 test('Set up env', async t => {
   t.plan(2)
@@ -17,7 +17,7 @@ test('Set up env', async t => {
 
 test('tables.factory main client', t => {
   t.plan(4)
-  factory({ tables }, (err, client) => {
+  factory({ services }, (err, client) => {
     if (err) t.fail(err)
     t.ok(client._client, '_client property assigned')
     t.notOk(client._db, '_db property not assigned')
@@ -28,7 +28,7 @@ test('tables.factory main client', t => {
 
 test('tables.factory AWS SDK properties', t => {
   t.plan(4)
-  factory({ tables, options: { awsSdkClient: true } }, (err, client) => {
+  factory({ services, options: { awsSdkClient: true } }, (err, client) => {
     if (err) t.fail(err)
     t.ok(client._client, '_client property assigned')
     t.ok(client._db, '_db property assigned')
@@ -39,10 +39,10 @@ test('tables.factory AWS SDK properties', t => {
 
 test('tables.factory client static methods', t => {
   t.plan(2)
-  let tables = { quart: 'tequila' }
-  factory({ tables }, async (err, client) => {
+  let services = { tables: { quart: 'tequila' } }
+  factory({ services }, async (err, client) => {
     if (err) t.fail(err)
-    t.equals(await client.reflect(), tables, 'reflect() returns tables object')
+    t.equals(await client.reflect(), services.tables, 'reflect() returns tables object')
     t.equals(client._name('quart'), 'tequila', '_name() returns tables value')
   })
 })

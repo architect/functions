@@ -36,12 +36,8 @@ module.exports = function tables (arc) {
       waterfall([
         function (callback) {
           arc.services()
-            .then(serviceMap => {
-              callback(null, { tables: serviceMap.tables, options })
-            })
-            .catch(err => {
-              callback(err)
-            })
+            .then(services => callback(null, { services, options }))
+            .catch(callback)
         },
         factory,
         function (created, callback) {
