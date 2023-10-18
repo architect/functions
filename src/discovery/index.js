@@ -6,7 +6,7 @@ let { getAwsClient, useAWS } = require('../lib')
  */
 module.exports = function lookup (callback) {
 
-  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, ARC_STACK_NAME: stack, AWS_REGION } = process.env
+  let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, ARC_STACK_NAME: stack } = process.env
 
   let local = !useAWS()
 
@@ -34,7 +34,6 @@ module.exports = function lookup (callback) {
       host: `localhost`,
       port,
       protocol: 'http',
-      region: AWS_REGION || 'us-west-2',
       plugins,
     }
   }

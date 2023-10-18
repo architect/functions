@@ -8,6 +8,7 @@ let nonLocalEnvs = [ 'staging', 'production' ]
 function getAwsClient (params, callback) {
   let awsLite = require('@aws-lite/client')
   params.autoloadPlugins = false
+  params.region = process.env.AWS_REGION || 'us-west-2'
   awsLite(params)
     .then(client => callback(null, client))
     .catch(callback)

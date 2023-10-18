@@ -48,9 +48,7 @@ module.exports = function publishFactory (arc, type) {
       publishAWS(params, callback)
     }
     else {
-      let { AWS_REGION } = process.env
       getAwsClient({
-        region: AWS_REGION || 'us-west-2',
         plugins: [ '@aws-lite/sns', '@aws-lite/sqs' ],
       }, (err, _client) => {
         if (err) callback(err)
