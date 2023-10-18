@@ -1,9 +1,14 @@
 let { join } = require('path')
 let test = require('tape')
-let factory = require('../../../../src/tables/factory')
+let proxyquire = require('proxyquire')
 let sandbox = require('@architect/sandbox')
 let cwd = process.cwd()
 let mock = join(cwd, 'test', 'mock', 'project')
+
+let noop = () => {}
+let factory = proxyquire('../../../../src/tables/factory', {
+  './legacy': () => ({ db: noop, doc: noop })
+})
 
 let services = { tables: { hi: 'there' } }
 
