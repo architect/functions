@@ -1,80 +1,57 @@
-let { isNode18, useAWS } = require('../lib')
-let _api, _send, _close, _info
+let { getAwsClient, useAWS } = require('../lib')
+let client, ApiUrl
 
 function instantiateAPI () {
-  if (_api) return
+  return new Promise((res, rej) => {
+    if (client) res(client)
 
-  let { ARC_WSS_URL, AWS_REGION, ARC_SANDBOX } = process.env
+    getAwsClient({
+      plugins: [ '@aws-lite/apigatewaymanagementapi' ]
+    }, (err, _client) => {
+      if (err) rej(err)
+      else {
+        client = _client
+        let { ARC_WSS_URL, ARC_SANDBOX } = process.env
 
-  if (isNode18) {
-    var {
-      ApiGatewayManagementApi,
-      PostToConnectionCommand,
-      DeleteConnectionCommand,
-      GetConnectionCommand
-    } = require('@aws-sdk/client-apigatewaymanagementapi')
-  }
-  else {
-    var ApiGatewayManagementApi = require('aws-sdk/clients/apigatewaymanagementapi')
-  }
-
-  if (useAWS()) {
-    _api = new ApiGatewayManagementApi({
-      apiVersion: '2018-11-29',
-      endpoint: `${ARC_WSS_URL.replace(/^ws/, 'http')}`,
+        if (useAWS()) {
+          ApiUrl = ARC_WSS_URL
+        }
+        else {
+          let { ports } = JSON.parse(ARC_SANDBOX)
+          let port = ports._arc
+          if (!port) throw ReferenceError('Architect internal port not found')
+          ApiUrl = `http://localhost:${port}/_arc/ws`
+        }
+        res(client)
+      }
     })
-  }
-  else {
-    let { ports } = JSON.parse(ARC_SANDBOX)
-    let port = ports._arc
-    if (!port)
-      throw ReferenceError('Architect internal port not found')
-    _api = new ApiGatewayManagementApi({
-      apiVersion: '2018-11-29',
-      endpoint: `http://localhost:${port}/_arc/ws`,
-      region: AWS_REGION || 'us-west-2',
-    })
-  }
+  })
+}
 
+/**
+ * arc.ws._api
+ *
+ * Get the raw WebSocket client
+ *
+ * @param {Function} callback - a node style errback (optional)
+ * @returns {Promise} - returned if no callback is supplied
+ */
+function _api (callback) {
+  if (callback) instantiateAPI()
+    .then(client => callback(null, client))
+    .catch(callback)
 
-  /** idk.. **/
-  _send = (params, callback) => {
-    if (isNode18) {
-      let cmd = new PostToConnectionCommand(params)
-      return _api.send(cmd, callback)
-    }
-    else {
-      return callback ? _api.postToConnection(params, callback) : _api.postToConnection(params).promise()
-    }
-  }
-
-  /** idk.. **/
-  _close = (params, callback) => {
-    if (isNode18) {
-      let cmd = new DeleteConnectionCommand(params)
-      return _api.send(cmd, callback)
-    }
-    else {
-      return callback ? _api.deleteConnection(params, callback) : _api.deleteConnection(params).promise()
-    }
-  }
-
-  /** idk.. **/
-  _info = (params, callback) => {
-    if (isNode18) {
-      let cmd = new GetConnectionCommand(params)
-      return _api.send(cmd, callback)
-    }
-    else {
-      return callback ? _api.getConnection(params, callback) : _api.getConnection(params).promise()
-    }
-  }
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => res(client))
+      .catch(rej)
+  })
 }
 
 /**
  * arc.ws.send
  *
- * publish web socket events
+ * Publish WebSocket events
  *
  * @param {Object} params
  * @param {String} params.id - the ws connection id (required)
@@ -83,17 +60,37 @@ function instantiateAPI () {
  * @returns {Promise} - returned if no callback is supplied
  */
 function send ({ id, payload }, callback) {
-  instantiateAPI()
-  return _send({
-    ConnectionId: id,
-    Data: JSON.stringify(payload)
-  }, callback)
+  if (callback) instantiateAPI()
+    .then(client => {
+      client.ApiGatewayManagementApi.PostToConnection({
+        ApiUrl,
+        ConnectionId: id,
+        Data: payload,
+      })
+        .then(result => callback(null, result))
+        .catch(callback)
+    })
+    .catch(callback)
+
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => {
+        client.ApiGatewayManagementApi.PostToConnection({
+          ApiUrl,
+          ConnectionId: id,
+          Data: payload,
+        })
+          .then(result => res(result))
+          .catch(rej)
+      })
+      .catch(rej)
+  })
 }
 
 /**
  * arc.ws.close
  *
- * publish web socket events
+ * Terminate a WebSocket client connection
  *
  * @param {Object} params
  * @param {String} params.id - the ws connection id (required)
@@ -101,16 +98,35 @@ function send ({ id, payload }, callback) {
  * @returns {Promise} - returned if no callback is supplied
  */
 function close ({ id }, callback) {
-  instantiateAPI()
-  return _close({
-    ConnectionId: id,
-  }, callback)
+  if (callback) instantiateAPI()
+    .then(client => {
+      client.ApiGatewayManagementApi.DeleteConnection({
+        ApiUrl,
+        ConnectionId: id,
+      })
+        .then(result => callback(null, result))
+        .catch(callback)
+    })
+    .catch(callback)
+
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => {
+        client.ApiGatewayManagementApi.DeleteConnection({
+          ApiUrl,
+          ConnectionId: id,
+        })
+          .then(result => res(result))
+          .catch(rej)
+      })
+      .catch(rej)
+  })
 }
 
 /**
  * arc.ws.info
  *
- * publish web socket events
+ * Get info on a WebSocket client connection
  *
  * @param {Object} params
  * @param {String} params.id - the ws connection id (required)
@@ -118,22 +134,34 @@ function close ({ id }, callback) {
  * @returns {Promise} - returned if no callback is supplied
  */
 function info ({ id }, callback) {
-  instantiateAPI()
-  return _info({
-    ConnectionId: id,
-  }, callback)
+  if (callback) instantiateAPI()
+    .then(client => {
+      client.ApiGatewayManagementApi.GetConnection({
+        ApiUrl,
+        ConnectionId: id,
+      })
+        .then(result => callback(null, result))
+        .catch(callback)
+    })
+    .catch(callback)
+
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => {
+        client.ApiGatewayManagementApi.GetConnection({
+          ApiUrl,
+          ConnectionId: id,
+        })
+          .then(result => res(result))
+          .catch(rej)
+      })
+      .catch(rej)
+  })
 }
 
 module.exports = {
+  _api,
   send,
   close,
   info,
 }
-
-Object.defineProperty(module.exports, '_api', {
-  enumerable: true,
-  get () {
-    instantiateAPI()
-    return _api
-  }
-})
