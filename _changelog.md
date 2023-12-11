@@ -6,6 +6,30 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [8.0.0] 2023-10-17
+
+Architect Functions just got a lot faster. Gone are the days of 500-1000ms cold starts due to instantiating the AWS SDK – Functions v8 is now between 2-5x faster, and uses 2-4x less memory, courtesy of [aws-lite](https://github.com/architect/aws-lite/)!
+
+
+### Added
+
+- `arc.tables()` now includes a new DynamoDB client: `_client`, an instantiation of [`@aws-lite/dynamodb`](https://github.com/architect/aws-lite/tree/main/plugins/dynamodb)
+  - `_client` is largely functionally similar to the AWS SDK's DocumentClient, but a bit less fiddly (we think)
+  - `arc.tables()` methods should be functionally the same, including key error properties
+
+
+### Changed
+
+- Breaking change: AWS SDK v2 + v3 DynamoDB client + DocumentClient instantiation is now opt-in
+  - Code depending on `data._db` or `data._doc` must now instantiate with the `awsSdkClient` boolean option, like so: `await arc.tables({ awsSdkClient: true })`
+  - If you only rely on the DocumentClient (`_doc`), you may want to just try using the new [`@aws-lite/dynamodb`](https://aws-lite.org/services/dynamodb)-based `_client`
+- Breaking change: while we've taken efforts to ensure the maximum degree of compatibility with AWS SDK v2 and v3 errors, the errors returned in Arc Functions 8.0 (using `aws-lite`) may still vary slightly
+  - This only really applies if your error handling relies on specific properties or values
+  - If you just `console.log()` your errors, you will be totally fine, and the quality of the errors you get via `aws-lite` will mostly likely improve with this change
+  - Note: if you're an AWS SDK v2 user considering migrating to v3, error incompatibility will apply even more so; v3 errors are incompatible with v2, whereas `aws-lite` errors attempt to be compatible with both SDK v2 + v3
+
+---
+
 ## [7.0.0] 2023-07-10
 
 ### Added
