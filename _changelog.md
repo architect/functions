@@ -8,7 +8,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ## [8.0.0] 2023-10-17
 
-Architect Functions just got a lot faster. Gone are the days of 500-1000ms cold starts due to instantiating the AWS SDK – Functions v8 is now between 2-5x faster, and uses 2-4x less memory, courtesy of [aws-lite](https://github.com/architect/aws-lite/)!
+Architect Functions just got a lot faster. Gone are the days of 500-1000ms cold starts due to instantiating the AWS SDK – Functions v8 is now between 2-5x faster, and uses 2-4x less memory, courtesy of [aws-lite](https://aws-lite.org)!
 
 
 ### Added
@@ -27,6 +27,8 @@ Architect Functions just got a lot faster. Gone are the days of 500-1000ms cold 
   - This only really applies if your error handling relies on specific properties or values
   - If you just `console.log()` your errors, you will be totally fine, and the quality of the errors you get via `aws-lite` will mostly likely improve with this change
   - Note: if you're an AWS SDK v2 user considering migrating to v3, error incompatibility will apply even more so; v3 errors are incompatible with v2, whereas `aws-lite` errors attempt to be compatible with both SDK v2 + v3
+- Added Node.js 20.x to test matrix
+- Breaking change: removed support for Node.js 14.x (now EOL, and no longer available to created in AWS Lambda)
 
 ---
 
