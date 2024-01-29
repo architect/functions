@@ -28,9 +28,7 @@ module.exports = function factory ({ services, options = {} }, callback) {
           return callback(ReferenceError('Sandbox tables port not found'))
         }
         let config = {
-          host: `localhost`,
-          port,
-          protocol: 'http',
+          endpoint: `http://localhost:${port}`,
           region,
           plugins,
         }

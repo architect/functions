@@ -30,10 +30,7 @@ module.exports = function lookup (callback) {
       port = ports._arc
     }
     config = {
-      endpointPrefix: '/_arc/ssm',
-      host: `localhost`,
-      port,
-      protocol: 'http',
+      endpoint: `http://localhost:${port}/_arc/ssm`,
       plugins,
     }
   }

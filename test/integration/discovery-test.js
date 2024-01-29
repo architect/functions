@@ -6,9 +6,8 @@ let mock = join(cwd, 'test', 'mock', 'project')
 let discovery = require('../../src/discovery')
 
 test('Set up env', async t => {
-  t.plan(2)
+  t.plan(1)
   await sandbox.start({ cwd: mock, quiet: true })
-  t.pass('Set up ARC_APP_NAME env var')
   t.pass('Sandbox started')
 })
 

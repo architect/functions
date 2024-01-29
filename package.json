@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "8.0.0-RC.1",
+  "version": "8.0.0-RC.2",
   "description": "Runtime utility library for Functional Web Apps (FWAs) built with Architect (https://arc.codes)",
   "homepage": "https://github.com/architect/functions",
   "repository": {
@@ -12,8 +12,8 @@
   "types": "types/index.d.ts",
   "scripts": {
     "lint": "eslint --fix .",
-    "test:unit": "cross-env tape 'test/unit/**/*-test.js' | tap-spec",
-    "test:integration": "cross-env tape 'test/integration/**/*-test.js' | tap-spec",
+    "test:unit": "cross-env tape 'test/unit/**/*-test.js' | tap-arc",
+    "test:integration": "cross-env tape 'test/integration/**/*-test.js' | tap-arc",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
     "test": "npm run lint && npm run test:integration && npm run coverage",
     "test:types": "tsd --files types/*.test-d.ts",
@@ -25,9 +25,9 @@
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-lite/apigatewaymanagementapi": "^0.0.6",
-    "@aws-lite/client": "^0.13.1",
-    "@aws-lite/dynamodb": "^0.3.1",
+    "@aws-lite/apigatewaymanagementapi": "^0.0.7",
+    "@aws-lite/client": "^0.15.0",
+    "@aws-lite/dynamodb": "^0.3.3",
     "@aws-lite/sns": "^0.0.4",
     "@aws-lite/sqs": "^0.2.0",
     "@aws-lite/ssm": "^0.2.2",
@@ -40,11 +40,11 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/asap": "^6.0.4",
+    "@architect/asap": "^7.0.0-RC.1",
     "@architect/eslint-config": "2.1.1",
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
-    "@architect/sandbox": "^5.9.4",
-    "@types/aws-lambda": "^8.10.130",
+    "@architect/sandbox": "^6.0.0-RC.1",
+    "@types/aws-lambda": "^8.10.133",
     "@types/node": "18",
     "cross-env": "~7.0.3",
     "eslint": "^8.56.0",
@@ -52,10 +52,9 @@
     "proxyquire": "~2.1.3",
     "sinon": "^17.0.1",
     "tap-arc": "^1.2.2",
-    "tap-spec": "^5.0.0",
-    "tape": "^5.7.2",
+    "tape": "^5.7.4",
     "tiny-json-http": "^7.5.1",
-    "tsd": "^0.30.3"
+    "tsd": "^0.30.4"
   },
   "files": [
     "types/*",

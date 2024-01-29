@@ -25,7 +25,7 @@ Architect Functions just got a lot faster. Gone are the days of 500-1000ms cold 
   - If you only rely on the DocumentClient (`_doc`), you may want to just try using the new [`@aws-lite/dynamodb`](https://aws-lite.org/services/dynamodb)-based `_client`
 - Breaking change: while we've taken efforts to ensure the maximum degree of compatibility with AWS SDK v2 and v3 errors, the errors returned in Arc Functions 8.0 (using `aws-lite`) may still vary slightly
   - This only really applies if your error handling relies on specific properties or values
-  - If you just `console.log()` your errors, you will be totally fine, and the quality of the errors you get via `aws-lite` will mostly likely improve with this change
+  - If you just `console.log()` your errors, you will be totally fine, and the quality of the errors you get via `aws-lite` will most likely improve with this change
   - Note: if you're an AWS SDK v2 user considering migrating to v3, error incompatibility will apply even more so; v3 errors are incompatible with v2, whereas `aws-lite` errors attempt to be compatible with both SDK v2 + v3
 - Added Node.js 20.x to test matrix
 - Breaking change: removed support for Node.js 14.x (now EOL, and no longer available to created in AWS Lambda)

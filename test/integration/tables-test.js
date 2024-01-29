@@ -11,10 +11,9 @@ let mock = join(__dirname, '..', 'mock')
 let tmp = join(mock, 'tmp')
 let shared = join(tmp, 'node_modules', '@architect', 'shared')
 
-
 test('Set up mocked files', t => {
   t.plan(3)
-  process.env.ARC_APP_NAME = 'test'
+  process.env.ARC_APP_NAME = 'test-app-name'
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
