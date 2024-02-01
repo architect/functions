@@ -1,8 +1,22 @@
-import { SNS, SQS } from "aws-sdk";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
-export { };
+export {};
+
+// import { PublishResponse } from "@aws-sdk/client-sns"; // @3.503.1
+interface PublishResponse {
+  MessageId?: string;
+  SequenceNumber?: string;
+}
+
+// import { SendMessageResult } from "@aws-sdk/client-sqs"; // @3.503.1
+interface SendMessageResult {
+  MD5OfMessageBody?: string;
+  MD5OfMessageAttributes?: string;
+  MD5OfMessageSystemAttributes?: string;
+  MessageId?: string;
+  SequenceNumber?: string;
+}
 
 interface Params<Payload> {
   name: string;
@@ -26,5 +40,5 @@ interface EventsOrQueues<PublishResult> {
   ): LambdaFunction;
 }
 
-export type ArcEvents = EventsOrQueues<SNS.Types.PublishResponse>;
-export type ArcQueues = EventsOrQueues<SQS.Types.SendMessageResult>;
+export type ArcEvents = EventsOrQueues<PublishResponse>;
+export type ArcQueues = EventsOrQueues<SendMessageResult>;

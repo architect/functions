@@ -2,7 +2,7 @@ import {
   APIGatewayProxyEvent,
   Context,
   APIGatewayProxyResult,
-} from "aws-lambda";
+} from "aws-lambda"; // from @types/aws-lambda
 import { Callback } from "./util";
 
 // Turn off automatic exporting
