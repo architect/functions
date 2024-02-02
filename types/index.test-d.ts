@@ -1,6 +1,5 @@
 import type { AwsLiteClient } from "@aws-lite/client"
 import type { GetConnectionResponse } from "@aws-lite/apigatewaymanagementapi-types";
-import type { QueryResponse, ScanResponse, UpdateItemResponse } from "@aws-lite/dynamodb-types"
 import type { PublishResponse } from "@aws-lite/sns-types"
 import type { SendMessageResponse } from "@aws-lite/sqs-types"
 import type { Context } from "aws-lambda";
@@ -98,8 +97,7 @@ arc.static("/", { stagePath: false });
 
 // TABLES
 const dbClient = await arc.tables()
-expectType<AwsLiteClient["DynamoDB"]>(dbClient._db)
-// expectType<DynamoDB.DocumentClient>(dbClient._doc)
+expectType<AwsLiteClient["DynamoDB"]>(dbClient._client)
 expectType<string>(dbClient.name('widgets'))
 expectType<Record<string, string>>(dbClient.reflect())
 const myTable = dbClient.foobar

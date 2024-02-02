@@ -64,7 +64,8 @@ export type ArcDB<Tables> = ArcDBWith<Tables> & {
   reflect(): {
     [tableName in keyof Tables]: string;
   };
-  _db: AwsLiteClient["DynamoDB"];
+  _client: AwsLiteClient["DynamoDB"];
+  // _db: DynamoDB;
   // _doc: DynamoDB.DocumentClient;
 };
 

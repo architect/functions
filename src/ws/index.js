@@ -38,12 +38,12 @@ function instantiateAPI () {
  */
 function _api (callback) {
   if (callback) instantiateAPI()
-    .then(client => callback(null, client))
+    .then(client => callback(null, client.ApiGatewayManagementApi))
     .catch(callback)
 
   else return new Promise((res, rej) => {
     instantiateAPI()
-      .then(client => res(client))
+      .then(client => res(client.ApiGatewayManagementApi))
       .catch(rej)
   })
 }
