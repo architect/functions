@@ -15,7 +15,7 @@
     "test:unit": "cross-env tape 'test/unit/**/*-test.js' | tap-arc",
     "test:integration": "cross-env tape 'test/integration/**/*-test.js' | tap-arc",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
-    "test": "npm run lint && npm run test:integration && npm run coverage",
+    "test": "npm run lint && npm run test:integration && npm run coverage && npm run test:types",
     "test:types": "tsd --files types/*.test-d.ts",
     "rc": "npm version prerelease --preid RC"
   },
