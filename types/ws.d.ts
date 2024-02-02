@@ -10,7 +10,8 @@ type CloseParams = { id: string };
 type InfoParams = { id: string };
 
 export interface ArcWebSocket {
-  _api: AwsLiteClient["ApiGatewayManagementApi"];
+  _api(): Promise<AwsLiteClient["ApiGatewayManagementApi"]>;
+  _api(callback: Callback<AwsLiteClient["ApiGatewayManagementApi"]>): void;
 
   send(params: SendParams): Promise<void>;
   send(params: SendParams, callback: Callback<void>): void;

@@ -28,14 +28,6 @@ function instantiateAPI () {
   })
 }
 
-/**
- * arc.ws._api
- *
- * Get the raw WebSocket client
- *
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
- */
 function _api (callback) {
   if (callback) instantiateAPI()
     .then(client => callback(null, client.ApiGatewayManagementApi))
@@ -48,17 +40,6 @@ function _api (callback) {
   })
 }
 
-/**
- * arc.ws.send
- *
- * Publish WebSocket events
- *
- * @param {Object} params
- * @param {String} params.id - the ws connection id (required)
- * @param {Object} params.payload - an event payload (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
- */
 function send ({ id, payload }, callback) {
   if (callback) instantiateAPI()
     .then(client => {
@@ -87,16 +68,6 @@ function send ({ id, payload }, callback) {
   })
 }
 
-/**
- * arc.ws.close
- *
- * Terminate a WebSocket client connection
- *
- * @param {Object} params
- * @param {String} params.id - the ws connection id (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
- */
 function close ({ id }, callback) {
   if (callback) instantiateAPI()
     .then(client => {
@@ -123,16 +94,6 @@ function close ({ id }, callback) {
   })
 }
 
-/**
- * arc.ws.info
- *
- * Get info on a WebSocket client connection
- *
- * @param {Object} params
- * @param {String} params.id - the ws connection id (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
- */
 function info ({ id }, callback) {
   if (callback) instantiateAPI()
     .then(client => {

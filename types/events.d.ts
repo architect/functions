@@ -5,21 +5,6 @@ import type { SendMessageResponse as SqsPublishResponse } from "@aws-lite/sqs-ty
 // Turn off automatic exporting
 export { };
 
-// // import { PublishResponse } from "@aws-sdk/client-sns"; // @3.503.1
-// interface PublishResponse {
-//   MessageId?: string;
-//   SequenceNumber?: string;
-// }
-
-// // import { SendMessageResult } from "@aws-sdk/client-sqs"; // @3.503.1
-// interface SendMessageResult {
-//   MD5OfMessageBody?: string;
-//   MD5OfMessageAttributes?: string;
-//   MD5OfMessageSystemAttributes?: string;
-//   MessageId?: string;
-//   SequenceNumber?: string;
-// }
-
 interface Params<Payload> {
   name: string;
   payload: Payload;

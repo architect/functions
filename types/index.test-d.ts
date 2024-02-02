@@ -8,6 +8,10 @@ import arc from "../";
 import type { HttpHandler, HttpAsyncHandler } from "../"
 import type { HttpMethods, HttpRequest, HttpResponse } from "./http";
 
+// SERVICES
+const servicesResult = await arc.services();
+expectType<Record<string, any>>(servicesResult);
+
 // EVENTS
 const eventsPublishArg = { name: "test", payload: { foo: "bar" } };
 const eventsPublishResult = await arc.events.publish(eventsPublishArg);
@@ -124,7 +128,7 @@ await myTable.scanAll({
 })
 
 // WS
-expectType<AwsLiteClient["ApiGatewayManagementApi"]>(arc.ws._api);
+expectType<AwsLiteClient["ApiGatewayManagementApi"]>(await arc.ws._api());
 expectType<void>(await arc.ws.send({ id: "foo", payload: { bar: "baz" } }));
 expectType<void>(await arc.ws.close({ id: "foo" }));
 expectType<GetConnectionResponse>(
