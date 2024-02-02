@@ -1,22 +1,24 @@
 import { Callback } from "./util";
+import type { PublishResponse as SnsPublishResponse } from "@aws-lite/sns-types"
+import type { SendMessageResponse as SqsPublishResponse } from "@aws-lite/sqs-types"
 
 // Turn off automatic exporting
-export {};
+export { };
 
-// import { PublishResponse } from "@aws-sdk/client-sns"; // @3.503.1
-interface PublishResponse {
-  MessageId?: string;
-  SequenceNumber?: string;
-}
+// // import { PublishResponse } from "@aws-sdk/client-sns"; // @3.503.1
+// interface PublishResponse {
+//   MessageId?: string;
+//   SequenceNumber?: string;
+// }
 
-// import { SendMessageResult } from "@aws-sdk/client-sqs"; // @3.503.1
-interface SendMessageResult {
-  MD5OfMessageBody?: string;
-  MD5OfMessageAttributes?: string;
-  MD5OfMessageSystemAttributes?: string;
-  MessageId?: string;
-  SequenceNumber?: string;
-}
+// // import { SendMessageResult } from "@aws-sdk/client-sqs"; // @3.503.1
+// interface SendMessageResult {
+//   MD5OfMessageBody?: string;
+//   MD5OfMessageAttributes?: string;
+//   MD5OfMessageSystemAttributes?: string;
+//   MessageId?: string;
+//   SequenceNumber?: string;
+// }
 
 interface Params<Payload> {
   name: string;
@@ -40,5 +42,5 @@ interface EventsOrQueues<PublishResult> {
   ): LambdaFunction;
 }
 
-export type ArcEvents = EventsOrQueues<PublishResponse>;
-export type ArcQueues = EventsOrQueues<SendMessageResult>;
+export type ArcEvents = EventsOrQueues<SnsPublishResponse>;
+export type ArcQueues = EventsOrQueues<SqsPublishResponse>;

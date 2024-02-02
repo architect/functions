@@ -1,5 +1,9 @@
-import { ApiGatewayManagementApi, DynamoDB, SNS, SQS } from "aws-sdk";
-import { Context } from "aws-lambda";
+import type { AwsLiteClient } from "@aws-lite/client"
+import type { GetConnectionResponse } from "@aws-lite/apigatewaymanagementapi-types";
+import type { QueryResponse, ScanResponse, UpdateItemResponse } from "@aws-lite/dynamodb-types"
+import type { PublishResponse } from "@aws-lite/sns-types"
+import type { SendMessageResponse } from "@aws-lite/sqs-types"
+import type { Context } from "aws-lambda";
 import { expectType, expectAssignable, expectNotAssignable } from "tsd";
 import arc from "../";
 import type { HttpHandler, HttpAsyncHandler } from "../"
@@ -8,12 +12,12 @@ import type { HttpMethods, HttpRequest, HttpResponse } from "./http";
 // EVENTS
 const eventsPublishArg = { name: "test", payload: { foo: "bar" } };
 const eventsPublishResult = await arc.events.publish(eventsPublishArg);
-expectType<SNS.Types.PublishResponse>(eventsPublishResult);
+expectType<PublishResponse>(eventsPublishResult);
 
 // QUEUES
 const queuesPublishArg = { name: "test", payload: { foo: "bar" } };
 const queuesPublishResult = await arc.queues.publish(queuesPublishArg);
-expectType<SQS.Types.SendMessageResult>(queuesPublishResult);
+expectType<SendMessageResponse>(queuesPublishResult);
 
 // HTTP
 const middleware: HttpHandler = (req, res, next) => {
@@ -94,8 +98,8 @@ arc.static("/", { stagePath: false });
 
 // TABLES
 const dbClient = await arc.tables()
-expectType<DynamoDB>(dbClient._db)
-expectType<DynamoDB.DocumentClient>(dbClient._doc)
+expectType<AwsLiteClient["DynamoDB"]>(dbClient._db)
+// expectType<DynamoDB.DocumentClient>(dbClient._doc)
 expectType<string>(dbClient.name('widgets'))
 expectType<Record<string, string>>(dbClient.reflect())
 const myTable = dbClient.foobar
@@ -122,9 +126,9 @@ await myTable.scanAll({
 })
 
 // WS
-expectType<ApiGatewayManagementApi>(arc.ws._api);
+expectType<AwsLiteClient["ApiGatewayManagementApi"]>(arc.ws._api);
 expectType<void>(await arc.ws.send({ id: "foo", payload: { bar: "baz" } }));
 expectType<void>(await arc.ws.close({ id: "foo" }));
-expectType<ApiGatewayManagementApi.Types.GetConnectionResponse>(
+expectType<GetConnectionResponse>(
   await arc.ws.info({ id: "foo" }),
 );
