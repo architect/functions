@@ -4,3 +4,4 @@ coverage/
 dist.js
 scratch/
 src/http/get-index
+types/

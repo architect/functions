@@ -1,4 +1,5 @@
-import type { DynamoDB } from "aws-sdk";
+import type { AwsLiteClient } from "@aws-lite/client"
+import type { QueryResponse, ScanResponse, UpdateItemResponse } from "@aws-lite/dynamodb-types"
 import { Callback } from "./util";
 
 // Turn off automatic exporting
@@ -17,17 +18,16 @@ type ItemsOutput<OutputType, Item> = Omit<OutputType, "Items"> & {
   Items: Item[];
 };
 
-type QueryParams = Params<DynamoDB.DocumentClient.QueryInput>;
-type QueryOutput<Item> = ItemsOutput<DynamoDB.DocumentClient.QueryOutput, Item>;
+type QueryParams = Params<Parameters<AwsLiteClient["DynamoDB"]["Query"]>[0]>;
+type QueryOutput<Item> = ItemsOutput<QueryResponse, Item>;
 
-type ScanParams = Params<DynamoDB.DocumentClient.ScanInput>;
-type ScanOutput<Item> = ItemsOutput<DynamoDB.DocumentClient.ScanOutput, Item>;
+type ScanParams = Params<Parameters<AwsLiteClient["DynamoDB"]["Scan"]>[0]>;
+type ScanOutput<Item> = ItemsOutput<ScanResponse, Item>;
 
 type UpdateParams<Item> = ParamsWithKey<
-  DynamoDB.DocumentClient.UpdateItemInput,
+  Parameters<AwsLiteClient["DynamoDB"]["UpdateItem"]>[0],
   Item
 >;
-type UpdateOutput = DynamoDB.DocumentClient.UpdateItemOutput;
 
 // Depending on the operation, the key attributes may be mandatory, but we don't
 // know what the key attributes are, so Partial is the best we can do.
@@ -51,8 +51,8 @@ export interface ArcTable<Item = unknown> {
 
   scanAll(params: ScanParams): Promise<Item[]>;
 
-  update(params: UpdateParams<Item>): Promise<UpdateOutput>;
-  update(params: UpdateParams<Item>, callback: Callback<UpdateOutput>): void;
+  update(params: UpdateParams<Item>): Promise<UpdateItemResponse>;
+  update(params: UpdateParams<Item>, callback: Callback<UpdateItemResponse>): void;
 }
 
 type ArcDBWith<Tables> = {
@@ -64,8 +64,9 @@ export type ArcDB<Tables> = ArcDBWith<Tables> & {
   reflect(): {
     [tableName in keyof Tables]: string;
   };
-  _db: DynamoDB;
-  _doc: DynamoDB.DocumentClient;
+  _client: AwsLiteClient["DynamoDB"];
+  // _db: DynamoDB;
+  // _doc: DynamoDB.DocumentClient;
 };
 
 // Permissive by default: allows any table, any inputs, any outputs.
