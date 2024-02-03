@@ -26,7 +26,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-lite/apigatewaymanagementapi": "^0.0.7",
-    "@aws-lite/client": "^0.15.1",
+    "@aws-lite/client": "^0.16.0",
     "@aws-lite/dynamodb": "^0.3.3",
     "@aws-lite/sns": "^0.0.4",
     "@aws-lite/sqs": "^0.2.0",
@@ -40,10 +40,10 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@architect/asap": "^7.0.0-RC.1",
+    "@architect/asap": "^7.0.3",
     "@architect/eslint-config": "2.1.1",
     "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
-    "@architect/sandbox": "^6.0.0-RC.1",
+    "@architect/sandbox": "^6.0.0",
     "@aws-lite/apigatewaymanagementapi-types": "^0.0.9",
     "@aws-lite/dynamodb-types": "^0.3.4",
     "@aws-lite/sns-types": "^0.0.5",
