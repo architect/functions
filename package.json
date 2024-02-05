@@ -1,6 +1,6 @@
 {
   "name": "@architect/functions",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "Runtime utility library for Functional Web Apps (FWAs) built with Architect (https://arc.codes)",
   "homepage": "https://github.com/architect/functions",
   "repository": {
