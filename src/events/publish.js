@@ -49,7 +49,7 @@ module.exports = function publishFactory (arc, type) {
     }
     else {
       getAwsClient({
-        plugins: [ '@aws-lite/sns', '@aws-lite/sqs' ],
+        plugins: [ import('@aws-lite/sns'), import('@aws-lite/sqs') ],
       }, (err, _client) => {
         if (err) callback(err)
         else {

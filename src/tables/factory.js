@@ -11,7 +11,7 @@ module.exports = function factory ({ services, options = {} }, callback) {
   let { ARC_ENV, AWS_REGION } = process.env
   let local = ARC_ENV === 'testing'
   let region = AWS_REGION || 'us-west-2'
-  let plugins = [ '@aws-lite/dynamodb' ]
+  let plugins = [ import('@aws-lite/dynamodb') ]
 
   if (useAWS()) {
     getAwsClient({ region, plugins }, (err, aws) => {

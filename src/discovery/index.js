@@ -18,7 +18,7 @@ module.exports = function lookup (callback) {
     app = 'arc-app'
   }
 
-  let plugins = [ '@aws-lite/ssm' ]
+  let plugins = [ import('@aws-lite/ssm') ]
   let config = { plugins }
   if (local) {
     let port = 2222
@@ -29,10 +29,7 @@ module.exports = function lookup (callback) {
       }
       port = ports._arc
     }
-    config = {
-      endpoint: `http://localhost:${port}/_arc/ssm`,
-      plugins,
-    }
+    config.endpoint = `http://localhost:${port}/_arc/ssm`
   }
 
   getAwsClient(config, (err, client) => {

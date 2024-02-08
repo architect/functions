@@ -6,7 +6,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
-## [8.0.0 - 8.0.1] 2024-02-03
+## [8.0.0 - 8.0.2] 2024-02-03
 
 Architect Functions just got a lot faster. Gone are the days of 500-1000ms cold starts due to instantiating the AWS SDK – Functions v8 is now between 2-5x faster, and uses 2-4x less memory, courtesy of [aws-lite](https://aws-lite.org)!
 
