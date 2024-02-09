@@ -101,7 +101,15 @@ function dynamoConstructor (params, callback) {
       },
 
       put (Item, callback) {
-        return go(aws.dynamodb.PutItem, { TableName, Item }, callback)
+        if (callback) aws.dynamodb.PutItem({ TableName, Item })
+          .then(() => callback(null, Item))
+          .catch(err => callback(err))
+
+        else return new Promise((res, rej) => {
+          aws.dynamodb.PutItem({ TableName, Item })
+            .then(() => res(Item))
+            .catch(rej)
+        })
       },
 
       query (params = {}, callback) {
