@@ -10,7 +10,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ### Fixed
 
-- Fixed output of `tables.put()` to return the updated item, as in versions <=7
+- Fixed output of `tables.put()` to return the updated item, as in versions <=7; fixes #554
 
 ---
 
