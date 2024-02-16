@@ -1,31 +1,33 @@
-import type { AwsLiteClient } from "@aws-lite/client"
-import type { QueryResponse, ScanResponse, UpdateItemResponse } from "@aws-lite/dynamodb-types"
+import type {
+  AwsLiteDynamoDB,
+  QueryResponse,
+  ScanResponse,
+  UpdateItemResponse,
+} from "@aws-lite/dynamodb-types"
 import { Callback } from "./util";
 
 // Turn off automatic exporting
 export { };
 
 // TableName not needed as the library sets it
-type Params<InputType> = Omit<InputType, "TableName">;
+type TablesParams<InputType> = Omit<InputType, "TableName">;
 
 // As above but also overriding the Key field
-type ParamsWithKey<InputType, Item> = Omit<Params<InputType>, "Key"> & {
-  Key: Key<Item>;
-};
+type TablesParamsWithKey<InputType, Item> = Omit<TablesParams<InputType>, "Key">
+  & { Key: Key<Item>};
 
 // Just overriding the Items field
-type ItemsOutput<OutputType, Item> = Omit<OutputType, "Items"> & {
-  Items: Item[];
-};
+type ItemsOutput<OutputType, Item> = Omit<OutputType, "Items">
+  & { Items: Item[] };
 
-type QueryParams = Params<Parameters<AwsLiteClient["DynamoDB"]["Query"]>[0]>;
+type QueryParams = TablesParams<Parameters<AwsLiteDynamoDB["Query"]>[0]>;
 type QueryOutput<Item> = ItemsOutput<QueryResponse, Item>;
 
-type ScanParams = Params<Parameters<AwsLiteClient["DynamoDB"]["Scan"]>[0]>;
+type ScanParams = TablesParams<Parameters<AwsLiteDynamoDB["Scan"]>[0]>;
 type ScanOutput<Item> = ItemsOutput<ScanResponse, Item>;
 
-type UpdateParams<Item> = ParamsWithKey<
-  Parameters<AwsLiteClient["DynamoDB"]["UpdateItem"]>[0],
+type UpdateParams<Item> = TablesParamsWithKey<
+  Parameters<AwsLiteDynamoDB["UpdateItem"]>[0],
   Item
 >;
 
@@ -51,7 +53,7 @@ export interface ArcTable<Item = unknown> {
 
   scanAll(params: ScanParams): Promise<Item[]>;
 
-  update(params: UpdateParams<Item>): Promise<UpdateItemResponse>;
+  update(params: UpdateParams<Item>): AwsLiteDynamoDB["UpdateItem"];
   update(params: UpdateParams<Item>, callback: Callback<UpdateItemResponse>): void;
 }
 
@@ -64,7 +66,7 @@ export type ArcDB<Tables> = ArcDBWith<Tables> & {
   reflect(): {
     [tableName in keyof Tables]: string;
   };
-  _client: AwsLiteClient["DynamoDB"];
+  _client: AwsLiteDynamoDB;
   // _db: DynamoDB;
   // _doc: DynamoDB.DocumentClient;
 };
