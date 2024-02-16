@@ -1,5 +1,7 @@
-import type { AwsLiteClient } from "@aws-lite/client"
-import type { GetConnectionResponse } from "@aws-lite/apigatewaymanagementapi-types";
+import type {
+  AwsLiteApiGatewayManagementApi,
+  GetConnectionResponse,
+} from "@aws-lite/apigatewaymanagementapi-types";
 import { Callback } from "./util";
 
 // Turn off automatic exporting
@@ -10,8 +12,8 @@ type CloseParams = { id: string };
 type InfoParams = { id: string };
 
 export interface ArcWebSocket {
-  _api(): Promise<AwsLiteClient["ApiGatewayManagementApi"]>;
-  _api(callback: Callback<AwsLiteClient["ApiGatewayManagementApi"]>): void;
+  _api(): Promise<AwsLiteApiGatewayManagementApi>;
+  _api(callback: Callback<AwsLiteApiGatewayManagementApi>): void;
 
   send(params: SendParams): Promise<void>;
   send(params: SendParams, callback: Callback<void>): void;
