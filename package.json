@@ -26,7 +26,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-lite/apigatewaymanagementapi": "^0.0.8",
-    "@aws-lite/client": "^0.17.2",
+    "@aws-lite/client": "^0.19.0-RC.0",
     "@aws-lite/dynamodb": "^0.3.4",
     "@aws-lite/sns": "^0.0.5",
     "@aws-lite/sqs": "^0.2.1",
@@ -48,17 +48,17 @@
     "@aws-lite/dynamodb-types": "^0.3.6",
     "@aws-lite/sns-types": "^0.0.7",
     "@aws-lite/sqs-types": "^0.2.3",
-    "@types/aws-lambda": "^8.10.133",
+    "@types/aws-lambda": "^8.10.136",
     "@types/node": "18",
     "cross-env": "~7.0.3",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "nyc": "~15.1.0",
     "proxyquire": "~2.1.3",
     "sinon": "^17.0.1",
     "tap-arc": "^1.2.2",
     "tape": "^5.7.5",
     "tiny-json-http": "^7.5.1",
-    "tsd": "^0.30.4"
+    "tsd": "^0.30.7"
   },
   "files": [
     "types/*",

@@ -12,9 +12,10 @@ module.exports = function factory ({ services, options = {} }, callback) {
   let local = ARC_ENV === 'testing'
   let region = AWS_REGION || 'us-west-2'
   let plugins = [ import('@aws-lite/dynamodb') ]
+  let { awsjsonMarshall, awsjsonUnmarshall } = options
 
   if (useAWS()) {
-    getAwsClient({ region, plugins }, (err, aws) => {
+    getAwsClient({ region, plugins, awsjsonMarshall, awsjsonUnmarshall }, (err, aws) => {
       if (err) callback(err)
       else dynamoConstructor({ aws, local, options, tables }, callback)
     })
@@ -31,6 +32,8 @@ module.exports = function factory ({ services, options = {} }, callback) {
           endpoint: `http://localhost:${port}`,
           region,
           plugins,
+          awsjsonMarshall,
+          awsjsonUnmarshall,
         }
         getAwsClient(config, (err, aws) => {
           if (err) callback(err)

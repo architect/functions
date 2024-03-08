@@ -6,6 +6,17 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [8.1.0] 2024-03-07
+
+### Added
+
+- Added support for passing `arc.tables({ awsjsonMarshall, awsjsonUnmarshall })` options, learn more at:
+  - https://github.com/architect/aws-lite/issues/111
+  - https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-util-dynamodb/Interface/marshallOptions/
+  - https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-util-dynamodb/Interface/unmarshallOptions/
+
+---
+
 ## [8.0.3] 2024-02-09
 
 ### Fixed
