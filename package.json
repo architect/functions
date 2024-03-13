@@ -11,6 +11,7 @@
   "main": "src/index",
   "types": "types/index.d.ts",
   "scripts": {
+    "test:one": "cross-env tape 'test/unit/src/http/csrf/*-test.js' | tap-arc",
     "lint": "eslint --fix .",
     "test:unit": "cross-env tape 'test/unit/**/*-test.js' | tap-arc",
     "test:integration": "cross-env tape 'test/integration/**/*-test.js' | tap-arc",

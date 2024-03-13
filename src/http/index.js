@@ -4,6 +4,8 @@ let bodyParser = require('./helpers/body-parser')
 let interpolate = require('./helpers/params')
 let url = require('./helpers/url')
 let responseFormatter = require('./_res-fmt')
+let create = require('./csrf/create')
+let verify = require('./csrf/verify')
 
 // Unified async / callback HTTP handler
 function httpHandler (isAsync, ...fns) {
@@ -94,6 +96,9 @@ http.helpers = { bodyParser, interpolate, url }
 
 // Session
 http.session = { read, write }
+
+// CSRF
+http.csrf = { create, verify }
 
 module.exports = http
 
