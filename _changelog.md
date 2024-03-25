@@ -15,6 +15,12 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
   - https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-util-dynamodb/Interface/marshallOptions/
   - https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-util-dynamodb/Interface/unmarshallOptions/
 
+
+### Changed
+
+- Fixed potential issue where parsing SQS errors may fail
+- Updated dependencies
+
 ---
 
 ## [8.0.3] 2024-02-09
