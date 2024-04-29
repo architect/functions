@@ -23,7 +23,7 @@ test('Set up mocked files', t => {
   t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
   t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   process.chdir(tmp)
-  // eslint-disable-next-line
+
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 

@@ -5,7 +5,7 @@ module.exports = function httpError (params) {
   let {
     statusCode = 502,
     title = 'Unknown error',
-    message = ''
+    message = '',
   } = params
   title = title === 'Error'
     ? `${statusCode} error`
@@ -14,7 +14,7 @@ module.exports = function httpError (params) {
     statusCode,
     headers: {
       'content-type': 'text/html; charset=utf8;',
-      'cache-control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+      'cache-control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0',
     },
     body: `
 <!DOCTYPE html>
@@ -83,6 +83,6 @@ module.exports = function httpError (params) {
   </div>
 </body>
 </html>
-`
+`,
   }
 }

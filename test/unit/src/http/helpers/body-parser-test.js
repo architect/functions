@@ -28,14 +28,14 @@ test('Architect v10+ requests', t => {
   let req = {
     body: hiText,
     headers: text,
-    isBase64Encoded: false
+    isBase64Encoded: false,
   }
   t.equals(parseBody(req), 'hi there', `body matches ${str(req.body)}`)
 
   req = {
     body: b64encode(hiText),
     headers: text,
-    isBase64Encoded: true
+    isBase64Encoded: true,
   }
   t.equals(parseBody(req), 'hi there', `body matches ${str(req.body)}`)
 
@@ -43,28 +43,28 @@ test('Architect v10+ requests', t => {
   req = {
     body: hiXml,
     headers: xmlText,
-    isBase64Encoded: false
+    isBase64Encoded: false,
   }
   t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
 
   req = {
     body: hiXml,
     headers: xmlApp,
-    isBase64Encoded: false
+    isBase64Encoded: false,
   }
   t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
 
   req = {
     body: b64encode(hiXml),
     headers: xmlText,
-    isBase64Encoded: true
+    isBase64Encoded: true,
   }
   t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
 
   req = {
     body: b64encode(hiXml),
     headers: xmlApp,
-    isBase64Encoded: true
+    isBase64Encoded: true,
   }
   t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
 })
@@ -75,21 +75,21 @@ test('Architect v6+ requests', t => {
   let req = {
     body: str(hi),
     headers: json,
-    isBase64Encoded: false
+    isBase64Encoded: false,
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${req.body}`)
 
   // Pass through empty body (although in practice we'll never see this, as we transform to empty object)
   req = {
     body: null,
-    headers: json
+    headers: json,
   }
   t.equals(str(parseBody(req)), str(null), `body matches ${str(req.body)}`)
 
   req = {
     body: b64encode(str(hi)),
     headers: json,
-    isBase64Encoded: true
+    isBase64Encoded: true,
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
@@ -97,7 +97,7 @@ test('Architect v6+ requests', t => {
   req = {
     body: b64encode(str(hi)),
     headers: { 'Content-Type': 'application/vnd.api+json' },
-    isBase64Encoded: true
+    isBase64Encoded: true,
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
@@ -110,7 +110,7 @@ test('Architect v6+ requests', t => {
   req = {
     body: hiFormURL,
     headers: formURLencoded,
-    isBase64Encoded: true
+    isBase64Encoded: true,
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
   // Not testing faulty encoding on form URL-encoded posts; you'll always get something back
@@ -119,7 +119,7 @@ test('Architect v6+ requests', t => {
   req = {
     body: hiBase64file,
     headers: multiPartFormData,
-    isBase64Encoded: true
+    isBase64Encoded: true,
   }
   t.equals(str(parseBody(req)), str({ base64: hiBase64file }), `body matches ${str(req.body)}`)
 
@@ -134,28 +134,28 @@ test('Architect v5 requests', t => {
   // Pass through empty body
   let req = {
     body: {},
-    headers: json
+    headers: json,
   }
   t.equals(parseBody(req), req.body, `body matches ${str(req.body)}`)
 
   // Pass through parsed body (JSON)
   req = {
     body: hi,
-    headers: json
+    headers: json,
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
   // Pass through parsed body (formURLencoded)
   req = {
     body: hi,
-    headers: formURLencoded
+    headers: formURLencoded,
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
 
   // Pass through multipart / base64
   req = {
     body: hiBase64,
-    headers: multiPartFormData
+    headers: multiPartFormData,
   }
   t.equals(str(parseBody(req)), str(hiBase64), `body matches ${str(req.body)}`)
 

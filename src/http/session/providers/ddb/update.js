@@ -8,7 +8,7 @@ module.exports = function _update (name, payload, callback) {
     if (err) callback(err)
     else data._client.PutItem({
       TableName: name,
-      Item: session
+      Item: session,
     }).then(() => callback(null, session)).catch(callback)
   })
 }

@@ -31,14 +31,14 @@ function __trigger (types, handler) {
   }
 }
 
-/* eslint-disable indent */
+
 module.exports = {
   insert: __trigger.bind({}, [ 'INSERT' ]),
   modify: __trigger.bind({}, [ 'MODIFY' ]),
   update: __trigger.bind({}, [ 'MODIFY' ]),
   remove: __trigger.bind({}, [ 'REMOVE' ]),
- destroy: __trigger.bind({}, [ 'REMOVE' ]),
-     all: __trigger.bind({}, [ 'INSERT', 'MODIFY', 'REMOVE' ]),
-    save: __trigger.bind({}, [ 'INSERT', 'MODIFY' ]),
-  change: __trigger.bind({}, [ 'INSERT', 'REMOVE' ])
+  destroy: __trigger.bind({}, [ 'REMOVE' ]),
+  all: __trigger.bind({}, [ 'INSERT', 'MODIFY', 'REMOVE' ]),
+  save: __trigger.bind({}, [ 'INSERT', 'MODIFY' ]),
+  change: __trigger.bind({}, [ 'INSERT', 'REMOVE' ]),
 }

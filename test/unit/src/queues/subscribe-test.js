@@ -5,7 +5,7 @@ let subscribe
 
 test('Set up env', t => {
   t.plan(1)
-  // eslint-disable-next-line
+
   let arc = require('../../../..')
   subscribe = arc.queues.subscribe
   t.ok(subscribe, 'Got queues.subscribe method')
@@ -37,7 +37,7 @@ test('queues.subscribe calls async handler', async t => {
   let fake = sinon.fake()
 
   // get a lambda signature from the handler
-  // eslint-disable-next-line
+
   let handler = subscribe(async function (json) {
     fake(json)
   })

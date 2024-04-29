@@ -8,7 +8,7 @@ exports.handler = async function (req) {
   let payload = { ok: true }
   await arc[type].publish({
     name,
-    payload
+    payload,
   })
   return payload
 }

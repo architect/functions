@@ -38,7 +38,7 @@ let arc = {
         }
       })
     })
-  }
+  },
 }
 arc.events = require('./events')(arc, 'events')
 arc.queues = require('./events')(arc, 'queues')

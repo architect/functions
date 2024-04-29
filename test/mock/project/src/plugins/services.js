@@ -3,13 +3,13 @@ module.exports = {
     services: async () => {
       return {
         tables: {
-          stuff: 'so-very-much-stuff'
+          stuff: 'so-very-much-stuff',
         },
         'cloudwatch/metrics': {
           foo: 'bar',
           fiz: 'buz',
-        }
+        },
       }
-    }
-  }
+    },
+  },
 }

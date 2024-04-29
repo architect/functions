@@ -8,7 +8,7 @@ module.exports = function _find (name, _idx, callback) {
     else data._client.GetItem({
       TableName: name,
       ConsistentRead: true,
-      Key: { _idx }
+      Key: { _idx },
     })
       .then(item => {
         let result = typeof item === 'undefined' ? false : item.Item

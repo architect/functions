@@ -7,7 +7,7 @@ let mock = join(cwd, 'test', 'mock', 'project')
 
 let noop = () => {}
 let factory = proxyquire('../../../../src/tables/factory', {
-  './legacy': () => ({ db: noop, doc: noop })
+  './legacy': () => ({ db: noop, doc: noop }),
 })
 
 let services = { tables: { hi: 'there' } }

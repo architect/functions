@@ -1,4 +1,4 @@
-/* eslint-disable require-await */
+
 let { join } = require('path')
 let { deepStrictEqual } = require('assert')
 let sut = join(process.cwd(), 'src')
@@ -19,7 +19,7 @@ let isNulled = key => arc6RestNull.some(v => v === key)
 let arc6RestPrettyParams = {
   method: 'httpMethod',
   params: 'pathParameters',
-  query: 'queryStringParameters'
+  query: 'queryStringParameters',
 }
 
 let requestsTested = []
@@ -62,7 +62,7 @@ test('Set up env', t => {
   t.plan(2)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
-  // eslint-disable-next-line
+
   arc = require(sut)
   t.ok(arc.http, 'Loaded HTTP')
   t.ok(arc.http.async, 'Loaded legacy async method')
@@ -521,7 +521,7 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t 
         deepStrictEqual(req, tested)
         return true
       }
-      catch (err) { /* noop */ }
+      catch { /* noop */ }
     }), `Tested req: ${name}`)
   }
   console.log(`Arc 7 requests`)

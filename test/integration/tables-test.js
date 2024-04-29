@@ -21,7 +21,7 @@ test('Set up mocked files', t => {
   t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
   t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
-  // eslint-disable-next-line
+
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
@@ -67,15 +67,15 @@ test('tables put()', async t => {
     foo: 'bar',
     baz: {
       one: 1,
-      doe: true
-    }
+      doe: true,
+    },
   })
   t.ok(item, 'returned item')
   item = null
   item = await data['accounts-messages'].put({
     accountID: 'fake',
     msgID: 'alsofake',
-    extra: true
+    extra: true,
   })
   t.ok(item, `returned item`)
 })
@@ -83,14 +83,14 @@ test('tables put()', async t => {
 test('tables get()', async t => {
   t.plan(4)
   let result = await data.accounts.get({
-    accountID: 'fake'
+    accountID: 'fake',
   })
   t.ok(result, 'got accounts table result')
   t.ok(result.baz.doe, 'result.baz.doe deserialized')
   result = null
   result = await data['accounts-messages'].get({
     accountID: 'fake',
-    msgID: 'alsofake'
+    msgID: 'alsofake',
   })
   t.ok(result, 'got accounts-messages table result')
   t.ok(result.extra, 'result.extra deserialized')
@@ -99,21 +99,21 @@ test('tables get()', async t => {
 test('tables delete()', async t => {
   t.plan(4)
   await data.accounts.delete({
-    accountID: 'fake'
+    accountID: 'fake',
   })
   t.ok(true, 'deleted')
   let result = await data.accounts.get({
-    accountID: 'fake'
+    accountID: 'fake',
   })
   t.equal(result, undefined, 'could not get deleted accounts item')
   await data['accounts-messages'].delete({
     accountID: 'fake',
-    msgID: 'alsofake'
+    msgID: 'alsofake',
   })
   t.ok(true, 'deleted')
   let otherResult = await data['accounts-messages'].get({
     accountID: 'fake',
-    msgID: 'alsofake'
+    msgID: 'alsofake',
   })
   t.equal(otherResult, undefined, 'could not get deleted accounts-messages item')
 })
@@ -132,7 +132,7 @@ test('tables query()', async t => {
     KeyConditionExpression: 'accountID = :id',
     ExpressionAttributeValues: {
       ':id': 'one',
-    }
+    },
   })
 
   t.ok(result, 'got a result')
@@ -144,8 +144,8 @@ test('tables scan()', async t => {
   let result = await data.accounts.scan({
     FilterExpression: 'accountID = :id',
     ExpressionAttributeValues: {
-      ':id': 'two'
-    }
+      ':id': 'two',
+    },
   })
   t.ok(result, 'got a result')
 })
@@ -161,21 +161,21 @@ test('tables update()', async t => {
   t.plan(3)
   await data.accounts.update({
     Key: {
-      accountID: 'three'
+      accountID: 'three',
     },
     UpdateExpression: 'set #hits = :hits',
     ExpressionAttributeNames: {
-      '#hits': 'hits'
+      '#hits': 'hits',
     },
     ExpressionAttributeValues: {
       ':hits': 20,
-    }
+    },
   })
 
   t.ok(true, 'updated without error')
 
   let result = await data.accounts.get({
-    accountID: 'three'
+    accountID: 'three',
   })
 
   t.ok(result, 'got result')

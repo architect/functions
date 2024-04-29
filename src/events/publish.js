@@ -91,7 +91,7 @@ function eventFactory (arc) {
     function publish (arn, payload, callback) {
       client.sns.Publish({
         TopicArn: arn,
-        Message: JSON.stringify(payload)
+        Message: JSON.stringify(payload),
       })
         .then(result => callback(null, result))
         .catch(callback)
@@ -121,7 +121,7 @@ function queueFactory (arc) {
       let params = {
         QueueUrl: url,
         DelaySeconds: delaySeconds || 0,
-        MessageBody: JSON.stringify(payload)
+        MessageBody: JSON.stringify(payload),
       }
       if (url.endsWith('.fifo')) {
         params.MessageGroupId = groupID || name

@@ -125,7 +125,7 @@ module.exports = function responseFormatter (req, params) {
   let res = {
     headers: Object.assign({}, { 'content-type': type }, params.headers || {}),
     statusCode,
-    body
+    body,
   }
 
   // REST API stuff

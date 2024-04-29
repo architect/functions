@@ -7,7 +7,7 @@ let port = process.env.PORT ? process.env.PORT : '3333'
 let url = s => `http://localhost:${port}${s ? s : ''}`
 let mock = join(__dirname, '..', 'mock', 'project')
 let compress = {
-  'accept-encoding': 'br'
+  'accept-encoding': 'br',
 }
 let css = `/* css here! */\n`
 let js = `/* js here! */\n`

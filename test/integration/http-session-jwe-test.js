@@ -15,7 +15,7 @@ async function getSession (url) {
 }
 
 function checkKeys (session, t) {
-  let { iat, } = session
+  let { iat } = session
   if (!iat) t.fail(`Did not get back all internal session keys: ${JSON.stringify(session, null, 2)}`)
   else t.pass('Got back internal session key: iat')
 }

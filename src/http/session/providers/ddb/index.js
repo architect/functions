@@ -103,7 +103,7 @@ function write (params, callback) {
         let sameSite = ARC_SESSION_SAME_SITE || 'lax'
         let options = {
           maxAge,
-          expires: new Date(Date.now() + maxAge * 1000),
+          expires: new Date(Date.now() + (maxAge * 1000)),
           secure: true,
           httpOnly: true,
           path: '/',

@@ -2,8 +2,8 @@ let parallel = require('run-parallel')
 
 let fallback = {
   Records: [
-    { Sns: { Message: JSON.stringify({}) } }
-  ]
+    { Sns: { Message: JSON.stringify({}) } },
+  ],
 }
 
 /**

@@ -137,7 +137,7 @@ function dynamoConstructor (params, callback) {
 
       update (params, callback) {
         return go(aws.dynamodb.UpdateItem, { ...params, TableName }, callback)
-      }
+      },
     }
   }
   callback(null, data)

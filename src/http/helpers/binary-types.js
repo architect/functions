@@ -58,5 +58,5 @@ module.exports = [
   'application/x-rar-compressed',
   'application/x-tar',
   'application/x-zip',
-  'application/zip'
+  'application/zip',
 ]

@@ -1,4 +1,4 @@
-/* eslint-disable require-await */
+
 let { join } = require('path')
 let { brotliDecompressSync, gunzipSync } = require('zlib')
 let { deepStrictEqual } = require('assert')
@@ -32,7 +32,7 @@ test('Set up env', t => {
   t.plan(1)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
-  // eslint-disable-next-line
+
   arc = require(sut)
   t.ok(arc.http, 'Loaded HTTP')
 })
@@ -497,7 +497,7 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) + legacy response fixtures were t
         deepStrictEqual(req, tested)
         return true
       }
-      catch (err) { /* noop */ }
+      catch { /* noop */ }
     }), `Tested res: ${name}`)
   }
   console.log(`Arc 7 responses`)

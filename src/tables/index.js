@@ -43,7 +43,7 @@ module.exports = function tables (arc) {
         function (created, callback) {
           client = created
           callback(null, client)
-        }
+        },
       ], callback)
     }
     return promise

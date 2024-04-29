@@ -18,7 +18,7 @@ module.exports = function _create (name, payload, callback) {
         if (err) callback(err)
         else callback(null, { _secret: val })
       })
-    }
+    },
   ],
   function _put (err, results) {
     if (err) throw err
@@ -29,7 +29,7 @@ module.exports = function _create (name, payload, callback) {
       if (err) callback(err)
       else data._client.PutItem({
         TableName: name,
-        Item: session
+        Item: session,
       }).then(() => callback(null, session)).catch(callback)
     })
   })

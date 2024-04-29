@@ -3,7 +3,7 @@ let publish
 
 test('Set up env', t => {
   t.plan(1)
-  // eslint-disable-next-line
+
   let arc = require('../../../..')
   publish = arc.queues.publish
   t.ok(publish, 'Got queues.publish method')
@@ -16,7 +16,7 @@ test('queues.publish should throw if there is no parameter name', t => {
 
 test('queues.publish should throw if there is no parameter payload', t => {
   t.plan(1)
-  t.throws(() => { publish({ name: 'batman' })}, /missing params.payload/, 'throws missing payload parameter exception')
+  t.throws(() => { publish({ name: 'batman' }) }, /missing params.payload/, 'throws missing payload parameter exception')
 })
 
 test('Teardown', t => {

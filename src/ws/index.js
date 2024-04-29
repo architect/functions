@@ -6,7 +6,7 @@ function instantiateAPI () {
     if (client) res(client)
 
     getAwsClient({
-      plugins: [ import('@aws-lite/apigatewaymanagementapi') ]
+      plugins: [ import('@aws-lite/apigatewaymanagementapi') ],
     }, (err, _client) => {
       if (err) rej(err)
       else {

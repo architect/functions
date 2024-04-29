@@ -20,7 +20,7 @@ test('Set up mocked arc', t => {
   t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
   t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
   process.chdir(tmp)
-  // eslint-disable-next-line
+
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
@@ -34,7 +34,7 @@ test('Set up mocked static manifest', t => {
   t.plan(2)
   copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
   t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
-  // eslint-disable-next-line
+
   static = require(join(shared, 'static.json'))
   t.ok(static['index.html'], 'Static manifest loaded')
 })

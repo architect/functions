@@ -4,9 +4,9 @@ let proxyquire = require('proxyquire')
 let manifestExists = true
 let fs = {
   readFileSync: () => (JSON.stringify({
-    'foo.png': 'foo-1a2b3d.png'
+    'foo.png': 'foo-1a2b3d.png',
   })),
-  existsSync: () => manifestExists
+  existsSync: () => manifestExists,
 }
 let arcStatic = proxyquire('../../../../src/static', { fs })
 

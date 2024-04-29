@@ -18,7 +18,7 @@ let isNulled = key => arc6RestNull.some(v => v === key)
 let arc6RestPrettyParams = {
   method: 'httpMethod',
   params: 'pathParameters',
-  query: 'queryStringParameters'
+  query: 'queryStringParameters',
 }
 
 let requestsTested = []
@@ -66,7 +66,7 @@ test('Set up env', t => {
   t.plan(1)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
-  // eslint-disable-next-line
+
   let arc = require(sut)
   http = arc.http
   t.ok(http, 'Loaded HTTP')
@@ -396,7 +396,7 @@ test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t 
         deepStrictEqual(req, tested)
         return true
       }
-      catch (err) { /* noop */ }
+      catch { /* noop */ }
     }), `Tested req: ${name}`)
   }
   console.log(`Arc 7 requests`)

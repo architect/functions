@@ -35,7 +35,7 @@ module.exports = function parseBody (req) {
           : request.body
         request.body = JSON.parse(data) || {}
       }
-      catch (e) {
+      catch {
         throw Error('Invalid request body encoding or invalid JSON')
       }
     }

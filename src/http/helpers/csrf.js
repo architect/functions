@@ -7,7 +7,7 @@ module.exports = function _csrf (req, res, next) {
   else {
     res({
       status: 403,
-      html: 'invalid csrf token'
+      html: 'invalid csrf token',
     })
   }
 }
