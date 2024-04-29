@@ -6,6 +6,15 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [8.1.1] 2024-04-29
+
+### Changed
+
+- Updated dependencies
+- Updated `package.json` `engines.node` property to reflect changes from v8
+
+---
+
 ## [8.1.0] 2024-03-07
 
 ### Added
