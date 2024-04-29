@@ -79,12 +79,6 @@
     "api gateway",
     "framework"
   ],
-  "eslintConfig": {
-    "extends": "@architect/eslint-config",
-    "rules": {
-      "global-require": "off"
-    }
-  },
   "tsd": {
     "compilerOptions": {
       "strict": false
