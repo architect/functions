@@ -27,7 +27,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-lite/apigatewaymanagementapi": "^0.0.8",
-    "@aws-lite/client": "^0.21.5",
+    "@aws-lite/client": "^0.21.6",
     "@aws-lite/dynamodb": "^0.3.4",
     "@aws-lite/sns": "^0.0.6",
     "@aws-lite/sqs": "^0.2.2",

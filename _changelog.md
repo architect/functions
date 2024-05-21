@@ -6,7 +6,7 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
-## [8.1.2 - 8.1.4] 2024-05-14
+## [8.1.2 - 8.1.5] 2024-05-14
 
 ### Changed
 
