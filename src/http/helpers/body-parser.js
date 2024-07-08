@@ -38,18 +38,12 @@ module.exports = function parseBody (req) {
       catch {
         throw Error('Invalid request body encoding or invalid JSON')
       }
-    }
-
-    if (isPlainText || isXml) {
+    } else if (isPlainText || isXml) {
       request.body = new Buffer.from(request.body, 'base64').toString()
-    }
-
-    if (isFormURLEncoded) {
+    } else if (isFormURLEncoded) {
       let data = new Buffer.from(request.body, 'base64').toString()
       request.body = qs.parse(data)
-    }
-
-    if (isMultiPartFormData || isOctetStream) {
+    } else if (isMultiPartFormData || isOctetStream) {
       request.body = request.body.base64
         ? request.body
         : { base64: request.body }
