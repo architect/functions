@@ -10,21 +10,14 @@ interface Params<Payload> {
   payload: Payload;
 }
 
-// Consumers of this library should not care exactly what this is. Just that
-// it's a lambda function which should be exported as a handler.
-type LambdaFunction = unknown;
-
 interface EventsOrQueues<PublishResult> {
   publish<Payload = any>(params: Params<Payload>): Promise<PublishResult>;
   publish<Payload = any>(
     params: Params<Payload>,
     callback: Callback<PublishResult>,
   ): void;
-  subscribe<Event = any>(
-    handler:
-      | ((event: Event) => Promise<void>)
-      | ((event: Event, callback: Callback<void>) => void),
-  ): LambdaFunction;
+  subscribe<Event = any>(handler: (e: Event) => Promise<void>): (e: Event) => Promise<void>;
+  subscribe<Event = any>(handler: (e: Event, callback: Function) => void): (e: Event, context: any, callback: Function) => void;
 }
 
 export type ArcEvents = EventsOrQueues<SnsPublishResponse>;
