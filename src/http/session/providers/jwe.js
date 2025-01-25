@@ -95,7 +95,7 @@ function write (payload, callback) {
   let key = '_idx'
   let val = jwe.create(payload)
   let twentyFiveYears = 7.884e+8
-  let maxAge = ARC_SESSION_TTL || SESSION_TTL || twentyFiveYears
+  let maxAge = Number(ARC_SESSION_TTL || SESSION_TTL || twentyFiveYears)
   let sameSite = ARC_SESSION_SAME_SITE || 'lax'
   let options = {
     maxAge,
