@@ -6,6 +6,15 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [8.1.7] 2025-01-25
+
+### Changed
+
+- Updated dependencies, resolve low-sev CVE for `cookie`
+- Added Node.js 22.x to CI
+
+---
+
 ## [8.1.2 - 8.1.6] 2024-05-14
 
 ### Changed
