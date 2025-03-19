@@ -49,7 +49,8 @@ export interface ArcTable<Item = unknown> {
   query(params: QueryParams, callback: Callback<QueryOutput<Item>>): void;
 
   scan(params?: ScanParams): Promise<ScanOutput<Item>>;
-  scan(params?: ScanParams, callback: Callback<ScanOutput<Item>>): void;
+  scan(params: ScanParams, callback: Callback<ScanOutput<Item>>): void;
+  scan(callback: Callback<ScanOutput<Item>>): void;
 
   scanAll(params?: ScanParams): Promise<Item[]>;
 
