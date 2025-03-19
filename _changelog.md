@@ -6,6 +6,15 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [8.1.8] 2025-03-18
+
+### Changed
+
+- Fixed type definitions for `tables.scan` and `tables.scanAll` methods; thanks @sjorsrijsdam!
+- Fixed type definitions for `event.subscribe` method; thanks @filmaj!
+
+---
+
 ## [8.1.7] 2025-01-25
 
 ### Changed
