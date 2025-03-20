@@ -46,6 +46,7 @@ let {
 - [`http()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http)
 - [`http` middleware](https://arc.codes/docs/en/reference/runtime-helpers/node.js#middleware)
 - [`http.session`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.session)
+- [`http.csrf`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.http.csrf)
 
 **[`@queues` methods](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues)**
 - [`queues.subscribe()`](https://arc.codes/docs/en/reference/runtime-helpers/node.js#arc.queues.subscribe())
