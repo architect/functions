@@ -20,6 +20,19 @@ let octetStream = { 'Content-Type': 'application/octet-stream' }
 let text = { 'Content-Type': 'text/plain' }
 let xmlText = { 'Content-Type': 'text/xml' }
 let xmlApp = { 'Content-Type': 'application/xml' }
+let multipleTypes = { 'Content-Type': 'application/json, text/plain' }
+
+test('Borked requests', t => {
+  t.plan(1)
+
+  let req = {
+    body: str(hi),
+    headers: multipleTypes,
+    isBase64Encoded: false,
+  }
+  t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
+
+})
 
 test('Architect v10+ requests', t => {
   t.plan(6)

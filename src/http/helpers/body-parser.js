@@ -14,6 +14,7 @@ module.exports = function parseBody (req) {
     // Paranoid deep copy
     let request = JSON.parse(JSON.stringify(req))
     let headers = request.headers
+    // Note: content-type header may have multiple, comma-separated values. matching w/ includes may match to multiple different types
     let contentType = type => headers?.['content-type']?.includes(type) || headers?.['Content-Type']?.includes(type)
 
     let isString = typeof request.body === 'string'
@@ -39,17 +40,14 @@ module.exports = function parseBody (req) {
         throw Error('Invalid request body encoding or invalid JSON')
       }
     }
-
-    if (isPlainText || isXml) {
+    else if (isPlainText || isXml) {
       request.body = new Buffer.from(request.body, 'base64').toString()
     }
-
-    if (isFormURLEncoded) {
+    else if (isFormURLEncoded) {
       let data = new Buffer.from(request.body, 'base64').toString()
       request.body = qs.parse(data)
     }
-
-    if (isMultiPartFormData || isOctetStream) {
+    else if (isMultiPartFormData || isOctetStream) {
       request.body = request.body.base64
         ? request.body
         : { base64: request.body }
