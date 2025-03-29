@@ -6,6 +6,14 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [8.1.9] 2025-03-88
+
+### Changed
+
+- Fixed handling of `http` body parsing when multiple content-types provided; thanks @mmrwoods via [#562](https://github.com/architect/functions/pulls/562)!
+
+---
+
 ## [8.1.8] 2025-03-18
 
 ### Changed
