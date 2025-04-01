@@ -12,8 +12,8 @@ function getAwsClient (params, callback) {
     .then(client => callback(null, client))
     .catch(err => {
       if (err.message.includes('AWS credentials') && !useAWS()) {
-        let accessKeyId = 'arc_dummy_access_key'
-        let secretAccessKey = 'arc_dummy_secret_key'
+        let accessKeyId = 'arcDummyAccessKey'
+        let secretAccessKey = 'arcDummySecretKey'
         awsLite({ ...params, accessKeyId, secretAccessKey })
           .then(client => callback(null, client))
           .catch(callback)
