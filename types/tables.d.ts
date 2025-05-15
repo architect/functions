@@ -77,19 +77,19 @@ type AnyTables = Record<string, any>;
 
 type TablesOptions = {
   awsjsonMarshall?: {
-    allowImpreciseNumbers?: bool,
-    convertClassInstanceToMap?: bool,
-    convertEmptyValues?: bool,
-    convertTopLevelContainer?: bool,
-    removeUndefinedValues?: bool
+    allowImpreciseNumbers?: boolean,
+    convertClassInstanceToMap?: boolean,
+    convertEmptyValues?: boolean,
+    convertTopLevelContainer?: boolean,
+    removeUndefinedValues?: boolean
   },
   awsjsonUnmarshall?: {
-    convertWithoutMapWrapper?: bool,
-    wrapNumbers?: bool | ((value:string) => number | bigint | any)
+    convertWithoutMapWrapper?: boolean,
+    wrapNumbers?: boolean | ((value:string) => number | bigint | any)
   }
 };
 
-export interface ArcTables {
+export interface ArcTables{ 
   <Tables = AnyTables>(options?: TablesOptions): Promise<ArcDB<Tables>>;
 
   // legacy methods
