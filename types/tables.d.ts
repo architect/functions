@@ -75,8 +75,22 @@ export type ArcDB<Tables> = ArcDBWith<Tables> & {
 // Permissive by default: allows any table, any inputs, any outputs.
 type AnyTables = Record<string, any>;
 
+type TablesOptions = {
+  awsjsonMarshall?: {
+    allowImpreciseNumbers?: bool,
+    convertClassInstanceToMap?: bool,
+    convertEmptyValues?: bool,
+    convertTopLevelContainer?: bool,
+    removeUndefinedValues?: bool
+  },
+  awsjsonUnmarshall?: {
+    convertWithoutMapWrapper?: bool,
+    wrapNumbers?: bool | ((value:string) => number | bigint | any)
+  }
+};
+
 export interface ArcTables {
-  <Tables = AnyTables>(): Promise<ArcDB<Tables>>;
+  <Tables = AnyTables>(options?: TablesOptions): Promise<ArcDB<Tables>>;
 
   // legacy methods
   insert: any;
