@@ -11,6 +11,7 @@
   "main": "src/index",
   "types": "types/index.d.ts",
   "scripts": {
+    "test:one": "cross-env tape 'test/unit/src/http/csrf/*-test.js' | tap-arc",
     "lint": "eslint --fix .",
     "test": "npm run lint && npm run test:integration && npm run coverage && npm run test:types",
     "test:nolint": "npm run test:integration && npm run coverage && npm run test:types",
