@@ -32,13 +32,13 @@
     "@aws-lite/sns": "^0.0.8",
     "@aws-lite/sqs": "^0.2.4",
     "@aws-lite/ssm": "^0.2.5",
-    "cookie": "^1.0.2",
-    "cookie-signature": "^1.2.2",
-    "csrf": "^3.1.0",
-    "node-webtokens": "^1.0.4",
-    "run-parallel": "^1.2.0",
-    "run-waterfall": "^1.1.7",
-    "uid-safe": "^2.1.5"
+    "cookie": "1.0.2",
+    "cookie-signature": "1.2.2",
+    "csrf": "3.1.0",
+    "node-webtokens": "1.0.4",
+    "run-parallel": "1.2.0",
+    "run-waterfall": "1.1.7",
+    "uid-safe": "2.1.5"
   },
   "devDependencies": {
     "@architect/asap": "^7.0.10",
