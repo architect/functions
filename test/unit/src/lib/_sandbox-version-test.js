@@ -1,9 +1,9 @@
-let { join } = require('path')
-let test = require('tape')
-let sut = join(process.cwd(), 'src', 'lib', '_sandbox-version')
-let { versionGTE } = require(sut)
+const { join } = require('node:path')
+const test = require('tape')
+const sut = join(process.cwd(), 'src', 'lib', '_sandbox-version')
+const { versionGTE } = require(sut)
 
-test('versionGTE', t => {
+test('versionGTE', (t) => {
   t.plan(7)
   t.true(versionGTE('1.0.0', '1.0.0'), 'equal')
   t.false(versionGTE('1.0.0', '1.0.1'), 'less than patch')

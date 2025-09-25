@@ -1,20 +1,20 @@
-let { execSync: exec } = require('child_process')
-let { copyFileSync, existsSync: exists, mkdirSync: mkdir } = require('fs')
-let { join } = require('path')
-let test = require('tape')
+const { execSync: exec } = require('node:child_process')
+const { copyFileSync, existsSync: exists, mkdirSync: mkdir } = require('node:fs')
+const { join } = require('node:path')
+const test = require('tape')
 
 let arc
-let mock = join(__dirname, '..', 'mock')
-let tmp = join(mock, 'tmp')
-let shared = join(tmp, 'node_modules', '@architect', 'shared')
+const mock = join(__dirname, '..', 'mock')
+const tmp = join(mock, 'tmp')
+const shared = join(tmp, 'node_modules', '@architect', 'shared')
 
-let origCwd = process.cwd()
+const origCwd = process.cwd()
 
-let resetEnv = () => {
+const resetEnv = () => {
   delete process.env.ARC_ENV
 }
 
-test('Set up mocked files', t => {
+test('Set up mocked files', (t) => {
   t.plan(2)
   process.env.ARC_ENV = 'testing'
   mkdir(shared, { recursive: true })
@@ -27,7 +27,7 @@ test('Set up mocked files', t => {
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
-test('Local URL tests', t => {
+test('Local URL tests', (t) => {
   t.plan(6)
   t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path')
   t.equal(arc.static('/index.html'), '/_static/index.html', 'Basic local static path with leading slash')
@@ -40,15 +40,23 @@ test('Local URL tests', t => {
 
   delete process.env.ARC_ENV // Run it "locally"
   process.env.ARC_STATIC_PREFIX = 'foo'
-  t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path unaffected by ARC_STATIC_PREFIX env var')
+  t.equal(
+    arc.static('index.html'),
+    '/_static/index.html',
+    'Basic local static path unaffected by ARC_STATIC_PREFIX env var',
+  )
   delete process.env.ARC_STATIC_PREFIX
 
   process.env.ARC_STATIC_FOLDER = 'foo'
-  t.equal(arc.static('index.html'), '/_static/index.html', 'Basic local static path unaffected by ARC_STATIC_FOLDER env var')
+  t.equal(
+    arc.static('index.html'),
+    '/_static/index.html',
+    'Basic local static path unaffected by ARC_STATIC_FOLDER env var',
+  )
   resetEnv()
 })
 
-test('Clean up env', t => {
+test('Clean up env', (t) => {
   t.plan(1)
   delete process.env.ARC_ENV
   process.chdir(origCwd)

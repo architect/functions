@@ -1,7 +1,6 @@
-let arc = require('../../../../../../src')
+const arc = require('../../../../../../src')
 
-
-async function handler (req) {
+async function handler(req) {
   let { query, session } = req
   if (query.session === 'create') {
     session.unique = new Date().toISOString()

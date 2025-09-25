@@ -1,15 +1,9 @@
 /**
  * HTTP error response generator and template
  */
-module.exports = function httpError (params) {
-  let {
-    statusCode = 502,
-    title = 'Unknown error',
-    message = '',
-  } = params
-  title = title === 'Error'
-    ? `${statusCode} error`
-    : `${statusCode} error: ${title}`
+module.exports = function httpError(params) {
+  let { statusCode = 502, title = 'Unknown error', message = '' } = params
+  title = title === 'Error' ? `${statusCode} error` : `${statusCode} error: ${title}`
   return {
     statusCode,
     headers: {

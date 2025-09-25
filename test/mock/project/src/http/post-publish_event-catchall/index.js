@@ -1,11 +1,11 @@
-let arc = require('../../../../../../')
+const arc = require('../../../../../../')
 
-exports.handler = async function (req) {
-  let { rawPath } = req
-  let parts = rawPath.split('/').filter(p => p)
-  let type = parts[1]
-  let name = parts[2]
-  let payload = { ok: true }
+exports.handler = async (req) => {
+  const { rawPath } = req
+  const parts = rawPath.split('/').filter((p) => p)
+  const type = parts[1]
+  const name = parts[2]
+  const payload = { ok: true }
   await arc[type].publish({
     name,
     payload,

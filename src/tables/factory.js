@@ -1,34 +1,33 @@
-let { getAwsClient, getPorts, useAWS } = require('../lib')
-let getAwsSdkClient = require('./legacy')
-let enumerable = false
-let paginate = true
+const { getAwsClient, getPorts, useAWS } = require('../lib')
+const getAwsSdkClient = require('./legacy')
+const enumerable = false
+const paginate = true
 
 /**
  * returns a data client
  */
-module.exports = function factory ({ services, options = {} }, callback) {
-  let { tables } = services
-  let { ARC_ENV, AWS_REGION } = process.env
-  let local = ARC_ENV === 'testing'
-  let region = AWS_REGION || 'us-west-2'
-  let plugins = [ import('@aws-lite/dynamodb') ]
-  let { awsjsonMarshall, awsjsonUnmarshall } = options
+module.exports = function factory({ services, options = {} }, callback) {
+  const { tables } = services
+  const { ARC_ENV, AWS_REGION } = process.env
+  const local = ARC_ENV === 'testing'
+  const region = AWS_REGION || 'us-west-2'
+  const plugins = [import('@aws-lite/dynamodb')]
+  const { awsjsonMarshall, awsjsonUnmarshall } = options
 
   if (useAWS()) {
     getAwsClient({ region, plugins, awsjsonMarshall, awsjsonUnmarshall }, (err, aws) => {
       if (err) callback(err)
       else dynamoConstructor({ aws, local, options, tables }, callback)
     })
-  }
-  else {
+  } else {
     getPorts((err, ports) => {
       if (err) callback(err)
       else {
-        let port = ports.tables
+        const port = ports.tables
         if (!port) {
           return callback(ReferenceError('Sandbox tables port not found'))
         }
-        let config = {
+        const config = {
           endpoint: `http://localhost:${port}`,
           region,
           plugins,
@@ -44,98 +43,111 @@ module.exports = function factory ({ services, options = {} }, callback) {
   }
 }
 
-function dynamoConstructor (params, callback) {
-  let { aws, local, options, tables } = params
-  let data = Object.keys(tables)
-    .filter(name => {
+function dynamoConstructor(params, callback) {
+  const { aws, local, options, tables } = params
+  const data = Object.keys(tables)
+    .filter((name) => {
       if (local && !name.includes('-production-')) return name
       return name
     })
     .reduce((client, fullName) => {
-      let name = local ? fullName.replace(/.+-staging-/, '') : fullName
+      const name = local ? fullName.replace(/.+-staging-/, '') : fullName
       client[name] = factory(tables[name])
       return client
     }, {})
 
   data.reflect = async () => tables
-  let _name = name => tables[name]
+  const _name = (name) => tables[name]
   data.name = _name
   data._name = _name
 
-  Object.defineProperty(data, '_client',  { enumerable, value: aws.dynamodb })
+  Object.defineProperty(data, '_client', { enumerable, value: aws.dynamodb })
 
   if (options.awsSdkClient) {
-    let { db, doc } = getAwsSdkClient(params)
-    Object.defineProperty(data, '_db',  { enumerable, value: db })
+    const { db, doc } = getAwsSdkClient(params)
+    Object.defineProperty(data, '_db', { enumerable, value: db })
     Object.defineProperty(data, '_doc', { enumerable, value: doc })
   }
 
-  function go (method, params, callback) {
-    if (callback) method(params)
-      .then(result => callback(null, result))
-      .catch(err => callback(err))
+  function go(method, params, callback) {
+    if (callback)
+      method(params)
+        .then((result) => callback(null, result))
+        .catch((err) => callback(err))
     else return method(params)
   }
 
-  function factory (TableName) {
+  function factory(TableName) {
     return {
-      delete (Key, callback) {
-        if (callback) aws.dynamodb.DeleteItem({ TableName, Key })
-          .then(result => callback(null, result))
-          .catch(err => callback(err))
-
-        else return new Promise((res, rej) => {
-          aws.dynamodb.DeleteItem({ TableName, Key })
-            .then(result => res(result))
-            .catch(rej)
-        })
+      delete(Key, callback) {
+        if (callback)
+          aws.dynamodb
+            .DeleteItem({ TableName, Key })
+            .then((result) => callback(null, result))
+            .catch((err) => callback(err))
+        else
+          return new Promise((res, rej) => {
+            aws.dynamodb
+              .DeleteItem({ TableName, Key })
+              .then((result) => res(result))
+              .catch(rej)
+          })
       },
 
-      get (Key, callback) {
-        if (callback) aws.dynamodb.GetItem({ TableName, Key })
-          .then(({ Item }) => callback(null, Item))
-          .catch(err => callback(err))
-
-        else return new Promise((res, rej) => {
-          aws.dynamodb.GetItem({ TableName, Key })
-            .then(({ Item }) => res(Item))
-            .catch(rej)
-        })
+      get(Key, callback) {
+        if (callback)
+          aws.dynamodb
+            .GetItem({ TableName, Key })
+            .then(({ Item }) => callback(null, Item))
+            .catch((err) => callback(err))
+        else
+          return new Promise((res, rej) => {
+            aws.dynamodb
+              .GetItem({ TableName, Key })
+              .then(({ Item }) => res(Item))
+              .catch(rej)
+          })
       },
 
-      put (Item, callback) {
-        if (callback) aws.dynamodb.PutItem({ TableName, Item })
-          .then(() => callback(null, Item))
-          .catch(err => callback(err))
-
-        else return new Promise((res, rej) => {
-          aws.dynamodb.PutItem({ TableName, Item })
-            .then(() => res(Item))
-            .catch(rej)
-        })
+      put(Item, callback) {
+        if (callback)
+          aws.dynamodb
+            .PutItem({ TableName, Item })
+            .then(() => callback(null, Item))
+            .catch((err) => callback(err))
+        else
+          return new Promise((res, rej) => {
+            aws.dynamodb
+              .PutItem({ TableName, Item })
+              .then(() => res(Item))
+              .catch(rej)
+          })
       },
 
-      query (params = {}, callback) {
+      query(params = {}, callback) {
         return go(aws.dynamodb.Query, { ...params, TableName }, callback)
       },
 
-      scan (params = {}, callback) {
+      scan(params = {}, callback) {
         return go(aws.dynamodb.Scan, { ...params, TableName }, callback)
       },
 
-      scanAll (params = {}, callback) {
-        if (callback) aws.dynamodb.Scan({ ...params, TableName, paginate })
-          .then(({ Items }) => callback(null, Items))
-          .catch(err => callback(err))
-
-        else return new Promise((res, rej) => {
-          aws.dynamodb.Scan({ ...params, TableName, paginate })
-            .then(({ Items }) => res(Items))
-            .catch(rej)
-        })
+      scanAll(params = {}, callback) {
+        if (callback)
+          aws.dynamodb
+            .Scan({ ...params, TableName, paginate })
+            .then(({ Items }) => callback(null, Items))
+            .catch((err) => callback(err))
+        else
+          return new Promise((res, rej) => {
+            aws.dynamodb
+              .Scan({ ...params, TableName, paginate })
+              .then(({ Items }) => res(Items))
+              .catch(rej)
+          })
       },
 
-      update (params, callback) {
+      update(params, callback) {
         return go(aws.dynamodb.UpdateItem, { ...params, TableName }, callback)
       },
     }

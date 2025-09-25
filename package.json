@@ -12,7 +12,8 @@
   "types": "types/index.d.ts",
   "scripts": {
     "test:one": "cross-env tape 'test/unit/src/http/csrf/*-test.js' | tap-arc",
-    "lint": "eslint --fix .",
+    "lint": "biome check --write .",
+    "lint:fmt": "biome format --write .",
     "test": "npm run lint && npm run test:integration && npm run coverage && npm run test:types",
     "test:nolint": "npm run test:integration && npm run coverage && npm run test:types",
     "test:unit": "cross-env tape 'test/unit/**/*-test.js' | tap-arc",
@@ -50,6 +51,7 @@
     "@aws-lite/dynamodb-types": "^0.3.11",
     "@aws-lite/sns-types": "^0.0.10",
     "@aws-lite/sqs-types": "^0.2.6",
+    "@biomejs/biome": "^1.9.4",
     "@types/aws-lambda": "^8.10.147",
     "@types/node": "^24.5.2",
     "cross-env": "^10.0.0",
@@ -62,10 +64,7 @@
     "tiny-json-http": "^7.5.1",
     "tsd": "^0.33.0"
   },
-  "files": [
-    "types/*",
-    "src/*"
-  ],
+  "files": ["types/*", "src/*"],
   "keywords": [
     "aws",
     "lambda",

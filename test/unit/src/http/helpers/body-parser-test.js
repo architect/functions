@@ -1,40 +1,39 @@
-let parseBody = require('../../../../../src/http/helpers/body-parser')
-let test = require('tape')
+const parseBody = require('../../../../../src/http/helpers/body-parser')
+const test = require('tape')
 
-let str = i => JSON.stringify(i)
-let b64encode = i => new Buffer.from(i).toString('base64')
+const str = (i) => JSON.stringify(i)
+const b64encode = (i) => new Buffer.from(i).toString('base64')
 
 // Bodies
-let hi = { hi: 'there' }
-let hiBase64 = { base64: b64encode('hi there') } // Arc 5
-let hiBase64file = b64encode('hi there\n') // text file style
-let hiFormURL = b64encode('hi=there')
-let hiText = 'hi there'
-let hiXml = '<?xml version="1.0"?><hi>there</hi>'
+const hi = { hi: 'there' }
+const hiBase64 = { base64: b64encode('hi there') } // Arc 5
+const hiBase64file = b64encode('hi there\n') // text file style
+const hiFormURL = b64encode('hi=there')
+const hiText = 'hi there'
+const hiXml = '<?xml version="1.0"?><hi>there</hi>'
 
 // Content types
-let json = { 'Content-Type': 'application/json' }
-let formURLencoded = { 'Content-Type': 'application/x-www-form-urlencoded' }
-let multiPartFormData = { 'Content-Type': 'multipart/form-data' }
-let octetStream = { 'Content-Type': 'application/octet-stream' }
-let text = { 'Content-Type': 'text/plain' }
-let xmlText = { 'Content-Type': 'text/xml' }
-let xmlApp = { 'Content-Type': 'application/xml' }
-let multipleTypes = { 'Content-Type': 'application/json, text/plain' }
+const json = { 'Content-Type': 'application/json' }
+const formURLencoded = { 'Content-Type': 'application/x-www-form-urlencoded' }
+const multiPartFormData = { 'Content-Type': 'multipart/form-data' }
+const octetStream = { 'Content-Type': 'application/octet-stream' }
+const text = { 'Content-Type': 'text/plain' }
+const xmlText = { 'Content-Type': 'text/xml' }
+const xmlApp = { 'Content-Type': 'application/xml' }
+const multipleTypes = { 'Content-Type': 'application/json, text/plain' }
 
-test('Borked requests', t => {
+test('Borked requests', (t) => {
   t.plan(1)
 
-  let req = {
+  const req = {
     body: str(hi),
     headers: multipleTypes,
     isBase64Encoded: false,
   }
   t.equals(str(parseBody(req)), str(hi), `body matches ${str(req.body)}`)
-
 })
 
-test('Architect v10+ requests', t => {
+test('Architect v10+ requests', (t) => {
   t.plan(6)
 
   // Plain text
@@ -82,7 +81,7 @@ test('Architect v10+ requests', t => {
   t.equals(parseBody(req), hiXml, `body matches ${str(req.body)}`)
 })
 
-test('Architect v6+ requests', t => {
+test('Architect v6+ requests', (t) => {
   t.plan(9)
   // HTTP + Lambda v2.0 payloads pass in raw JSON
   let req = {
@@ -139,10 +138,9 @@ test('Architect v6+ requests', t => {
   // Pass through octet stream / base64
   req.headers = octetStream
   t.equals(str(parseBody(req)), str({ base64: hiBase64file }), `body matches ${str(req.body)}`)
-
 })
 
-test('Architect v5 requests', t => {
+test('Architect v5 requests', (t) => {
   t.plan(5)
   // Pass through empty body
   let req = {

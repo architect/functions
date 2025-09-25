@@ -1,14 +1,13 @@
-let { getAwsClient, useAWS } = require('../lib')
+const { getAwsClient, useAWS } = require('../lib')
 
 /**
  * @param {string} type - events, queues, or tables
  * @returns {object} {name: value}
  */
-module.exports = function lookup (callback) {
-
+module.exports = function lookup(callback) {
   let { ARC_APP_NAME: app, ARC_ENV: env, ARC_SANDBOX, ARC_STACK_NAME: stack } = process.env
 
-  let local = !useAWS()
+  const local = !useAWS()
 
   if (!local && !app && !stack) {
     return callback(ReferenceError('ARC_APP_NAME and ARC_STACK_NAME env vars not found'))
@@ -18,12 +17,12 @@ module.exports = function lookup (callback) {
     app = 'arc-app'
   }
 
-  let plugins = [ import('@aws-lite/ssm') ]
-  let config = { plugins }
+  const plugins = [import('@aws-lite/ssm')]
+  const config = { plugins }
   if (local) {
     let port = 2222
     if (ARC_SANDBOX) {
-      let { ports } = JSON.parse(ARC_SANDBOX)
+      const { ports } = JSON.parse(ARC_SANDBOX)
       if (!ports._arc) {
         return callback(ReferenceError('Sandbox internal port not found'))
       }
@@ -35,19 +34,22 @@ module.exports = function lookup (callback) {
   getAwsClient(config, (err, client) => {
     if (err) callback(err)
     else {
-      let Path = `/${stack || toLogicalID(`${app}-${env}`)}`
-      client.ssm.GetParametersByPath({ Path, Recursive: true, paginate: true })
-        .then(result => {
-          let services = result.Parameters.reduce((a, b) => {
-            let hierarchy = b.Name.split('/')
+      const Path = `/${stack || toLogicalID(`${app}-${env}`)}`
+      client.ssm
+        .GetParametersByPath({ Path, Recursive: true, paginate: true })
+        .then((result) => {
+          const services = result.Parameters.reduce((a, b) => {
+            const hierarchy = b.Name.split('/')
             hierarchy.shift() // leading slash
             hierarchy.shift() // stack name
-            let type = hierarchy.shift() // i.e. tables, events, queues, plugins
+            const type = hierarchy.shift() // i.e. tables, events, queues, plugins
             if (!a[type]) a[type] = {}
             let parent = a[type]
-            let child, lastChild, lastParent
-            /* eslint-disable-next-line */
-            while (child = hierarchy.shift()) {
+            let child
+            let lastChild
+            let lastParent
+            // biome-ignore lint/suspicious/noAssignInExpressions: we know what we are doing here
+            while ((child = hierarchy.shift())) {
               if (!parent[child]) parent[child] = {}
               lastParent = parent
               parent = parent[child]
@@ -58,14 +60,11 @@ module.exports = function lookup (callback) {
           }, {})
           callback(null, services)
         })
-        .catch(err => {
-          if (err && local &&
-              err.message.includes('Inaccessible host') &&
-              err.message.includes('localhost')) {
-            let msg = 'Sandbox internal services are unavailable, please ensure Sandbox is running'
+        .catch((err) => {
+          if (err && local && err.message.includes('Inaccessible host') && err.message.includes('localhost')) {
+            const msg = 'Sandbox internal services are unavailable, please ensure Sandbox is running'
             callback(ReferenceError(msg))
-          }
-          else {
+          } else {
             callback(err)
           }
         })
@@ -73,7 +72,7 @@ module.exports = function lookup (callback) {
   })
 }
 
-function toLogicalID (str) {
+function toLogicalID(str) {
   str = str.replace(/([A-Z])/g, ' $1')
   if (str.length === 1) {
     return str.toUpperCase()

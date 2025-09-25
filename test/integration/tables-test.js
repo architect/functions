@@ -1,17 +1,17 @@
-let sandbox = require('@architect/sandbox')
-let { execSync: exec } = require('child_process')
-let test = require('tape')
-let { join } = require('path')
-let { copyFileSync, existsSync: exists, mkdirSync: mkdir  } = require('fs')
+const sandbox = require('@architect/sandbox')
+const { execSync: exec } = require('node:child_process')
+const test = require('tape')
+const { join } = require('node:path')
+const { copyFileSync, existsSync: exists, mkdirSync: mkdir } = require('node:fs')
 
 let arc
 let data
 
-let mock = join(__dirname, '..', 'mock')
-let tmp = join(mock, 'tmp')
-let shared = join(tmp, 'node_modules', '@architect', 'shared')
+const mock = join(__dirname, '..', 'mock')
+const tmp = join(mock, 'tmp')
+const shared = join(tmp, 'node_modules', '@architect', 'shared')
 
-test('Set up mocked files', t => {
+test('Set up mocked files', (t) => {
   t.plan(3)
   process.env.ARC_APP_NAME = 'test-app-name'
   mkdir(shared, { recursive: true })
@@ -25,15 +25,15 @@ test('Set up mocked files', t => {
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
-test('starts the db server', t => {
+test('starts the db server', (t) => {
   t.plan(1)
-  sandbox.start({ quiet: true, cwd: tmp }, err => {
+  sandbox.start({ quiet: true, cwd: tmp }, (err) => {
     if (err) t.fail(err)
     else t.pass('Sandbox started')
   })
 })
 
-test('tables() returns table object', async t => {
+test('tables() returns table object', async (t) => {
   t.plan(3)
   data = await arc.tables()
   t.ok(data.accounts, 'accounts table object exists')
@@ -41,7 +41,7 @@ test('tables() returns table object', async t => {
   t.ok(data['accounts-messages'], 'accounts-messages table object exists')
 })
 
-test('tables().name() returns the table\'s name', async t => {
+test("tables().name() returns the table's name", async (t) => {
   t.plan(3)
   const { name } = await arc.tables()
   t.equal(name('accounts'), 'test-app-name-staging-accounts', 'accounts table returns correct logical id')
@@ -49,18 +49,22 @@ test('tables().name() returns the table\'s name', async t => {
   t.equal(name('accounts-messages'), 'test-app-name-staging-accounts-messages')
 })
 
-test('tables().reflect() returns the table map', async t => {
+test('tables().reflect() returns the table map', async (t) => {
   t.plan(1)
   const { reflect } = await arc.tables()
   const tables = await reflect()
-  t.deepEqual(tables, {
-    accounts: 'test-app-name-staging-accounts',
-    messages: 'test-app-name-staging-messages',
-    'accounts-messages': 'test-app-name-staging-accounts-messages',
-  }, 'map of table names to table logical ids should be correct')
+  t.deepEqual(
+    tables,
+    {
+      accounts: 'test-app-name-staging-accounts',
+      messages: 'test-app-name-staging-messages',
+      'accounts-messages': 'test-app-name-staging-accounts-messages',
+    },
+    'map of table names to table logical ids should be correct',
+  )
 })
 
-test('tables put()', async t => {
+test('tables put()', async (t) => {
   t.plan(2)
   let item = await data.accounts.put({
     accountID: 'fake',
@@ -77,10 +81,10 @@ test('tables put()', async t => {
     msgID: 'alsofake',
     extra: true,
   })
-  t.ok(item, `returned item`)
+  t.ok(item, 'returned item')
 })
 
-test('tables get()', async t => {
+test('tables get()', async (t) => {
   t.plan(4)
   let result = await data.accounts.get({
     accountID: 'fake',
@@ -96,13 +100,13 @@ test('tables get()', async t => {
   t.ok(result.extra, 'result.extra deserialized')
 })
 
-test('tables delete()', async t => {
+test('tables delete()', async (t) => {
   t.plan(4)
   await data.accounts.delete({
     accountID: 'fake',
   })
   t.ok(true, 'deleted')
-  let result = await data.accounts.get({
+  const result = await data.accounts.get({
     accountID: 'fake',
   })
   t.equal(result, undefined, 'could not get deleted accounts item')
@@ -111,16 +115,16 @@ test('tables delete()', async t => {
     msgID: 'alsofake',
   })
   t.ok(true, 'deleted')
-  let otherResult = await data['accounts-messages'].get({
+  const otherResult = await data['accounts-messages'].get({
     accountID: 'fake',
     msgID: 'alsofake',
   })
   t.equal(otherResult, undefined, 'could not get deleted accounts-messages item')
 })
 
-test('tables query()', async t => {
+test('tables query()', async (t) => {
   t.plan(3)
-  let items = await Promise.all([
+  const items = await Promise.all([
     data.accounts.put({ accountID: 'one' }),
     data.accounts.put({ accountID: 'two' }),
     data.accounts.put({ accountID: 'three' }),
@@ -128,7 +132,7 @@ test('tables query()', async t => {
 
   t.ok(items, 'got items')
 
-  let result = await data.accounts.query({
+  const result = await data.accounts.query({
     KeyConditionExpression: 'accountID = :id',
     ExpressionAttributeValues: {
       ':id': 'one',
@@ -139,9 +143,9 @@ test('tables query()', async t => {
   t.equal(result.Count, 1, 'got count of one')
 })
 
-test('tables scan()', async t => {
+test('tables scan()', async (t) => {
   t.plan(1)
-  let result = await data.accounts.scan({
+  const result = await data.accounts.scan({
     FilterExpression: 'accountID = :id',
     ExpressionAttributeValues: {
       ':id': 'two',
@@ -150,14 +154,14 @@ test('tables scan()', async t => {
   t.ok(result, 'got a result')
 })
 
-test('tables scanAll()', async t => {
+test('tables scanAll()', async (t) => {
   t.plan(2)
-  let result = await data.accounts.scanAll({ Limit: 1 })
+  const result = await data.accounts.scanAll({ Limit: 1 })
   t.ok(result, 'got a result')
   t.equal(result.length, 3, 'Got back all rows')
 })
 
-test('tables update()', async t => {
+test('tables update()', async (t) => {
   t.plan(3)
   await data.accounts.update({
     Key: {
@@ -174,7 +178,7 @@ test('tables update()', async t => {
 
   t.ok(true, 'updated without error')
 
-  let result = await data.accounts.get({
+  const result = await data.accounts.get({
     accountID: 'three',
   })
 
@@ -182,15 +186,15 @@ test('tables update()', async t => {
   t.equal(result.hits, 20, 'property updated')
 })
 
-test('server closes', t => {
+test('server closes', (t) => {
   t.plan(1)
-  sandbox.end(err => {
+  sandbox.end((err) => {
     if (err) t.fail(err)
     else t.pass('Sandbox ended')
   })
 })
 
-test('Clean up env', t => {
+test('Clean up env', (t) => {
   t.plan(1)
   delete process.env.ARC_APP_NAME
   delete process.env.ARC_ENV

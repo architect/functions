@@ -1,56 +1,54 @@
-let { join } = require('path')
-let { deepStrictEqual } = require('assert')
-let sut = join(process.cwd(), 'src')
-let test = require('tape')
+const { join } = require('node:path')
+const { deepStrictEqual } = require('node:assert')
+const sut = join(process.cwd(), 'src')
+const test = require('tape')
 let http
 
-let reqs = require('@architect/req-res-fixtures').http.req
+const reqs = require('@architect/req-res-fixtures').http.req
 
-let str = i => JSON.stringify(i)
-let isObject = t => typeof t === 'object' && !!(t)
-let unNulled = (before, after) => before === null && isObject(after)
-let match = (copy, item) => `${copy} matches: ${str(item)}`
-let basicResponse = { statusCode: 200 }
+const str = (i) => JSON.stringify(i)
+const isObject = (t) => typeof t === 'object' && !!t
+const unNulled = (before, after) => before === null && isObject(after)
+const match = (copy, item) => `${copy} matches: ${str(item)}`
+const basicResponse = { statusCode: 200 }
 
-let arc6RestNull = [ 'body', 'pathParameters', 'queryStringParameters', 'multiValueQueryStringParameters' ]
-let isNulled = key => arc6RestNull.some(v => v === key)
+const arc6RestNull = ['body', 'pathParameters', 'queryStringParameters', 'multiValueQueryStringParameters']
+const isNulled = (key) => arc6RestNull.some((v) => v === key)
 
-let arc6RestPrettyParams = {
+const arc6RestPrettyParams = {
   method: 'httpMethod',
   params: 'pathParameters',
   query: 'queryStringParameters',
 }
 
-let requestsTested = []
+const requestsTested = []
 
-let copy = obj => JSON.parse(JSON.stringify(obj))
+const copy = (obj) => JSON.parse(JSON.stringify(obj))
 
-function check ({ req, request, res, t }) {
-  console.log(`Got request:`, req)
+function check({ req, request, res, t }) {
+  console.log('Got request:', req)
   requestsTested.push(request)
 
   // Make sure all original keys are present and accounted for
-  Object.keys(request).forEach(key => {
+  Object.keys(request).forEach((key) => {
     // eslint-disable-next-line
-    if (!req.hasOwnProperty(key)) t.fail(`Original request param missing from interpolated request: ${key}`)
+    if (!Object.hasOwn(req, key)) t.fail(`Original request param missing from interpolated request: ${key}`)
   })
 
   if (request.body) t.ok(req.rawBody, 'Body property also created rawBody')
   else t.notOk(req.rawBody, 'Did not populate rawBody without a body present')
 
-  Object.entries(req).forEach(([ key, val ]) => {
+  Object.entries(req).forEach(([key, val]) => {
     // Make sure we don't have any false positives matching undefined tests
     if (req[key] === undefined) t.fail(`Property is undefined: ${key}`)
     // Compare mutation of nulls into objects
     if (isNulled(key) && request[key] === null) {
       if (unNulled(request[key], val)) {
         t.pass(match(`req.${key}`, req[key]))
-      }
-      else {
+      } else {
         t.fail(`Param not un-nulled: ${key}: ${val}`)
       }
-    }
-    else {
+    } else {
       t.equal(str(val), str(req[key]), match(`req.${key}`, str(req[key])))
     }
     // Compare interpolation to nicer, backwards compat req params
@@ -62,181 +60,181 @@ function check ({ req, request, res, t }) {
   res(basicResponse)
 }
 
-test('Set up env', t => {
+test('Set up env', (t) => {
   t.plan(1)
   // Set env var to keep from stalling on db reads in CI
   process.env.ARC_SESSION_TABLE_NAME = 'jwe'
 
-  let arc = require(sut)
+  const arc = require(sut)
   http = arc.http
   t.ok(http, 'Loaded HTTP')
 })
 
-test('Architect v7 (HTTP): get /', t => {
+test('Architect v7 (HTTP): get /', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getIndex
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getIndex
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get /?whats=up', t => {
+test('Architect v7 (HTTP): get /?whats=up', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getWithQueryString
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getWithQueryString
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get /?whats=up&whats=there', t => {
+test('Architect v7 (HTTP): get /?whats=up&whats=there', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getWithQueryStringDuplicateKey
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getWithQueryStringDuplicateKey
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get /nature/hiking', t => {
+test('Architect v7 (HTTP): get /nature/hiking', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getWithParam
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getWithParam
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get /{proxy+} (/nature/hiking)', t => {
+test('Architect v7 (HTTP): get /{proxy+} (/nature/hiking)', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getProxyPlus
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getProxyPlus
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get /$default', t => {
+test('Architect v7 (HTTP): get /$default', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.get$default
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.get$default
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get /path/* (/path/hi/there)', t => {
+test('Architect v7 (HTTP): get /path/* (/path/hi/there)', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getCatchall
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getCatchall
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get /:activities/{proxy+} (/nature/hiking/wilderness)', t => {
+test('Architect v7 (HTTP): get /:activities/{proxy+} (/nature/hiking/wilderness)', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getWithParamAndCatchall
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getWithParamAndCatchall
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get / with brotli compression', t => {
+test('Architect v7 (HTTP): get / with brotli compression', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getWithBrotli
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getWithBrotli
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): get / with gzip compression', t => {
+test('Architect v7 (HTTP): get / with gzip compression', (t) => {
   t.plan(24)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.getWithGzip
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.getWithGzip
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): post /form (JSON)', t => {
+test('Architect v7 (HTTP): post /form (JSON)', (t) => {
   t.plan(25)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.postJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.postJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): post /form (form URL encoded)', t => {
+test('Architect v7 (HTTP): post /form (form URL encoded)', (t) => {
   t.plan(25)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.postFormURL
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.postFormURL
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): post /form (multipart form data)', t => {
+test('Architect v7 (HTTP): post /form (multipart form data)', (t) => {
   t.plan(25)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.postMultiPartFormData
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.postMultiPartFormData
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): post /form (octet stream)', t => {
+test('Architect v7 (HTTP): post /form (octet stream)', (t) => {
   t.plan(25)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.postOctetStream
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.postOctetStream
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): put /form (JSON)', t => {
+test('Architect v7 (HTTP): put /form (JSON)', (t) => {
   t.plan(25)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.putJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.putJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): patch /form (JSON)', t => {
+test('Architect v7 (HTTP): patch /form (JSON)', (t) => {
   t.plan(25)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.patchJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.patchJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v7 (HTTP): delete /form (JSON)', t => {
+test('Architect v7 (HTTP): delete /form (JSON)', (t) => {
   t.plan(25)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc7.deleteJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc7.deleteJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
@@ -247,165 +245,169 @@ test('Architect v7 (HTTP): delete /form (JSON)', t => {
  * - `nulls` passed instead of empty objects
  * - All bodies are base64 encoded
  */
-test('Architect v6 (REST): get /', t => {
+test('Architect v6 (REST): get /', (t) => {
   t.plan(21)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.getIndex
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.getIndex
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): get /?whats=up', t => {
+test('Architect v6 (REST): get /?whats=up', (t) => {
   t.plan(21)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.getWithQueryString
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.getWithQueryString
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): get /?whats=up&whats=there', t => {
+test('Architect v6 (REST): get /?whats=up&whats=there', (t) => {
   t.plan(21)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.getWithQueryStringDuplicateKey
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.getWithQueryStringDuplicateKey
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): get /nature/hiking', t => {
+test('Architect v6 (REST): get /nature/hiking', (t) => {
   t.plan(21)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.getWithParam
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.getWithParam
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): get /{proxy+}', t => {
+test('Architect v6 (REST): get /{proxy+}', (t) => {
   t.plan(21)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.getProxyPlus
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.getProxyPlus
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): get /path/* (/path/hi/there)', t => {
+test('Architect v6 (REST): get /path/* (/path/hi/there)', (t) => {
   t.plan(21)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.getCatchall
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.getCatchall
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): get /:activities/{proxy+} (/nature/hiking/wilderness)', t => {
+test('Architect v6 (REST): get /:activities/{proxy+} (/nature/hiking/wilderness)', (t) => {
   t.plan(21)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.getWithParamAndCatchall
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.getWithParamAndCatchall
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): post /form (JSON)', t => {
+test('Architect v6 (REST): post /form (JSON)', (t) => {
   t.plan(22)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.postJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.postJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): post /form (form URL encoded)', t => {
+test('Architect v6 (REST): post /form (form URL encoded)', (t) => {
   t.plan(22)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.postFormURL
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.postFormURL
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): post /form (multipart form data)', t => {
+test('Architect v6 (REST): post /form (multipart form data)', (t) => {
   t.plan(22)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.postMultiPartFormData
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.postMultiPartFormData
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): post /form (octet stream)', t => {
+test('Architect v6 (REST): post /form (octet stream)', (t) => {
   t.plan(22)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.postOctetStream
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.postOctetStream
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): put /form (JSON)', t => {
+test('Architect v6 (REST): put /form (JSON)', (t) => {
   t.plan(22)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.putJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.putJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): patch /form (JSON)', t => {
+test('Architect v6 (REST): patch /form (JSON)', (t) => {
   t.plan(22)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.patchJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.patchJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Architect v6 (REST): delete /form (JSON)', t => {
+test('Architect v6 (REST): delete /form (JSON)', (t) => {
   t.plan(22)
-  let end = () => t.pass('Final callback called')
-  let request = reqs.arc6.deleteJson
-  let handler = http((req, res) => {
+  const end = () => t.pass('Final callback called')
+  const request = reqs.arc6.deleteJson
+  const handler = http((req, res) => {
     check({ req, request: copy(request), res, t })
   })
   handler(copy(request), {}, end)
 })
 
-test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', t => {
-  let totalReqs = Object.keys(reqs.arc7).length + Object.keys(reqs.arc6).length
+test('Verify all Arc v7 (HTTP) + Arc v6 (REST) request fixtures were tested', (t) => {
+  const totalReqs = Object.keys(reqs.arc7).length + Object.keys(reqs.arc6).length
   t.plan(totalReqs)
-  let tester = ([ name, req ]) => {
-    t.ok(requestsTested.some(tested => {
-      try {
-        deepStrictEqual(req, tested)
-        return true
-      }
-      catch { /* noop */ }
-    }), `Tested req: ${name}`)
+  const tester = ([name, req]) => {
+    t.ok(
+      requestsTested.some((tested) => {
+        try {
+          deepStrictEqual(req, tested)
+          return true
+        } catch {
+          /* noop */
+        }
+      }),
+      `Tested req: ${name}`,
+    )
   }
-  console.log(`Arc 7 requests`)
+  console.log('Arc 7 requests')
   Object.entries(reqs.arc7).forEach(tester)
-  console.log(`Arc 6 requests`)
+  console.log('Arc 6 requests')
   Object.entries(reqs.arc6).forEach(tester)
 })
 
-test('Teardown', t => {
+test('Teardown', (t) => {
   t.plan(1)
   delete process.env.ARC_ENV
   delete process.env.ARC_SESSION_TABLE_NAME

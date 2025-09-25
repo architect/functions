@@ -1,5 +1,4 @@
-
-async function handler () {
+async function handler() {
   console.log('connect')
   return {
     statusCode: 200,

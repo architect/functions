@@ -1,24 +1,24 @@
-let sandbox = require('@architect/sandbox')
-let test = require('tape')
-let { join } = require('path')
-let tiny = require('tiny-json-http')
+const sandbox = require('@architect/sandbox')
+const test = require('tape')
+const { join } = require('node:path')
+const tiny = require('tiny-json-http')
 
-let port = process.env.PORT ? process.env.PORT : '3333'
-let url = s => `http://localhost:${port}${s ? s : ''}`
-let mock = join(__dirname, '..', 'mock', 'project')
-let compress = {
+const port = process.env.PORT ? process.env.PORT : '3333'
+const url = (s) => `http://localhost:${port}${s ? s : ''}`
+const mock = join(__dirname, '..', 'mock', 'project')
+const compress = {
   'accept-encoding': 'br',
 }
-let css = `/* css here! */\n`
-let js = `/* js here! */\n`
+const css = '/* css here! */\n'
+const js = '/* js here! */\n'
 
-test('Set up env', async t => {
+test('Set up env', async (t) => {
   t.plan(1)
-  let result = await sandbox.start({ quiet: true, cwd: mock })
+  const result = await sandbox.start({ quiet: true, cwd: mock })
   t.equal(result, 'Sandbox successfully started', result)
 })
 
-test('Get uncompressed assets', async t => {
+test('Get uncompressed assets', async (t) => {
   t.plan(4)
   let result
 
@@ -39,8 +39,8 @@ test('Get uncompressed assets', async t => {
 
 // TODO could probably stand to do a compressed test set, but that would require building local compression support for ASAP, which we did not yet bother with
 
-test('Teardown', async t => {
+test('Teardown', async (t) => {
   t.plan(1)
-  let result = await sandbox.end()
+  const result = await sandbox.end()
   t.equal(result, 'Sandbox successfully shut down', result)
 })

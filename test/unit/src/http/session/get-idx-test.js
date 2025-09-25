@@ -1,19 +1,19 @@
-let test = require('tape')
-let { join } = require('path')
-let sut = join(process.cwd(), 'src', 'http', 'session', 'providers', '_get-idx')
-let getIdx = require(sut)
+const test = require('tape')
+const { join } = require('node:path')
+const sut = join(process.cwd(), 'src', 'http', 'session', 'providers', '_get-idx')
+const getIdx = require(sut)
 
-test('Set up env', t => {
+test('Set up env', (t) => {
   t.plan(1)
   t.ok(getIdx, 'Got getIdx module')
 })
 
-test('Test some cookies', t => {
+test('Test some cookies', (t) => {
   t.plan(7)
   let result
   let cookie
-  let random = Math.random() + ''
-  let idx = `_idx=${random}`
+  const random = `${Math.random()}`
+  const idx = `_idx=${random}`
 
   result = getIdx()
   t.equal(result, '', 'Passing nothing returns empty string')
