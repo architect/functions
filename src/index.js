@@ -1,34 +1,47 @@
+let { sandboxVersionAtLeast } = require('./lib')
+
 /**
  * Ensure env is one of: 'testing', 'staging', or 'production'
- * - Some test harnesses (ahem) will automatically populate NODE_ENV with their own values, unbidden
- * - Due to tables.direct auto initializing, always set (or override) default NODE_ENV to 'testing'
+ * If in Sandbox, meet version requirements
  */
-let env = process.env.NODE_ENV
-let isNotStagingOrProd = env !== 'staging' && env !== 'production'
-if (!env || isNotStagingOrProd) {
-  process.env.NODE_ENV = 'testing'
+let { ARC_ENV, ARC_SANDBOX } = process.env
+let validEnvs = [ 'testing', 'staging', 'production' ]
+// Backfill ARC_ENV if Functions is running outside of Sandbox in a test suite
+if (!ARC_ENV) {
+  process.env.ARC_ENV = ARC_ENV = 'testing'
+}
+if (!validEnvs.includes(ARC_ENV)) {
+  throw ReferenceError(`ARC_ENV env var is required for use with @architect/functions`)
+}
+if (ARC_SANDBOX && !sandboxVersionAtLeast('5.0.0')) {
+  throw ReferenceError('Incompatible version: please upgrade to Sandbox >=5.x or Architect >=10.x')
 }
 
-let events = require('./events')
 let http = require('./http')
-let queues = require('./queues')
 let _static = require('./static')
-let tables = require('./tables')
-let send = require('./ws')
+let serviceDiscovery = require('./discovery')
+let ws = require('./ws')
 
+let services
 let arc = {
-  events,
   http,
-  queues,
   static: _static,
-  tables,
-  ws: { send },
+  ws,
+  services: function () {
+    return new Promise(function (resolve, reject) {
+      if (services) resolve(services)
+      else serviceDiscovery(function (err, serviceMap) {
+        if (err) reject(err)
+        else {
+          services = serviceMap
+          resolve(services)
+        }
+      })
+    })
+  },
 }
-
-// backwards compat
-arc.proxy = {}
-arc.proxy.public = http.proxy.public
-arc.middleware = http.middleware
-// backwards compat
+arc.events = require('./events')(arc, 'events')
+arc.queues = require('./events')(arc, 'queues')
+arc.tables = require('./tables')(arc)
 
 module.exports = arc

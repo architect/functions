@@ -5,5 +5,7 @@ arc-proxy-*
 coverage/
 dist.js
 node_modules/
+scratch/
 test/mock/*/src/*/*/vendor/
+test/mock/tmp/
 yarn.lock

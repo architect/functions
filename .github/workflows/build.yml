@@ -15,16 +15,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [ 10.x, 12.x, 14.x ]
+        node-version: [ 16.x, 18.x, 20.x, 22.x ]
         os: [ windows-latest, ubuntu-latest, macOS-latest ]
 
     # Go
     steps:
     - name: Check out repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -40,22 +40,32 @@ jobs:
     - name: Install
       run: npm install
 
+    - name: Test (Node.js <= 16.x)
+      if: matrix.node-version <= '16.x'
+      run: npm run test:nolint
+      env:
+        CI: true
+
     - name: Test
-      # run: npm test
-      run: node test/unit/src/http/proxy/read/_local-test.js
+      if: matrix.node-version > '16.x'
+      run: npm test
+      env:
+        CI: true
+
+    - name: Test types # this is kept out of "npm t" because it can be slow
+      run: npm run test:types
       env:
         CI: true
 
     - name: Notify
-      uses: homoluctus/slatify@master
+      uses: sarisia/actions-status-discord@v1
       # Only fire alert once
-      if: github.ref == 'refs/heads/master' && failure() && matrix.node-version == '10.x' && matrix.os == 'ubuntu-latest'
+      if: github.ref == 'refs/heads/main' && failure() && matrix.node-version == '20.x' && matrix.os == 'ubuntu-latest'
       with:
-        type: ${{ job.status }}
-        job_name: '*Build*'
-        url: ${{ secrets.SLACK_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        title: "build and test"
+        color: 0x222222
+        username: GitHub Actions
 
   # ----- Only git tag testing + package publishing beyond this point ----- #
 
@@ -69,16 +79,13 @@ jobs:
     # Go
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 12
+          node-version: lts/*
           registry-url: https://registry.npmjs.org/
-
-      - name: Install
-        run: npm i
 
       # Publish to npm
       - name: Publish @RC to npm
@@ -93,32 +100,11 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # Set up Node again, this time using GitHub as the publish target
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://npm.pkg.github.com/
-
-      # Publish to GitHub
-      - name: Publish @RC to GitHub
-        if: contains(github.ref, 'RC')
-        run: npm publish --tag RC
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish @latest to GitHub
-        if: contains(github.ref, 'RC') == false #'!contains()'' doesn't work lol
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Notify
-        uses: homoluctus/slatify@master
+        uses: sarisia/actions-status-discord@v1
         if: always()
         with:
-          type: ${{ job.status }}
-          job_name: '*Publish*'
-          url: ${{ secrets.SLACK_WEBHOOK }}
-          commit: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "npm publish"
+          color: 0x222222
+          username: GitHub Actions

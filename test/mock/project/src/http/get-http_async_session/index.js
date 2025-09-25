@@ -1,6 +1,6 @@
 let arc = require('../../../../../../src')
 
-// eslint-disable-next-line
+
 async function handler (req) {
   let { query, session } = req
   if (query.session === 'create') {
@@ -14,8 +14,8 @@ async function handler (req) {
   }
   return {
     session,
-    json: JSON.stringify(session)
+    json: JSON.stringify(session),
   }
 }
 
-exports.handler = arc.http.async(handler)
+exports.handler = arc.http(handler)

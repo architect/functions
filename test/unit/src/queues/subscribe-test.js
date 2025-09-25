@@ -1,7 +1,15 @@
 let test = require('tape')
 let sinon = require('sinon')
-let subscribe = require('../../../../src/queues/subscribe')
 let mockSqsEvent = require('../../../mock/mock-sqs-event.json')
+let subscribe
+
+test('Set up env', t => {
+  t.plan(1)
+
+  let arc = require('../../../..')
+  subscribe = arc.queues.subscribe
+  t.ok(subscribe, 'Got queues.subscribe method')
+})
 
 test('queues.subscribe calls handler', t => {
   t.plan(1)
@@ -29,7 +37,7 @@ test('queues.subscribe calls async handler', async t => {
   let fake = sinon.fake()
 
   // get a lambda signature from the handler
-  // eslint-disable-next-line
+
   let handler = subscribe(async function (json) {
     fake(json)
   })
@@ -37,4 +45,10 @@ test('queues.subscribe calls async handler', async t => {
   // invoke the lambda handler with mock payloads
   await handler(mockSqsEvent)
   t.ok(fake.calledOnce, 'event handler called once')
+})
+
+test('Teardown', t => {
+  t.plan(1)
+  delete process.env.ARC_ENV
+  t.pass('Done!')
 })

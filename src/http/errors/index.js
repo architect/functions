@@ -1,33 +1,20 @@
 /**
  * HTTP error response generator and template
  */
-module.exports = {
-  httpError,
-  proxyConfig: proxyConfig()
-}
-
-function proxyConfig () {
-  let title = 'Index not found'
-  let message = `No static asset bucket or <code>get /</code> function found in your project. Possible solutions:<br?
-<ul>
-  <li>Add <code>@static</code> to your project manifest</li>
-  <li>Add <code>get /</code> to the <code>@http</code> pragma of your project manifest</li>
-  <li>Manually specify an S3 bucket (containing an <code>index.html</code> file) with the <code>ARC_STATIC_BUCKET</code> env var</li>
-  <li>If using <code>arc.http.proxy</code>, pass in a valid config object</li>
-</ul>
-<a href="https://arc.codes/primitives/static" target="_blank">Learn more</a>`
-  return httpError({ title, message })
-}
-
-function httpError ({ statusCode = 502, title = 'Unknown error', message = '' }) {
+module.exports = function httpError (params) {
+  let {
+    statusCode = 502,
+    title = 'Unknown error',
+    message = '',
+  } = params
   title = title === 'Error'
     ? `${statusCode} error`
     : `${statusCode} error: ${title}`
   return {
     statusCode,
     headers: {
-      'Content-Type': 'text/html; charset=utf8;',
-      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+      'content-type': 'text/html; charset=utf8;',
+      'cache-control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0',
     },
     body: `
 <!DOCTYPE html>
@@ -96,6 +83,6 @@ function httpError ({ statusCode = 502, title = 'Unknown error', message = '' })
   </div>
 </body>
 </html>
-`
+`,
   }
 }

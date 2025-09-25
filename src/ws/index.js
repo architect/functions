@@ -1,36 +1,128 @@
-let sandbox = require('./send-sandbox')
-let run = require('./send')
+let { getAwsClient, useAWS } = require('../lib')
+let client, ApiUrl
 
-/**
- * arc.ws.send
- *
- * publish web socket events
- *
- * @param {Object} params
- * @param {String} params.id - the ws connecton id (required)
- * @param {String} params.payload - a json event payload (required)
- * @param {Function} callback - a node style errback (optional)
- * @returns {Promise} - returned if no callback is supplied
- */
-module.exports = function send ({ id, payload }, callback) {
+function instantiateAPI () {
+  return new Promise((res, rej) => {
+    if (client) res(client)
 
-  // create a promise if no callback is defined
-  let promise
-  if (!callback) {
-    promise = new Promise(function (res, rej) {
-      callback = function (err, result) {
-        err ? rej(err) : res(result)
+    getAwsClient({
+      plugins: [ import('@aws-lite/apigatewaymanagementapi') ],
+    }, (err, _client) => {
+      if (err) rej(err)
+      else {
+        client = _client
+        let { ARC_WSS_URL, ARC_SANDBOX } = process.env
+
+        if (useAWS()) {
+          ApiUrl = ARC_WSS_URL
+        }
+        else {
+          let { ports } = JSON.parse(ARC_SANDBOX)
+          let port = ports._arc
+          if (!port) throw ReferenceError('Architect internal port not found')
+          ApiUrl = `http://localhost:${port}/_arc/ws`
+        }
+        res(client)
       }
     })
-  }
+  })
+}
 
-  let local = process.env.NODE_ENV === 'testing' || process.env.ARC_LOCAL
-  let exec = local ? sandbox : run
+function _api (callback) {
+  if (callback) instantiateAPI()
+    .then(client => callback(null, client.ApiGatewayManagementApi))
+    .catch(callback)
 
-  exec({
-    id,
-    payload
-  }, callback)
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => res(client.ApiGatewayManagementApi))
+      .catch(rej)
+  })
+}
 
-  return promise
+function send ({ id, payload }, callback) {
+  if (callback) instantiateAPI()
+    .then(client => {
+      client.ApiGatewayManagementApi.PostToConnection({
+        ApiUrl,
+        ConnectionId: id,
+        Data: payload,
+      })
+        .then(result => callback(null, result))
+        .catch(callback)
+    })
+    .catch(callback)
+
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => {
+        client.ApiGatewayManagementApi.PostToConnection({
+          ApiUrl,
+          ConnectionId: id,
+          Data: payload,
+        })
+          .then(result => res(result))
+          .catch(rej)
+      })
+      .catch(rej)
+  })
+}
+
+function close ({ id }, callback) {
+  if (callback) instantiateAPI()
+    .then(client => {
+      client.ApiGatewayManagementApi.DeleteConnection({
+        ApiUrl,
+        ConnectionId: id,
+      })
+        .then(result => callback(null, result))
+        .catch(callback)
+    })
+    .catch(callback)
+
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => {
+        client.ApiGatewayManagementApi.DeleteConnection({
+          ApiUrl,
+          ConnectionId: id,
+        })
+          .then(result => res(result))
+          .catch(rej)
+      })
+      .catch(rej)
+  })
+}
+
+function info ({ id }, callback) {
+  if (callback) instantiateAPI()
+    .then(client => {
+      client.ApiGatewayManagementApi.GetConnection({
+        ApiUrl,
+        ConnectionId: id,
+      })
+        .then(result => callback(null, result))
+        .catch(callback)
+    })
+    .catch(callback)
+
+  else return new Promise((res, rej) => {
+    instantiateAPI()
+      .then(client => {
+        client.ApiGatewayManagementApi.GetConnection({
+          ApiUrl,
+          ConnectionId: id,
+        })
+          .then(result => res(result))
+          .catch(rej)
+      })
+      .catch(rej)
+  })
+}
+
+module.exports = {
+  _api,
+  send,
+  close,
+  info,
 }

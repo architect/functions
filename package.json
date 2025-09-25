@@ -1,7 +1,7 @@
 {
   "name": "@architect/functions",
-  "version": "3.13.8",
-  "description": "Cloud function signatures for HTTP handlers, pub/sub + scheduled, queued functions, table triggers, and more",
+  "version": "8.1.9",
+  "description": "Runtime utility library for Functional Web Apps (FWAs) built with Architect (https://arc.codes)",
   "homepage": "https://github.com/architect/functions",
   "repository": {
     "type": "git",
@@ -9,20 +9,63 @@
   },
   "bugs": "https://github.com/architect/functions/issues",
   "main": "src/index",
+  "types": "types/index.d.ts",
   "scripts": {
+    "test:one": "cross-env tape 'test/unit/src/http/csrf/*-test.js' | tap-arc",
     "lint": "eslint --fix .",
-    "test:unit": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape 'test/unit/**/*-test.js' | tap-spec",
-    "test:integration": "cross-env PORT=6666 NODE_ENV=testing AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar AWS_REGION=us-west-1 tape 'test/integration/**/*-test.js' | tap-spec",
+    "test": "npm run lint && npm run test:integration && npm run coverage && npm run test:types",
+    "test:nolint": "npm run test:integration && npm run coverage && npm run test:types",
+    "test:unit": "cross-env tape 'test/unit/**/*-test.js' | tap-arc",
+    "test:integration": "cross-env tape 'test/integration/**/*-test.js' | tap-arc",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
-    "test": "npm run lint && npm run test:integration && npm run coverage",
-    "bundle": "echo 'For experimentation only, build from http-proxy!' && browserify src/http/proxy/arc-default-get-index.js --node --external aws-sdk --standalone proxy > dist.js",
+    "test:types": "tsd --files types/*.test-d.ts",
     "rc": "npm version prerelease --preid RC"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=16"
   },
   "author": "Brian LeRoux <b@brian.io>",
   "license": "Apache-2.0",
+  "dependencies": {
+    "@aws-lite/apigatewaymanagementapi": "^0.0.10",
+    "@aws-lite/client": "^0.22.4",
+    "@aws-lite/dynamodb": "^0.3.9",
+    "@aws-lite/sns": "^0.0.8",
+    "@aws-lite/sqs": "^0.2.4",
+    "@aws-lite/ssm": "^0.2.5",
+    "cookie": "^1.0.2",
+    "cookie-signature": "^1.2.2",
+    "csrf": "^3.1.0",
+    "node-webtokens": "^1.0.4",
+    "run-parallel": "^1.2.0",
+    "run-waterfall": "^1.1.7",
+    "uid-safe": "^2.1.5"
+  },
+  "devDependencies": {
+    "@architect/asap": "^7.0.10",
+    "@architect/eslint-config": "^3.0.0",
+    "@architect/req-res-fixtures": "git+https://github.com/architect/req-res-fixtures.git",
+    "@architect/sandbox": "^6.0.5",
+    "@aws-lite/apigatewaymanagementapi-types": "^0.0.13",
+    "@aws-lite/dynamodb-types": "^0.3.11",
+    "@aws-lite/sns-types": "^0.0.10",
+    "@aws-lite/sqs-types": "^0.2.6",
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "18",
+    "cross-env": "~7.0.3",
+    "eslint": "^9.19.0",
+    "nyc": "~17.1.0",
+    "proxyquire": "~2.1.3",
+    "sinon": "^19.0.2",
+    "tap-arc": "^1.3.2",
+    "tape": "^5.9.0",
+    "tiny-json-http": "^7.5.1",
+    "tsd": "^0.31.2"
+  },
+  "files": [
+    "types/*",
+    "src/*"
+  ],
   "keywords": [
     "aws",
     "lambda",
@@ -37,34 +80,9 @@
     "api gateway",
     "framework"
   ],
-  "dependencies": {
-    "aws-serverless-express": "^3.3.8",
-    "cookie": "^0.4.1",
-    "cookie-signature": "^1.1.0",
-    "csrf": "^3.1.0",
-    "mime-types": "^2.1.27",
-    "node-webtokens": "^1.0.4",
-    "run-parallel": "^1.1.10",
-    "run-waterfall": "^1.1.7",
-    "uid-safe": "^2.1.5"
-  },
-  "devDependencies": {
-    "@architect/eslint-config": "1.0.0",
-    "@architect/sandbox": "^3.1.3",
-    "aws-sdk": "2.799.0",
-    "browserify": "^16.5.2",
-    "codecov": "^3.8.1",
-    "cross-env": "^7.0.2",
-    "eslint": "^7.12.1",
-    "mock-fs": "^4.13.0",
-    "nyc": "^15.1.0",
-    "proxyquire": "^2.1.3",
-    "sinon": "^9.2.1",
-    "tap-spec": "^5.0.0",
-    "tape": "^5.0.1",
-    "tiny-json-http": "^7.3.0"
-  },
-  "eslintConfig": {
-    "extends": "@architect/eslint-config"
+  "tsd": {
+    "compilerOptions": {
+      "strict": false
+    }
   }
 }

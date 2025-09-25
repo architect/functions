@@ -19,6 +19,7 @@ module.exports = [
   'font/woff',
   'font/woff2',
   // Images
+  'image/avif',
   'image/bmp',
   'image/gif',
   'image/jpeg',
@@ -32,7 +33,8 @@ module.exports = [
   'audio/basic',
   'audio/mpeg',
   'audio/ogg',
-  'audio/wavaudio/webm',
+  'audio/wav',
+  'audio/webm',
   'audio/x-aiff',
   'audio/x-midi',
   'audio/x-wav',
@@ -56,5 +58,5 @@ module.exports = [
   'application/x-rar-compressed',
   'application/x-tar',
   'application/x-zip',
-  'application/zip'
+  'application/zip',
 ]

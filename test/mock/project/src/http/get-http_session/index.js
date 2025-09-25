@@ -13,7 +13,7 @@ function handler (req, res) {
   }
   res({
     session,
-    json: JSON.stringify(session)
+    json: JSON.stringify(session),
   })
 }
 

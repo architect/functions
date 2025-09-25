@@ -1,27 +1,24 @@
-let dynamo = require('../../../../tables/dynamo').session
 let create = require('./create')
 
 module.exports = function _find (name, _idx, callback) {
-  dynamo(function _gotDB (err, db) {
+  let { tables } = require('../../../../')
+
+  tables({}, (err, data) => {
     if (err) callback(err)
-    else {
-      db.get({
-        TableName: name,
-        ConsistentRead: true,
-        Key: { _idx }
-      },
-      function _get (err, data) {
-        if (err) callback(err)
+    else data._client.GetItem({
+      TableName: name,
+      ConsistentRead: true,
+      Key: { _idx },
+    })
+      .then(item => {
+        let result = typeof item === 'undefined' ? false : item.Item
+        if (result?._secret) {
+          callback(null, result)
+        }
         else {
-          let result = typeof data === 'undefined' ? false : data.Item
-          if (result && result._secret) {
-            callback(null, result)
-          }
-          else {
-            create(name, {}, callback)
-          }
+          create(name, {}, callback)
         }
       })
-    }
+      .catch(callback)
   })
 }

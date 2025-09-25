@@ -1,5 +1,5 @@
 module.exports = function _csrf (req, res, next) {
-  var token = req.body && req.body.csrf ? req.body.csrf : ''
+  var token = req.body?.csrf ? req.body.csrf : ''
   var valid = req._verify(token)
   if (valid) {
     next()
@@ -7,7 +7,7 @@ module.exports = function _csrf (req, res, next) {
   else {
     res({
       status: 403,
-      html: 'invalid csrf token'
+      html: 'invalid csrf token',
     })
   }
 }
