@@ -9,3 +9,4 @@ scratch/
 test/mock/*/src/*/*/vendor/
 test/mock/tmp/
 yarn.lock
+.kiro
