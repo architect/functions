@@ -12,6 +12,34 @@
 Check out the full docs for [this library](https://arc.codes/docs/en/reference/runtime-helpers/node.js) and [Architect](https://arc.codes)
 
 
+## Development
+
+### Testing
+
+This project uses Node.js native test runner (Node.js 20+) for testing. The test suite includes both unit and integration tests.
+
+**Run all tests:**
+```bash
+npm test
+```
+
+**Run specific test types:**
+```bash
+npm run test:unit        # Unit tests only
+npm run test:integration # Integration tests only
+npm run test:types       # TypeScript type tests
+```
+
+**Generate coverage reports:**
+```bash
+npm run coverage         # Coverage with lcov output
+npm run coverage:text    # Coverage with text output only
+npm run coverage:all     # Coverage for all tests (unit + integration)
+```
+
+The test suite uses Node.js built-in test runner and assert module. Coverage reporting is handled by Node.js native coverage collection (`--experimental-test-coverage`).
+
+
 ## Install
 
 Within your Architect project directory, add `@architect/function` to its root `package.json`:

@@ -1,5 +1,6 @@
 let sandbox = require('@architect/sandbox')
-let test = require('tape')
+const { test } = require('node:test')
+const assert = require('node:assert')
 let { join } = require('path')
 let WebSocket = require('ws')
 
@@ -8,14 +9,12 @@ let url = `ws://localhost:${port}`
 
 let mock = join(__dirname, '..', 'mock', 'project')
 
-test('Set up env', async t => {
-  t.plan(1)
+test('Set up env', async () => {
   let result = await sandbox.start({ quiet: true, cwd: mock })
-  t.equal(result, 'Sandbox successfully started', result)
+  assert.strictEqual(result, 'Sandbox successfully started', result)
 })
 
-test('Connect, get message, send message, get message, send disconnect, be disconnected', async t => {
-  t.plan(3)
+test('Connect, get message, send message, get message, send disconnect, be disconnected', async () => {
   let ws = new WebSocket(url)
 
   await new Promise(resolve => ws.once('open', resolve))
@@ -23,8 +22,8 @@ test('Connect, get message, send message, get message, send disconnect, be disco
 
   let infoMessage = await new Promise(resolve => ws.once('message', data => resolve(JSON.parse(data.toString('utf8')))))
 
-  t.equal(infoMessage.message, 'hi back')
-  t.equal(typeof infoMessage.info.ConnectedAt, 'string')
+  assert.strictEqual(infoMessage.message, 'hi back')
+  assert.strictEqual(typeof infoMessage.info.ConnectedAt, 'string')
 
   ws.send(JSON.stringify({ message: 'disconnect me' }))
 
@@ -34,11 +33,10 @@ test('Connect, get message, send message, get message, send disconnect, be disco
   // At this point in the test the @ws disconnect Lambda is just firing up, but we're about to shut down Sandbox, thereby creating a Lambda execution race condition
   // We'll have to fix that at some point in the future by ensuring Sandbox shuts down invocations before terminating
 
-  t.pass('Disconnected')
+  assert.ok(true, 'Disconnected')
 })
 
-test('Teardown', async t => {
-  t.plan(1)
+test('Teardown', async () => {
   let result = await sandbox.end()
-  t.equal(result, 'Sandbox successfully shut down', result)
+  assert.strictEqual(result, 'Sandbox successfully shut down', result)
 })

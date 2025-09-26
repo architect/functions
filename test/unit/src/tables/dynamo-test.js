@@ -1,9 +1,13 @@
 /*
-let test = require('tape')
-let file = '../../../../src/tables/dynamo'
+// NOTE: This test is commented out because src/tables/dynamo.js does not exist
+// The test has been migrated to Node.js test runner syntax for future use
+
+const { test } = require('node:test')
+const assert = require('node:assert')
+const file = '../../../../src/tables/dynamo'
 let dynamo
 
-function reset (t) {
+function reset () {
   delete process.env.ARC_ENV
   delete process.env.ARC_SANDBOX
   delete process.env.AWS_REGION
@@ -11,155 +15,181 @@ function reset (t) {
   delete require.cache[require.resolve(file)]
   dynamo = undefined
 
-  if (process.env.ARC_SANDBOX) t.fail('Did not unset ARC_SANDBOX')
-  if (process.env.AWS_REGION) t.fail('Did not unset AWS_REGION')
-  if (process.env.ARC_SESSION_TABLE_NAME) t.fail('Did not unset ARC_SESSION_TABLE_NAME')
-  if (require.cache[require.resolve(file)]) t.fail('Did not reset require cache')
-  if (dynamo) t.fail('Did not unset module')
+  if (process.env.ARC_SANDBOX) assert.fail('Did not unset ARC_SANDBOX')
+  if (process.env.AWS_REGION) assert.fail('Did not unset AWS_REGION')
+  if (process.env.ARC_SESSION_TABLE_NAME) assert.fail('Did not unset ARC_SESSION_TABLE_NAME')
+  if (require.cache[require.resolve(file)]) assert.fail('Did not reset require cache')
+  if (dynamo) assert.fail('Did not unset module')
 }
 
-test('Set up env', t => {
-  t.plan(2)
+test('Set up env', (t, done) => {
   process.env.ARC_ENV = 'testing'
   process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
 
   // eslint-disable-next-line
   dynamo = require(file)
 
+  let completed = 0
+  const checkComplete = () => {
+    completed++
+    if (completed === 2) {
+      reset()
+      done()
+    }
+  }
+
   // DB x callback
   dynamo.db((err, db) => {
-    if (err) t.fail(err)
-    t.ok(db, 'Got DynamoDB object (callback)')
+    if (err) assert.fail(err)
+    assert.ok(db, 'Got DynamoDB object (callback)')
+    checkComplete()
   })
 
   // Doc x callback
   dynamo.doc((err, doc) => {
-    if (err) t.fail(err)
-    t.ok(doc, 'Got DynamoDB document object (callback)')
+    if (err) assert.fail(err)
+    assert.ok(doc, 'Got DynamoDB document object (callback)')
+    checkComplete()
   })
-
-  reset(t)
 })
 
-test('Local port + region configuration', t => {
-  t.plan(20)
-
+test('Local port + region configuration', (t, done) => {
   process.env.ARC_ENV = 'testing'
   process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
-  let localhost = 'localhost'
-  let defaultPort = 5555
-  let defaultRegion = 'us-west-2'
+  const localhost = 'localhost'
+  const defaultPort = 5555
+  const defaultRegion = 'us-west-2'
   let host = `${localhost}:${defaultPort}`
 
   // eslint-disable-next-line
   dynamo = require(file)
 
+  let completed = 0
+  const checkComplete = () => {
+    completed++
+    if (completed === 4) {
+      reset()
+      done()
+    }
+  }
+
   // DB x callback
   dynamo.db(async (err, db) => {
-    if (err) t.fail(err)
-    t.equal(db.endpoint.host, host, `DB configured 'host' property is ${host}`)
-    t.equal(db.endpoint.hostname, localhost, `DB configured 'hostname' property is ${localhost}`)
-    t.equal(db.endpoint.href, `http://${host}/`, `DB configured 'href' property is http://${host}/`)
-    t.equal(db.endpoint.port, defaultPort, `DB configured 'port' property is ${defaultPort}`)
-    t.equal(db.config.region, defaultRegion, `DB configured 'region' property is ${defaultRegion}`)
+    if (err) assert.fail(err)
+    assert.strictEqual(db.endpoint.host, host, `DB configured 'host' property is ${host}`)
+    assert.strictEqual(db.endpoint.hostname, localhost, `DB configured 'hostname' property is ${localhost}`)
+    assert.strictEqual(db.endpoint.href, `http://${host}/`, `DB configured 'href' property is http://${host}/`)
+    assert.strictEqual(db.endpoint.port, defaultPort, `DB configured 'port' property is ${defaultPort}`)
+    assert.strictEqual(db.config.region, defaultRegion, `DB configured 'region' property is ${defaultRegion}`)
+    checkComplete()
   })
 
   // Doc x callback
   // For whatever mysterious reason(s), docs configure their endpoint under doc.service.endpoint, not doc.endpoint
   dynamo.doc((err, doc) => {
-    if (err) t.fail(err)
-    t.equal(doc.service.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-    t.equal(doc.service.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.service.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-    t.equal(doc.service.endpoint.port, defaultPort, `Doc configured 'port' property is ${defaultPort}`)
-    t.equal(doc.service.config.region, defaultRegion, `Doc configured 'region' property is ${defaultRegion}`)
+    if (err) assert.fail(err)
+    assert.strictEqual(doc.service.endpoint.host, host, `Doc configured 'host' property is ${host}`)
+    assert.strictEqual(doc.service.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
+    assert.strictEqual(doc.service.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
+    assert.strictEqual(doc.service.endpoint.port, defaultPort, `Doc configured 'port' property is ${defaultPort}`)
+    assert.strictEqual(doc.service.config.region, defaultRegion, `Doc configured 'region' property is ${defaultRegion}`)
+    checkComplete()
   })
 
-  reset(t)
+  // Reset and test custom configuration
+  reset()
 
-  let customPort = 5666
-  let customRegion = 'us-east-1'
+  const customPort = 5666
+  const customRegion = 'us-east-1'
   process.env.ARC_ENV = 'testing'
   process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: customPort } })
   process.env.AWS_REGION = customRegion
   host = `${localhost}:${customPort}`
 
   // eslint-disable-next-line
-    dynamo = require(file)
+  dynamo = require(file)
 
   // DB x callback
   dynamo.db((err, db) => {
-    if (err) t.fail(err)
-    t.equal(db.endpoint.host, host, `DB configured 'host' property is ${host}`)
-    t.equal(db.endpoint.hostname, localhost, `DB configured 'hostname' property is ${localhost}`)
-    t.equal(db.endpoint.href, `http://${host}/`, `DB configured 'href' property is http://${host}/`)
-    t.equal(db.endpoint.port, customPort, `DB configured 'port' property is ${customPort}`)
-    t.equal(db.config.region, customRegion, `DB configured 'region' property is ${customRegion}`)
+    if (err) assert.fail(err)
+    assert.strictEqual(db.endpoint.host, host, `DB configured 'host' property is ${host}`)
+    assert.strictEqual(db.endpoint.hostname, localhost, `DB configured 'hostname' property is ${localhost}`)
+    assert.strictEqual(db.endpoint.href, `http://${host}/`, `DB configured 'href' property is http://${host}/`)
+    assert.strictEqual(db.endpoint.port, customPort, `DB configured 'port' property is ${customPort}`)
+    assert.strictEqual(db.config.region, customRegion, `DB configured 'region' property is ${customRegion}`)
+    checkComplete()
   })
 
   // Doc x callback
   // For whatever mysterious reason(s), docs configure their endpoint under doc.service.endpoint, not doc.endpoint
   dynamo.doc((err, doc) => {
-    if (err) t.fail(err)
-    t.equal(doc.service.endpoint.host, host, `Doc configured 'host' property is ${host}`)
-    t.equal(doc.service.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
-    t.equal(doc.service.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
-    t.equal(doc.service.endpoint.port, customPort, `Doc configured 'port' property is ${customPort}`)
-    t.equal(doc.service.config.region, customRegion, `Doc configured 'region' property is ${customRegion}`)
+    if (err) assert.fail(err)
+    assert.strictEqual(doc.service.endpoint.host, host, `Doc configured 'host' property is ${host}`)
+    assert.strictEqual(doc.service.endpoint.hostname, localhost, `Doc configured 'hostname' property is ${localhost}`)
+    assert.strictEqual(doc.service.endpoint.href, `http://${host}/`, `Doc configured 'href' property is http://${host}/`)
+    assert.strictEqual(doc.service.endpoint.port, customPort, `Doc configured 'port' property is ${customPort}`)
+    assert.strictEqual(doc.service.config.region, customRegion, `Doc configured 'region' property is ${customRegion}`)
+    checkComplete()
   })
-
-  reset(t)
 })
 
-test('Live AWS infra config', t => {
-  t.plan(4)
-
+test('Live AWS infra config', (t, done) => {
   // Defaults
   process.env.ARC_ENV = 'testing'
   process.env.ARC_SANDBOX = JSON.stringify({ ports: { tables: 5555 } })
 
   // eslint-disable-next-line
-    dynamo = require(file)
+  dynamo = require(file)
+
+  let completed = 0
+  const checkComplete = () => {
+    completed++
+    if (completed === 4) {
+      reset()
+      done()
+    }
+  }
 
   // DB x callback
   dynamo.db((err, db) => {
-    if (err) t.fail(err)
-    t.notOk(db.config.httpOptions.agent, 'DB HTTP agent options not set')
+    if (err) assert.fail(err)
+    assert.ok(!db.config.httpOptions.agent, 'DB HTTP agent options not set')
+    checkComplete()
   })
 
   // Doc x callback
   dynamo.doc((err, doc) => {
-    if (err) t.fail(err)
-    t.notOk(doc.service.config.httpOptions.agent, 'Doc HTTP agent options not set')
+    if (err) assert.fail(err)
+    assert.ok(!doc.service.config.httpOptions.agent, 'Doc HTTP agent options not set')
+    checkComplete()
   })
 
-  reset(t)
+  reset()
 
   // Defaults
   process.env.ARC_ENV = 'staging'
   process.env.AWS_REGION = 'us-west-1'
 
   // eslint-disable-next-line
-    dynamo = require(file)
+  dynamo = require(file)
 
   // DB x callback
   dynamo.db((err, db) => {
-    if (err) t.fail(err)
-    t.ok(db.config.httpOptions.agent.options, 'DB HTTP agent options set')
+    if (err) assert.fail(err)
+    assert.ok(db.config.httpOptions.agent.options, 'DB HTTP agent options set')
+    checkComplete()
   })
 
   // Doc x callback
   dynamo.doc((err, doc) => {
-    if (err) t.fail(err)
-    t.ok(doc.service.config.httpOptions.agent.options, 'Doc HTTP agent options set')
+    if (err) assert.fail(err)
+    assert.ok(doc.service.config.httpOptions.agent.options, 'Doc HTTP agent options set')
+    checkComplete()
   })
-
-  reset(t)
 })
 
-test('Tear down env', t => {
-  t.plan(1)
-  reset(t)
-  t.pass('Tore down env')
+test('Tear down env', () => {
+  reset()
+  assert.ok(true, 'Tore down env')
 })
 */

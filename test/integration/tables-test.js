@@ -1,6 +1,7 @@
 let sandbox = require('@architect/sandbox')
 let { execSync: exec } = require('child_process')
-let test = require('tape')
+const { test } = require('node:test')
+const assert = require('node:assert')
 let { join } = require('path')
 let { copyFileSync, existsSync: exists, mkdirSync: mkdir  } = require('fs')
 
@@ -11,57 +12,54 @@ let mock = join(__dirname, '..', 'mock')
 let tmp = join(mock, 'tmp')
 let shared = join(tmp, 'node_modules', '@architect', 'shared')
 
-test('Set up mocked files', t => {
-  t.plan(3)
+test('Set up mocked files', () => {
   process.env.ARC_APP_NAME = 'test-app-name'
   mkdir(shared, { recursive: true })
   copyFileSync(join(mock, 'mock-arc'), join(shared, '.arc'))
   copyFileSync(join(mock, 'mock-arc'), join(tmp, '.arc'))
   copyFileSync(join(mock, 'mock-static'), join(shared, 'static.json'))
-  t.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
-  t.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
-  t.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
+  assert.ok(exists(join(shared, '.arc')), 'Mock .arc (shared) file ready')
+  assert.ok(exists(join(tmp, '.arc')), 'Mock .arc (root) file ready')
+  assert.ok(exists(join(shared, 'static.json')), 'Mock static.json file ready')
 
   arc = require('../..') // module globally inspects arc file so need to require after chdir
 })
 
-test('starts the db server', t => {
-  t.plan(1)
+test('starts the db server', (t, done) => {
   sandbox.start({ quiet: true, cwd: tmp }, err => {
-    if (err) t.fail(err)
-    else t.pass('Sandbox started')
+    if (err) assert.fail(err)
+    else {
+      assert.ok(true, 'Sandbox started')
+      done()
+    }
   })
 })
 
-test('tables() returns table object', async t => {
-  t.plan(3)
+test('tables() returns table object', async () => {
   data = await arc.tables()
-  t.ok(data.accounts, 'accounts table object exists')
-  t.ok(data.messages, 'messages table object exists')
-  t.ok(data['accounts-messages'], 'accounts-messages table object exists')
+  assert.ok(data.accounts, 'accounts table object exists')
+  assert.ok(data.messages, 'messages table object exists')
+  assert.ok(data['accounts-messages'], 'accounts-messages table object exists')
 })
 
-test('tables().name() returns the table\'s name', async t => {
-  t.plan(3)
+test('tables().name() returns the table\'s name', async () => {
   const { name } = await arc.tables()
-  t.equal(name('accounts'), 'test-app-name-staging-accounts', 'accounts table returns correct logical id')
-  t.equal(name('messages'), 'test-app-name-staging-messages', 'messages table returns correct logical id')
-  t.equal(name('accounts-messages'), 'test-app-name-staging-accounts-messages')
+  assert.strictEqual(name('accounts'), 'test-app-name-staging-accounts', 'accounts table returns correct logical id')
+  assert.strictEqual(name('messages'), 'test-app-name-staging-messages', 'messages table returns correct logical id')
+  assert.strictEqual(name('accounts-messages'), 'test-app-name-staging-accounts-messages')
 })
 
-test('tables().reflect() returns the table map', async t => {
-  t.plan(1)
+test('tables().reflect() returns the table map', async () => {
   const { reflect } = await arc.tables()
   const tables = await reflect()
-  t.deepEqual(tables, {
+  assert.deepStrictEqual(tables, {
     accounts: 'test-app-name-staging-accounts',
     messages: 'test-app-name-staging-messages',
     'accounts-messages': 'test-app-name-staging-accounts-messages',
   }, 'map of table names to table logical ids should be correct')
 })
 
-test('tables put()', async t => {
-  t.plan(2)
+test('tables put()', async () => {
   let item = await data.accounts.put({
     accountID: 'fake',
     foo: 'bar',
@@ -70,63 +68,60 @@ test('tables put()', async t => {
       doe: true,
     },
   })
-  t.ok(item, 'returned item')
+  assert.ok(item, 'returned item')
   item = null
   item = await data['accounts-messages'].put({
     accountID: 'fake',
     msgID: 'alsofake',
     extra: true,
   })
-  t.ok(item, `returned item`)
+  assert.ok(item, `returned item`)
 })
 
-test('tables get()', async t => {
-  t.plan(4)
+test('tables get()', async () => {
   let result = await data.accounts.get({
     accountID: 'fake',
   })
-  t.ok(result, 'got accounts table result')
-  t.ok(result.baz.doe, 'result.baz.doe deserialized')
+  assert.ok(result, 'got accounts table result')
+  assert.ok(result.baz.doe, 'result.baz.doe deserialized')
   result = null
   result = await data['accounts-messages'].get({
     accountID: 'fake',
     msgID: 'alsofake',
   })
-  t.ok(result, 'got accounts-messages table result')
-  t.ok(result.extra, 'result.extra deserialized')
+  assert.ok(result, 'got accounts-messages table result')
+  assert.ok(result.extra, 'result.extra deserialized')
 })
 
-test('tables delete()', async t => {
-  t.plan(4)
+test('tables delete()', async () => {
   await data.accounts.delete({
     accountID: 'fake',
   })
-  t.ok(true, 'deleted')
+  assert.ok(true, 'deleted')
   let result = await data.accounts.get({
     accountID: 'fake',
   })
-  t.equal(result, undefined, 'could not get deleted accounts item')
+  assert.strictEqual(result, undefined, 'could not get deleted accounts item')
   await data['accounts-messages'].delete({
     accountID: 'fake',
     msgID: 'alsofake',
   })
-  t.ok(true, 'deleted')
+  assert.ok(true, 'deleted')
   let otherResult = await data['accounts-messages'].get({
     accountID: 'fake',
     msgID: 'alsofake',
   })
-  t.equal(otherResult, undefined, 'could not get deleted accounts-messages item')
+  assert.strictEqual(otherResult, undefined, 'could not get deleted accounts-messages item')
 })
 
-test('tables query()', async t => {
-  t.plan(3)
+test('tables query()', async () => {
   let items = await Promise.all([
     data.accounts.put({ accountID: 'one' }),
     data.accounts.put({ accountID: 'two' }),
     data.accounts.put({ accountID: 'three' }),
   ])
 
-  t.ok(items, 'got items')
+  assert.ok(items, 'got items')
 
   let result = await data.accounts.query({
     KeyConditionExpression: 'accountID = :id',
@@ -135,30 +130,27 @@ test('tables query()', async t => {
     },
   })
 
-  t.ok(result, 'got a result')
-  t.equal(result.Count, 1, 'got count of one')
+  assert.ok(result, 'got a result')
+  assert.strictEqual(result.Count, 1, 'got count of one')
 })
 
-test('tables scan()', async t => {
-  t.plan(1)
+test('tables scan()', async () => {
   let result = await data.accounts.scan({
     FilterExpression: 'accountID = :id',
     ExpressionAttributeValues: {
       ':id': 'two',
     },
   })
-  t.ok(result, 'got a result')
+  assert.ok(result, 'got a result')
 })
 
-test('tables scanAll()', async t => {
-  t.plan(2)
+test('tables scanAll()', async () => {
   let result = await data.accounts.scanAll({ Limit: 1 })
-  t.ok(result, 'got a result')
-  t.equal(result.length, 3, 'Got back all rows')
+  assert.ok(result, 'got a result')
+  assert.strictEqual(result.length, 3, 'Got back all rows')
 })
 
-test('tables update()', async t => {
-  t.plan(3)
+test('tables update()', async () => {
   await data.accounts.update({
     Key: {
       accountID: 'three',
@@ -172,28 +164,29 @@ test('tables update()', async t => {
     },
   })
 
-  t.ok(true, 'updated without error')
+  assert.ok(true, 'updated without error')
 
   let result = await data.accounts.get({
     accountID: 'three',
   })
 
-  t.ok(result, 'got result')
-  t.equal(result.hits, 20, 'property updated')
+  assert.ok(result, 'got result')
+  assert.strictEqual(result.hits, 20, 'property updated')
 })
 
-test('server closes', t => {
-  t.plan(1)
+test('server closes', (t, done) => {
   sandbox.end(err => {
-    if (err) t.fail(err)
-    else t.pass('Sandbox ended')
+    if (err) assert.fail(err)
+    else {
+      assert.ok(true, 'Sandbox ended')
+      done()
+    }
   })
 })
 
-test('Clean up env', t => {
-  t.plan(1)
+test('Clean up env', () => {
   delete process.env.ARC_APP_NAME
   delete process.env.ARC_ENV
   exec(`rm -rf ${tmp}`)
-  t.ok(!exists(tmp), 'Mocks cleaned up')
+  assert.ok(!exists(tmp), 'Mocks cleaned up')
 })

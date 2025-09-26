@@ -1,5 +1,6 @@
 let sandbox = require('@architect/sandbox')
-let test = require('tape')
+const { test } = require('node:test')
+const assert = require('node:assert')
 let { join } = require('path')
 let tiny = require('tiny-json-http')
 
@@ -12,35 +13,32 @@ let compress = {
 let css = `/* css here! */\n`
 let js = `/* js here! */\n`
 
-test('Set up env', async t => {
-  t.plan(1)
+test('Set up env', async () => {
   let result = await sandbox.start({ quiet: true, cwd: mock })
-  t.equal(result, 'Sandbox successfully started', result)
+  assert.strictEqual(result, 'Sandbox successfully started', result)
 })
 
-test('Get uncompressed assets', async t => {
-  t.plan(4)
+test('Get uncompressed assets', async () => {
   let result
 
   // No compression
   result = await tiny.get({ url: url('/style.css') })
-  t.equal(result.body, css, 'Got back correct CSS')
+  assert.strictEqual(result.body, css, 'Got back correct CSS')
 
   result = await tiny.get({ url: url('/index.js') })
-  t.equal(result.body, js, 'Got back correct JS')
+  assert.strictEqual(result.body, js, 'Got back correct JS')
 
   // Client accepts Brotli compression
   result = await tiny.get({ url: url('/style.css'), headers: compress })
-  t.equal(result.body, css, 'Got back correct CSS')
+  assert.strictEqual(result.body, css, 'Got back correct CSS')
 
   result = await tiny.get({ url: url('/index.js'), headers: compress })
-  t.equal(result.body, js, 'Got back correct JS')
+  assert.strictEqual(result.body, js, 'Got back correct JS')
 })
 
 // TODO could probably stand to do a compressed test set, but that would require building local compression support for ASAP, which we did not yet bother with
 
-test('Teardown', async t => {
-  t.plan(1)
+test('Teardown', async () => {
   let result = await sandbox.end()
-  t.equal(result, 'Sandbox successfully shut down', result)
+  assert.strictEqual(result, 'Sandbox successfully shut down', result)
 })
