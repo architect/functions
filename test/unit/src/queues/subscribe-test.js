@@ -4,10 +4,10 @@ let mockSqsEvent = require('../../../mock/mock-sqs-event.json')
 let subscribe
 
 // Simple function tracker to replace sinon
-function createFake() {
+function createFake () {
   const calls = []
   let callCount = 0
-  const fake = function(...args) {
+  function fake (...args) {
     calls.push(args)
     callCount++
     if (fake._callback) {
@@ -16,7 +16,7 @@ function createFake() {
   }
   fake.calledOnce = () => callCount === 1
   fake.yields = () => {
-    fake._callback = function(...args) {
+    fake._callback = function (...args) {
       const callback = args[args.length - 1]
       if (typeof callback === 'function') {
         callback()

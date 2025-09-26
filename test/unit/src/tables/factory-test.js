@@ -10,7 +10,7 @@ const noop = () => {}
 
 // Mock the legacy module using Node.js native module mocking
 const originalRequire = Module.prototype.require
-Module.prototype.require = function(id) {
+Module.prototype.require = function (id) {
   if (id === './legacy') {
     return () => ({ db: noop, doc: noop })
   }

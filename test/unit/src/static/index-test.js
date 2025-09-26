@@ -1,4 +1,4 @@
-const { test, mock } = require('node:test')
+const { test } = require('node:test')
 const assert = require('node:assert')
 const Module = require('module')
 
@@ -6,7 +6,7 @@ let manifestExists = true
 
 // Mock fs module using Node.js native module mocking
 const originalRequire = Module.prototype.require
-Module.prototype.require = function(id) {
+Module.prototype.require = function (id) {
   if (id === 'fs') {
     return {
       readFileSync: () => JSON.stringify({

@@ -3,9 +3,9 @@ const assert = require('node:assert')
 let subscribe
 
 // Simple function tracker to replace sinon
-function createFake() {
+function createFake () {
   const calls = []
-  const fake = function(...args) {
+  function fake (...args) {
     calls.push(args)
     if (fake._callback) {
       fake._callback(...args)
@@ -15,7 +15,7 @@ function createFake() {
     return calls.some(call => JSON.stringify(call[0]) === JSON.stringify(expectedArg))
   }
   fake.yields = () => {
-    fake._callback = function(...args) {
+    fake._callback = function (...args) {
       const callback = args[args.length - 1]
       if (typeof callback === 'function') {
         callback()
