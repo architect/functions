@@ -1,20 +1,40 @@
-let test = require('tape')
-let sinon = require('sinon')
+const { test } = require('node:test')
+const assert = require('node:assert')
 let mockSqsEvent = require('../../../mock/mock-sqs-event.json')
 let subscribe
 
-test('Set up env', t => {
-  t.plan(1)
+// Simple function tracker to replace sinon
+function createFake() {
+  const calls = []
+  let callCount = 0
+  const fake = function(...args) {
+    calls.push(args)
+    callCount++
+    if (fake._callback) {
+      fake._callback(...args)
+    }
+  }
+  fake.calledOnce = () => callCount === 1
+  fake.yields = () => {
+    fake._callback = function(...args) {
+      const callback = args[args.length - 1]
+      if (typeof callback === 'function') {
+        callback()
+      }
+    }
+    return fake
+  }
+  return fake
+}
 
+test('Set up env', () => {
   let arc = require('../../../..')
   subscribe = arc.queues.subscribe
-  t.ok(subscribe, 'Got queues.subscribe method')
+  assert.ok(subscribe, 'Got queues.subscribe method')
 })
 
-test('queues.subscribe calls handler', t => {
-  t.plan(1)
-
-  let eventHandler = sinon.fake.yields()
+test('queues.subscribe calls handler', (t, done) => {
+  let eventHandler = createFake().yields()
 
   // get a lambda signature from the handler
   let handler = subscribe(eventHandler)
@@ -23,18 +43,17 @@ test('queues.subscribe calls handler', t => {
   let mockContext = {}
   handler(mockSqsEvent, mockContext, function _handler (err) {
     if (err) {
-      t.fail(err)
+      assert.fail(err)
     }
     else {
-      t.ok(eventHandler.calledOnce, 'event handler called once')
+      assert.ok(eventHandler.calledOnce(), 'event handler called once')
     }
+    done()
   })
 })
 
-test('queues.subscribe calls async handler', async t => {
-  t.plan(1)
-
-  let fake = sinon.fake()
+test('queues.subscribe calls async handler', async () => {
+  let fake = createFake()
 
   // get a lambda signature from the handler
 
@@ -44,11 +63,10 @@ test('queues.subscribe calls async handler', async t => {
 
   // invoke the lambda handler with mock payloads
   await handler(mockSqsEvent)
-  t.ok(fake.calledOnce, 'event handler called once')
+  assert.ok(fake.calledOnce(), 'event handler called once')
 })
 
-test('Teardown', t => {
-  t.plan(1)
+test('Teardown', () => {
   delete process.env.ARC_ENV
-  t.pass('Done!')
+  assert.ok(true, 'Done!')
 })

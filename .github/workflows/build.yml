@@ -41,7 +41,7 @@ jobs:
       run: npm install
 
     - name: Test
-      run: npm test
+      run: npm test  # Uses Node.js native test runner (Node 20+)
       env:
         CI: true
 

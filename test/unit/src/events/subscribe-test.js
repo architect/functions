@@ -1,67 +1,86 @@
-let test = require('tape')
-let sinon = require('sinon')
+const { test } = require('node:test')
+const assert = require('node:assert')
 let subscribe
 
-test('Set up env', t => {
-  t.plan(1)
+// Simple function tracker to replace sinon
+function createFake() {
+  const calls = []
+  const fake = function(...args) {
+    calls.push(args)
+    if (fake._callback) {
+      fake._callback(...args)
+    }
+  }
+  fake.calledWith = (expectedArg) => {
+    return calls.some(call => JSON.stringify(call[0]) === JSON.stringify(expectedArg))
+  }
+  fake.yields = () => {
+    fake._callback = function(...args) {
+      const callback = args[args.length - 1]
+      if (typeof callback === 'function') {
+        callback()
+      }
+    }
+    return fake
+  }
+  return fake
+}
 
+test('Set up env', () => {
   let arc = require('../../../..')
   subscribe = arc.events.subscribe
-  t.ok(subscribe, 'Got events.subscribe method')
+  assert.ok(subscribe, 'Got events.subscribe method')
 })
 
-test('events.subscribe should invoke provided handler for each SNS event Record', t => {
-  t.plan(2)
-  let fake = sinon.fake.yields()
+test('events.subscribe should invoke provided handler for each SNS event Record', (t, done) => {
+  let fake = createFake().yields()
   let handler = subscribe(fake)
   handler({
     Records: [ { Sns: { Message: '{"hey":"there"}' } }, { Sns: { Message: '{"sup":"bud"}' } } ],
   }, {}, function (err) {
-    if (err) t.fail(err)
+    if (err) assert.fail(err)
     else {
-      t.ok(fake.calledWith({ hey: 'there' }), 'subscribe handler called with first SNS record')
-      t.ok(fake.calledWith({ sup: 'bud' }), 'subscribe handler called with second SNS record')
+      assert.ok(fake.calledWith({ hey: 'there' }), 'subscribe handler called with first SNS record')
+      assert.ok(fake.calledWith({ sup: 'bud' }), 'subscribe handler called with second SNS record')
     }
+    done()
   })
 })
 
-test('events.subscribe should invoke provided handler for each SNS event Record when handler is async', async t => {
-  t.plan(2)
-  let fake = sinon.fake()
+test('events.subscribe should invoke provided handler for each SNS event Record when handler is async', async () => {
+  let fake = createFake()
   let handler = subscribe(async function (json) {
     await fake(json)
   })
   await handler({
     Records: [ { Sns: { Message: '{"hey":"there"}' } }, { Sns: { Message: '{"sup":"bud"}' } } ],
   })
-  t.ok(fake.calledWith({ hey: 'there' }), 'subscribe handler called with first SNS record')
-  t.ok(fake.calledWith({ sup: 'bud' }), 'subscribe handler called with second SNS record')
+  assert.ok(fake.calledWith({ hey: 'there' }), 'subscribe handler called with first SNS record')
+  assert.ok(fake.calledWith({ sup: 'bud' }), 'subscribe handler called with second SNS record')
 })
 
-test('events.subscribe should fall back to an empty event if one is not provided', t => {
-  t.plan(1)
-  let fake = sinon.fake.yields()
+test('events.subscribe should fall back to an empty event if one is not provided', (t, done) => {
+  let fake = createFake().yields()
   let handler = subscribe(fake)
   handler(null, {}, function (err) {
-    if (err) t.fail(err)
+    if (err) assert.fail(err)
     else {
-      t.ok(fake.calledWith({}), 'subscribe handler called with empty SNS record')
+      assert.ok(fake.calledWith({}), 'subscribe handler called with empty SNS record')
     }
+    done()
   })
 })
 
-test('events.subscribe should fall back to an empty event if one is not provided (async)', async t => {
-  t.plan(1)
-  let fake = sinon.fake()
+test('events.subscribe should fall back to an empty event if one is not provided (async)', async () => {
+  let fake = createFake()
   let handler = subscribe(async function (json) {
     await fake(json)
   })
   await handler()
-  t.ok(fake.calledWith({}), 'subscribe handler called with empty SNS record')
+  assert.ok(fake.calledWith({}), 'subscribe handler called with empty SNS record')
 })
 
-test('Teardown', t => {
-  t.plan(1)
+test('Teardown', () => {
   delete process.env.ARC_ENV
-  t.pass('Done!')
+  assert.ok(true, 'Done!')
 })

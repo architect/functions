@@ -1,5 +1,6 @@
 let sandbox = require('@architect/sandbox')
-let test = require('tape')
+const { test } = require('node:test')
+const assert = require('node:assert')
 let { join } = require('path')
 let tiny = require('tiny-json-http')
 
@@ -8,27 +9,24 @@ let url = s => `http://localhost:${port}${s ? s : ''}`
 let cwd = process.cwd()
 let mock = join(cwd, 'test', 'mock', 'project')
 
-test('Set up env', async t => {
-  t.plan(1)
+test('Set up env', async () => {
   let result = await sandbox.start({ quiet: true, cwd: mock })
-  t.equal(result, 'Sandbox successfully started', result)
+  assert.strictEqual(result, 'Sandbox successfully started', result)
 })
 
-test('Check for incompatible versions', async t => {
-  t.plan(1)
+test('Check for incompatible versions', async () => {
   let dest = url('/incompatible-version')
   try {
     let result = await tiny.get({ url: dest })
-    t.fail('Should not have responded with 2xx')
+    assert.fail('Should not have responded with 2xx')
     console.log(result.body)
   }
   catch (err) {
-    t.match(err.body, /Incompatible version: please upgrade/, 'Got incompatible version error')
+    assert.match(err.body, /Incompatible version: please upgrade/, 'Got incompatible version error')
   }
 })
 
-test('Teardown', async t => {
-  t.plan(1)
+test('Teardown', async () => {
   let result = await sandbox.end()
-  t.equal(result, 'Sandbox successfully shut down', result)
+  assert.strictEqual(result, 'Sandbox successfully shut down', result)
 })

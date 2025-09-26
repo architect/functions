@@ -1,7 +1,8 @@
 let { join } = require('path')
 let http = require('http')
 let sandbox = require('@architect/sandbox')
-let test = require('tape')
+const { test } = require('node:test')
+const assert = require('node:assert')
 let tiny = require('tiny-json-http')
 let cwd = process.cwd()
 let mock = join(cwd, 'test', 'mock', 'project')
@@ -30,78 +31,74 @@ function closeServer () {
   })
 }
 
-test('Set up env', async t => {
-  t.plan(2)
+test('Set up env', async () => {
   await sandbox.start({ cwd: mock, quiet: true })
-  t.pass('Sandbox started')
   createServer()
-  t.ok(server, 'Reflection server started')
+  assert.ok(server, 'Reflection server started')
 })
 
 // These can almost certainly be dried up, but they should be good enough for now
-test('@events pub/sub (continuation-passing handler)', t => {
-  t.plan(2)
+test('@events pub/sub (continuation-passing handler)', (t, done) => {
   let path = '/events/cb-event'
   let check = req => {
     let posted = req.url.split('?')
-    t.equal(posted[0], path, 'Published callback event through the event bus')
-    t.equal(posted[1], sane, 'Got payload')
+    assert.strictEqual(posted[0], path, 'Published callback event through the event bus')
+    assert.strictEqual(posted[1], sane, 'Got payload')
     server.removeListener('request', check)
+    done()
   }
   server.on('request', check)
   tiny.post({ url: url(path) }, err => {
-    if (err) t.fail(err)
+    if (err) assert.fail(err)
   })
 })
 
-test('@events pub/sub (async handler)', t => {
-  t.plan(2)
+test('@events pub/sub (async handler)', (t, done) => {
   let path = '/events/async-event'
   let check = req => {
     let posted = req.url.split('?')
-    t.equal(posted[0], path, 'Published async event through the event bus')
-    t.equal(posted[1], sane, 'Got payload')
+    assert.strictEqual(posted[0], path, 'Published async event through the event bus')
+    assert.strictEqual(posted[1], sane, 'Got payload')
     server.removeListener('request', check)
+    done()
   }
   server.on('request', check)
   tiny.post({ url: url(path) }, err => {
-    if (err) t.fail(err)
+    if (err) assert.fail(err)
   })
 })
 
-test('@queues pub/sub (continuation-passing handler)', t => {
-  t.plan(2)
+test('@queues pub/sub (continuation-passing handler)', (t, done) => {
   let path = '/queues/cb-queue'
   let check = req => {
     let posted = req.url.split('?')
-    t.equal(posted[0], path, 'Published callback queue through the queue bus')
-    t.equal(posted[1], sane, 'Got payload')
+    assert.strictEqual(posted[0], path, 'Published callback queue through the queue bus')
+    assert.strictEqual(posted[1], sane, 'Got payload')
     server.removeListener('request', check)
+    done()
   }
   server.on('request', check)
   tiny.post({ url: url(path) }, err => {
-    if (err) t.fail(err)
+    if (err) assert.fail(err)
   })
 })
 
-test('@queues pub/sub (async handler)', t => {
-  t.plan(2)
+test('@queues pub/sub (async handler)', (t, done) => {
   let path = '/queues/async-queue'
   let check = req => {
     let posted = req.url.split('?')
-    t.equal(posted[0], path, 'Published async queue through the queue bus')
-    t.equal(posted[1], sane, 'Got payload')
+    assert.strictEqual(posted[0], path, 'Published async queue through the event bus')
+    assert.strictEqual(posted[1], sane, 'Got payload')
     server.removeListener('request', check)
+    done()
   }
   server.on('request', check)
   tiny.post({ url: url(path) }, err => {
-    if (err) t.fail(err)
+    if (err) assert.fail(err)
   })
 })
 
-test('Teardown', async t => {
-  t.plan(1)
+test('Teardown', async () => {
   await closeServer()
   await sandbox.end()
-  t.pass('Sandbox ended, server closed')
 })

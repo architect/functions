@@ -1,4 +1,5 @@
-let test = require('tape')
+let { test } = require('node:test')
+let assert = require('node:assert')
 let url = require('../../../../../src/http/helpers/url')
 
 function reset () {
@@ -7,45 +8,40 @@ function reset () {
   if (process.env.ARC_ENV) throw ReferenceError('ARC_ENV not unset')
 }
 
-test('Set up env', t => {
-  t.plan(1)
-  t.ok(url, 'url helper found')
+test('Set up env', () => {
+  assert.ok(url, 'url helper found')
 })
 
-test('Local (ARC_ENV=testing) env returns unmodified URL', t => {
-  t.plan(1)
+test('Local (ARC_ENV=testing) env returns unmodified URL', () => {
   reset()
   process.env.ARC_ENV = 'testing'
   let asset = url('foo.png')
-  t.equal(asset, 'foo.png', 'Returned unmodified path')
+  assert.strictEqual(asset, 'foo.png', 'Returned unmodified path')
 })
 
-test('Staging env returns staging-prefixed URL', t => {
-  t.plan(1)
+test('Staging env returns staging-prefixed URL', () => {
   reset()
   process.env.ARC_ENV = 'staging'
   let asset = url('/')
-  t.equal(asset, '/staging/', 'Returned staging path')
+  assert.strictEqual(asset, '/staging/', 'Returned staging path')
 })
 
-test('Local env with staging mask (ARC_ENV=staging, ARC_LOCAL=1) returns unmodified path', t => {
-  t.plan(1)
+test('Local env with staging mask (ARC_ENV=staging, ARC_LOCAL=1) returns unmodified path', () => {
   reset()
   process.env.ARC_ENV = 'staging'
   process.env.ARC_LOCAL = '1'
   let asset = url('bar.png')
-  t.equal(asset, 'bar.png', 'Returned staging path')
+  assert.strictEqual(asset, 'bar.png', 'Returned staging path')
 })
 
-test('Production env returns production-prefixed URL', t => {
-  t.plan(1)
+test('Production env returns production-prefixed URL', () => {
   reset()
   process.env.ARC_ENV = 'production'
   let asset = url('/')
-  t.equal(asset, '/production/', 'Returned staging path')
+  assert.strictEqual(asset, '/production/', 'Returned staging path')
 })
 
-test('Reset', t => {
+test('Reset', () => {
   reset()
-  t.end()
+  assert.ok(true, 'Reset complete')
 })
