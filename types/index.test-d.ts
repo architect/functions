@@ -103,7 +103,7 @@ arc.static("/", { stagePath: false });
 const dbClient = await arc.tables()
 expectType<AwsLiteClient["DynamoDB"]>(dbClient._client)
 expectType<string>(dbClient.name('widgets'))
-expectType<Record<string, string>>(dbClient.reflect())
+expectType<Promise<Record<string, string>>>(dbClient.reflect())
 const myTable = dbClient.foobar
 const id42 = await myTable.get({ id: 42 })
 await myTable.update({
