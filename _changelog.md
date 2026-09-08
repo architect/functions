@@ -6,6 +6,15 @@ Also see: [Architect changelog](https://github.com/architect/architect/blob/main
 
 ---
 
+## [8.1.10] 2026-09-08
+
+### Changed
+
+- Fixed types for `arc.tables().reflect()`; thanks @sjorsrijsdam via [#577](https://github.com/architect/functions/pull/577)!
+- Fixed types for `arc.tables()` parameters/options; thanks @jkarsud via [#571](https://github.com/architect/functions/pull/571)!
+
+---
+
 ## [8.1.9] 2025-03-88
 
 ### Changed
